@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import '@rainbow-me/rainbowkit/styles.css';
 import './index.css'
 import { RouterProvider } from 'react-router-dom'
 import AppRouter from './router/router.tsx'
