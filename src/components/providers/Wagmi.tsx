@@ -1,3 +1,4 @@
+import { VITE_WALLET_CONNECT_PROJECT_ID } from "@/utils/runtime-config";
 import { RainbowKitProvider, getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { sepolia  } from "viem/chains";
@@ -6,7 +7,7 @@ import { WagmiProvider, http } from "wagmi";
 // eslint-disable-next-line react-refresh/only-export-components
 export const config = getDefaultConfig({
   appName: "PumpBTC",
-  projectId: "387232306b29f7cf98b7f2c68207ea11", // wallet connect project id
+  projectId: VITE_WALLET_CONNECT_PROJECT_ID, // wallet connect project id
   chains: [ sepolia ],
   transports: {
     [sepolia.id]: http(),
