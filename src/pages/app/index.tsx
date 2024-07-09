@@ -1,12 +1,19 @@
 import AllProviders from "@/components/providers/AllProviders";
+import { useCreateReducer } from "@/hooks/useCreateReducer";
+import AppContext, { AppIntialState, appInitialState } from "@/store/app";
 import { Outlet } from "react-router-dom";
 
 export default function App() {
+
+  const contextValue = useCreateReducer<AppIntialState>({initialState: appInitialState})
+
   return (
     <AllProviders>
-      <div className="w-full h-full container m-auto">
-        <Outlet />
-      </div>
+      <AppContext.Provider value={contextValue}>
+        <div className="w-full h-full container m-auto">
+          <Outlet />
+        </div>
+      </AppContext.Provider>
     </AllProviders>
   )
 }

@@ -6,7 +6,7 @@ import { WagmiProvider, http } from "wagmi";
 // eslint-disable-next-line react-refresh/only-export-components
 export const config = getDefaultConfig({
   appName: "PumpBTC",
-  projectId: "xxx", // wallet connect project id
+  projectId: "387232306b29f7cf98b7f2c68207ea11", // wallet connect project id
   chains: [ sepolia ],
   transports: {
     [sepolia.id]: http(),
