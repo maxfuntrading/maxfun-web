@@ -10,7 +10,7 @@ export default function App() {
   return (
     <AllProviders>
       <AppContext.Provider value={contextValue}>
-        <div className="w-full h-full container m-auto">
+        <div className="w-screen">
           <Outlet />
         </div>
       </AppContext.Provider>

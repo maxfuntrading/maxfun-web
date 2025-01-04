@@ -6,7 +6,7 @@ import { WagmiProvider, http } from "wagmi";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const config = getDefaultConfig({
-  appName: "PumpBTC",
+  appName: "MaxFun",
   projectId: VITE_WALLET_CONNECT_PROJECT_ID, // wallet connect project id
   chains: [ sepolia ],
   transports: {
