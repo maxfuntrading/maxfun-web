@@ -23,6 +23,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.23.1",
+    "resize-observer-polyfill": "^1.5.1",
     "viem": "2.x",
     "wagmi": "^2.10.3"
   },

@@ -6,7 +6,6 @@ import { useAccount } from "wagmi"
 export default function Header() {
   const { isConnected, address } = useAccount()
   const { onConnectWallet, onDisconnectWallet } = useContext(AppContext)
-
   const pathname = useLocation().pathname
   
   const NavData = [
