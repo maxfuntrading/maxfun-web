@@ -17,3 +17,19 @@ export const toastSuccess = (message: string ) => {
     description: `${message ?? 'Success'}`
   })
 }
+
+export const toastInfo = (message: string ) => {
+  toast({
+    status: 'info',
+    position: 'top',
+    description: `${message ?? ''}`
+  })
+}
+
+export const toastWarning = (message: string ) => {
+  toast({
+    status: 'warning',
+    position: 'top',
+    description: `${message ?? ''}`
+  })
+}

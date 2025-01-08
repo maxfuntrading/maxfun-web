@@ -1,16 +1,17 @@
-import { VITE_WALLET_CONNECT_PROJECT_ID } from "@/utils/runtime-config";
+import { IS_DEV, VITE_WALLET_CONNECT_PROJECT_ID } from "@/utils/runtime-config";
 import { RainbowKitProvider, getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { sepolia  } from "viem/chains";
+import { base, baseSepolia  } from "viem/chains";
 import { WagmiProvider, http } from "wagmi";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const config = getDefaultConfig({
   appName: "MaxFun",
   projectId: VITE_WALLET_CONNECT_PROJECT_ID, // wallet connect project id
-  chains: [ sepolia ],
+  chains: IS_DEV ? [ baseSepolia ] : [ base ],
   transports: {
-    [sepolia.id]: http(),
+    [base.id]: http('https://base-rpc.publicnode.com'),
+    [baseSepolia.id]: http('https://sepolia.base.org'),
   }
 })
 

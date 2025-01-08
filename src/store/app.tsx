@@ -13,6 +13,8 @@ export const appInitialState: AppIntialState = {
 export interface AppContextProps {
   state: AppIntialState;
   dispatch: Dispatch<ActionType<AppIntialState>>;
+  onConnectWallet: () => void;
+  onDisconnectWallet: () => void;
 }
 
 const AppContext = createContext<AppContextProps>(undefined!);
