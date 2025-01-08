@@ -11,6 +11,7 @@ export default {
         'sm': { 'max': '750px' },
         'md': { 'min': '750px', 'max': '1400px' },
         'lg': { 'min': '1400px' },
+        'mdup': { 'min': '750px' },
       },
       colors: {
         black: {
