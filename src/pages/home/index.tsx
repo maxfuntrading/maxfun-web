@@ -8,7 +8,7 @@ export default function Home() {
   const { address } = useAccount()
 
   return (
-    <div className=" w-full bg-red-400 md:bg-blue-400 lg:bg-green-400">
+    <div className=" w-full">
       <button onClick={() => onConnectWallet()}>Connect wallet</button>
       <button onClick={() => onDisconnectWallet()}>Disconnect wallet</button>
       <div>{address ?? 'Not connected'}</div>

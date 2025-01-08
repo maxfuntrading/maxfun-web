@@ -15,7 +15,7 @@ export default function Header({ navData }: { navData: NavData[] }) {
   
 
   return (
-    <header className=" flex-shrink-0 w-full sticky top-0 h-[4.395rem] md:h-[7.125rem] lg:h-[7.125rem] bg-black-10">
+    <header className=" flex-shrink-0 w-full sticky top-0 h-[4.395rem] md:h-[7.125rem] lg:h-[7.125rem] bg-black-20">
       <div className="flex justify-between items-center h-full px-4 mdup:px-[3.62rem]">
         <div className="flex items-center gap-[4.71rem] ">
           <Link to="/" className="w-[1.8125rem] h-[1.875rem] mdup:w-[3.03938rem] mdup:h-[3.125rem]">
@@ -26,7 +26,7 @@ export default function Header({ navData }: { navData: NavData[] }) {
         </div>
 
         <div className="hidden mdup:flex">
-          <button onClick={isConnected ? onDisconnectWallet : onConnectWallet} className="text-white">
+          <button onClick={isConnected ? onDisconnectWallet : onConnectWallet}>
             {isConnected ? 'Disconnect wallet' : 'Connect wallet'}
           </button>
         </div>
