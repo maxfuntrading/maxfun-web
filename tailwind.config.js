@@ -7,6 +7,9 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        outfit: ['Outfit', 'sans-serif'],
+      },
       screens: {
         'sm': { 'max': '750px' },
         'md': { 'min': '750px', 'max': '1400px' },

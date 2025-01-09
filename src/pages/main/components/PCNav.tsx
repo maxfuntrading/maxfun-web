@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { NavData } from '../type'
 import clsx from 'clsx'
+
 export default function PCNav({ navData, className }: { navData: NavData[], className?: string }) {
   return (
     <div className={clsx("flex items-center gap-[3.88rem]", className)}>

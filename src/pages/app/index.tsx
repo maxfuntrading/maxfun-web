@@ -26,7 +26,7 @@ export default function App() {
         onConnectWallet: handleConnectWallet,
         onDisconnectWallet: handleDisconnectWallet
       }}>
-      <div className="w-screen text-white bg-black-20">
+      <div className="w-screen text-white bg-black-20 font-outfit">
         <Outlet />
       </div>
 

@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Outfit", Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -23,6 +23,32 @@ body {
   min-height: 100dvh;
 }
 
+@layer base {
+  @font-face {
+    font-family: 'Outfit';
+    src: url('/fonts/Outfit-Light.otf') format('opentype');
+    font-weight: 300;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'Outfit';
+    src: url('/fonts/Outfit-Regular.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'Outfit';
+    src: url('/fonts/Outfit-Medium.otf') format('opentype');
+    font-weight: 500;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'Outfit';
+    src: url('/fonts/Outfit-SemiBold.otf') format('opentype');
+    font-weight: 600;
+    font-style: normal;
+  }
+}
 
 @layer utilities {
   .flex-center {
