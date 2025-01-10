@@ -21,7 +21,7 @@ const HotTxItem = ({index}: {index: number}) => {
       <div className='flex items-center gap-[1.71rem]'>
         <img className='size-[3.375rem]' src={TokenAvatar} alt="" />
         
-        <div className='flex flex-col text-[0.875rem] mdup:text-[1rem]'>
+        <div className='flex flex-col text-[0.875rem] mdup:text-[1rem] leading-[1.4]'>
           <div className='text-[#DFE2EA] mdup:font-semibold'>0xee…daf999</div>
           <div>
             <span className={`font-semibold ${isBought ? 'text-[#06D188]' : 'text-[#EC3E6F]'}`}>{isBought ? 'Bought' : 'Sold'}</span>

@@ -23,6 +23,7 @@ export default {
         },
         red: {
           10: '#EC3E6F',
+          20: '#FA608B',
         }
       },
     },

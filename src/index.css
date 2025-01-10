@@ -57,4 +57,19 @@ body {
   .absolute-center {
     @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
   }
+
+  .my-container {
+    width: 100%;
+  }
+  @media (min-width: 750px) {
+    .my-container {
+      max-width: 1280px;
+    }
+  }
+  @media (min-width: 1400px) {
+    .my-container {
+      max-width: 1400px;
+    }
+  }
+ 
 }
