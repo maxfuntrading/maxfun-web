@@ -1,15 +1,33 @@
 
 import logo from '@/assets/images/logo.png'
 import TokenAvatar from '@/assets/images/home/token-avatar.png'
+import Slider, { Settings } from 'react-slick'
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 export default function HotTx() {
+
+  const settings: Settings = {
+    dots: false,
+    cssEase: "linear",
+    autoplay: true,
+    speed: 2000, // 降低动画时间，让滚动更流畅
+    autoplaySpeed: 10, 
+    pauseOnHover: true,
+    arrows: false,
+    prevArrow: <></>,
+    nextArrow: <></>,
+    variableWidth: true,
+    infinite: true,
+  }
+
   return (
     <div className=" px-4 mdup:px-[3.62rem] ">
-      <div className="w-full flex flex-col mdup:flex-row mdup:gap-[0.06rem] h-20 mdup:h-[5.625rem] overflow-hidden">
+      <Slider {...settings} className='w-full flex flex-col mdup:flex-row h-20 mdup:h-[5.625rem] overflow-hidden'>
         {Array.from({ length: 10 }).map((_, index) => (
-          <HotTxItem index={index} />
+          <HotTxItem key={index} index={index} />
         ))}
-      </div>
+      </Slider>
     </div>
   )
 }
@@ -17,7 +35,7 @@ export default function HotTx() {
 const HotTxItem = ({index}: {index: number}) => {
   const isBought = index % 2 === 0
   return (
-    <div key={index} className="shrink-0 w-full h-20 bg-black-10 mdup:w-[22.5rem] mdup:h-[5.625rem] rounded-[0.625rem] mdup:rounded-none flex justify-between items-center px-[1.32rem] mdup:px-[0.87rem] cursor-pointer border-2 border-transparent hover:border-[#EC3E6F] mdup:hover:rounded-[0.625rem] transition-all duration-300">
+    <div className="shrink-0 w-full h-20 bg-black-10 mdup:w-[22.5rem] mdup:h-[5.625rem] rounded-[0.625rem] mdup:rounded-none flex justify-between items-center px-[1.32rem] mdup:px-[0.87rem] cursor-pointer border-2 border-transparent hover:border-[#EC3E6F] mdup:hover:rounded-[0.625rem] transition-all duration-300 mr-[0.06rem]">
       <div className='flex items-center gap-[1.71rem]'>
         <img className='size-[3.375rem]' src={TokenAvatar} alt="" />
         

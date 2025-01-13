@@ -6,6 +6,7 @@ import { RouterProvider } from 'react-router-dom'
 import AppRouter from './router/router.tsx'
 import AllProviders from './components/providers/AllProviders.tsx';
 
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <AllProviders>
