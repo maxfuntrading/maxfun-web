@@ -9,7 +9,7 @@ export default function Main() {
     {
       name: "Home",
       path: "/",
-      isActive: pathname === "/"
+      isActive: pathname === "/" || pathname.includes("/token")
     },
     {
       name: "Launcher",

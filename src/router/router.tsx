@@ -5,6 +5,7 @@ import Main from "@/pages/main";
 import Ranking from "@/pages/ranking";
 import Refferal from "@/pages/refferal";
 import Launcher from "@/pages/launcher";
+import TokenDetail from "@/pages/token-detail";
 
 const AppRouter = createBrowserRouter([
   {
@@ -17,7 +18,11 @@ const AppRouter = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <Home />
+            element: <Home />,
+          },
+          {
+            path: 'token/:tokenId',
+            element: <TokenDetail />
           },
           {
             path: 'launcher',

@@ -9,6 +9,8 @@ import MoviesIcon from '@/assets/icons/movies.png'
 import { useState } from 'react'
 import Select from './Select';
 import { TokenTag, SelectOptionType, SortType } from '../type';
+import { Button } from '@chakra-ui/react'
+import { useNavigate } from 'react-router-dom'
 
 const TokenTagSelectList: SelectOptionType<TokenTag>[] = [
   {
@@ -76,6 +78,8 @@ export default function TokenList() {
   const [selectTag, setSelectTag] = useState<SelectOptionType<TokenTag>>(TokenTagSelectList[0])
   const [selectSort, setSelectSort] = useState<SelectOptionType<SortType>>(SortSelectList[0])
 
+  const navigate = useNavigate()
+
   const onSearch = () => {
     console.log('search', search);
   }
@@ -120,6 +124,10 @@ export default function TokenList() {
             options={TokenTagSelectList} 
             onSelect={(val) => setSelectTag(val)} />
         </div>
+      </div>
+
+      <div>
+        <Button onClick={() => navigate('/token/1')}>Token Detail</Button>
       </div>
 
 
