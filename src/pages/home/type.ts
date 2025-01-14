@@ -9,12 +9,6 @@ export enum TokenTag {
   Movies = "Movies",
 }
 
-export interface SelectOptionType<T> {
-  key: T,
-  value: string,
-  icon?: string,
-}
-
 export enum SortType {
   LaunchedTime = "Launched Time",
   TradingVolume = "Trading Volume",

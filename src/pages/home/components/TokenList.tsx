@@ -7,10 +7,11 @@ import IpIcon from '@/assets/icons/ip.png'
 import EsportsIcon from '@/assets/icons/esports.png'
 import MoviesIcon from '@/assets/icons/movies.png'
 import { useState } from 'react'
-import Select from './Select';
-import { TokenTag, SelectOptionType, SortType } from '../type';
+import Select, { SelectOptionType } from '../../../components/Select';
+import { TokenTag, SortType } from '../type';
 import { Button } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
+import { AscendingIcon, DescendingIcon, RefreshIcon } from './Icon'
 
 const TokenTagSelectList: SelectOptionType<TokenTag>[] = [
   {
@@ -75,8 +76,10 @@ const SortSelectList: SelectOptionType<SortType>[] = [
 
 export default function TokenList() {
   const [search, setSearch] = useState('')
+  const [isOnUniswap, setIsOnUniswap] = useState(false)
   const [selectTag, setSelectTag] = useState<SelectOptionType<TokenTag>>(TokenTagSelectList[0])
   const [selectSort, setSelectSort] = useState<SelectOptionType<SortType>>(SortSelectList[0])
+  const [isAscending, setIsAscending] = useState(true) // 是否升序
 
   const navigate = useNavigate()
 
@@ -110,19 +113,46 @@ export default function TokenList() {
 
         {/* 筛选 */}
         <div className='w-full mdup:w-auto flex gap-[0.62rem] mt-[0.73rem] mdup:mt-0'>
+          <button onClick={() => setIsOnUniswap(prev => !prev)} className=' hidden mdup:flex w-[10.3125rem] md:w-[13.75rem] lg:w-[16.25rem] h-[2.5rem] mdup:h-[3.125rem] rounded-[0.625rem] outline-none bg-black-20 border-[2px] border-red-10  px-[0.56rem] md:px-[1.09rem] lg:px-[1.22rem] cursor-pointer items-center justify-start gap-[0.67rem]'>
+            <span className={`size-4 border-[2px] border-white rounded-full ${isOnUniswap ? 'bg-red-10' : 'bg-transparent'}`}></span>
+            <span>List on Uniswap</span>
+          </button>
+
           <Select 
             className='sm:w-1/2'
             defaultOption={selectSort}
             options={SortSelectList} 
             onSelect={(val) => setSelectSort(val)}
             />
-            
 
           <Select 
             className='sm:w-1/2'
             defaultOption={selectTag}
             options={TokenTagSelectList} 
             onSelect={(val) => setSelectTag(val)} />
+
+          <button onClick={() => setIsAscending(prev => !prev)} className=' hidden mdup:flex size-[3.125rem] border-[2px] border-red-10 rounded-[0.625rem] items-center justify-center'>
+            {isAscending ? <DescendingIcon className='size-[1.25rem]' /> : <AscendingIcon className='size-[1.25rem]' />}
+          </button>
+
+          <button 
+            onClick={() => {
+              const icon = document.querySelector('.refresh-icon');
+              if (icon) {
+                icon.animate([
+                  { transform: 'rotate(0deg)' },
+                  { transform: 'rotate(360deg)' }
+                ], {
+                  duration: 500,
+                  iterations: 1
+                });
+              }
+            }}
+            className=' hidden mdup:flex size-[3.125rem] border-[2px] border-red-10 rounded-[0.625rem] items-center justify-center'
+          >
+            <RefreshIcon className="refresh-icon" />
+          </button>
+
         </div>
       </div>
 

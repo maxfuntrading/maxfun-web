@@ -1,8 +1,12 @@
 import useClickAway from "@/hooks/useClickAway"
 import { useRef, useState } from "react"
-import { DownArrowIcon, UpArrowIcon } from "./Icon"
-import { SelectOptionType } from "../type"
 import clsx from "clsx"
+
+export interface SelectOptionType<T> {
+  key: T,
+  value: string,
+  icon?: string,
+}
 
 interface SelectProps<T> {
   defaultOption: SelectOptionType<T>,
@@ -22,7 +26,7 @@ export default function Select<T>({ defaultOption, options, onSelect, className,
   })
 
   return (
-    <div ref={selectRef} className={clsx('relative w-[10.3125rem] md:w-[13.75rem] lg:w-[16.25rem] h-[2.5rem] mdup:h-[3.125rem] rounded-[0.625rem] outline-none bg-black-20 border-[2px] border-red-10 px-[0.56rem] cursor-pointer', className)}>
+    <div ref={selectRef} className={clsx('relative w-[10.3125rem] md:w-[13.75rem] lg:w-[16.25rem] h-[2.5rem] mdup:h-[3.125rem] rounded-[0.625rem] outline-none bg-black-20 border-[2px] border-red-10 px-[0.56rem] md:px-[1.09rem] lg:px-[1.22rem] cursor-pointer', className)}>
       <div 
         className={clsx("w-full h-full flex items-center justify-between")}
         onClick={() => setIsOpenOption(prev => !prev)}>
@@ -33,7 +37,7 @@ export default function Select<T>({ defaultOption, options, onSelect, className,
           : <DownArrowIcon className="size-[1.25rem]" />}
       </div>
       {isOpenOption && <div 
-        className=" w-full absolute top-[2.5rem] mdup:top-[3.125rem] left-0 border-[2px] border-red-10 rounded-[0.625rem] py-[1rem] px-[1rem] mdup:px-[1.54rem] cursor-default flex flex-col gap-[1.19rem]"
+        className=" w-full absolute z-10 top-[2.5rem] mdup:top-[3.125rem] left-0 border-[2px] border-red-10 rounded-[0.625rem] py-[1rem] px-[1rem] mdup:px-[1.54rem] cursor-default flex flex-col gap-[1.19rem]"
         style={{
           background: 'rgba(46, 48, 51, 0.80)',
           backdropFilter: 'blur(7.5px)',
@@ -56,5 +60,21 @@ export default function Select<T>({ defaultOption, options, onSelect, className,
         </div>
       }
     </div>
+  )
+}
+
+export const DownArrowIcon = ({className}: {className?: string}) => {
+  return (
+    <svg className={clsx(className)} xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21" fill="none">
+      <path d="M5.33398 7.89288L10.334 12.8929L15.334 7.89288" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  )
+}
+
+export const UpArrowIcon = ({className}: {className?: string}) => {
+  return (
+    <svg className={clsx(className)} xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21" fill="none">
+      <path d="M5.80859 13.7263L10.8086 8.72626L15.8086 13.7263" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
   )
 }

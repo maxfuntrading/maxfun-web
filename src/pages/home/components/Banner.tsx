@@ -32,7 +32,7 @@ export default function Banner() {
             }}>
               Max.Fun
           </div>
-          <div className='mt-[0.97rem] mdup:text-[1.625rem]'>
+          <div className=' mdup:text-[1.625rem]'>
             A meme-launch platform operating on the Base chain.
             <a href='#' target='_blank' className='underline text-red-10'> How it works ?</a>
           </div>
