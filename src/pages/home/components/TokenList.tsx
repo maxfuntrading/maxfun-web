@@ -11,6 +11,8 @@ import Select, { SelectOptionType } from '../../../components/Select';
 import { TokenTag, SortType } from '../type';
 import { AscendingIcon, DescendingIcon, RefreshIcon } from './Icon'
 import TokenCard from '@/components/TokenCard'
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll'
+import LoadingMore from '@/components/LoadingMore'
 
 const TokenTagSelectList: SelectOptionType<TokenTag>[] = [
   {
@@ -80,8 +82,32 @@ export default function TokenList() {
   const [selectSort, setSelectSort] = useState<SelectOptionType<SortType>>(SortSelectList[0])
   const [isAscending, setIsAscending] = useState(true) // 是否升序
 
+  // data
+  const [tokens, setTokens] = useState(0)
+  const [loading, setLoading] = useState(false)
+
   const onSearch = () => {
     console.log('search', search);
+  }
+
+  const onLoadMore = () => {
+    if (loading) return
+    if (tokens >= 30) return
+    setLoading(true)
+    setTimeout(() => {
+      setTokens(prev => prev + 15)
+      setLoading(false)
+    }, 1000)
+  }
+
+  const loadMoreRef = useInfiniteScroll({
+    onLoadMore,
+    loading
+  })
+
+  const onRefresh = () => {
+    setTokens(0)
+    onLoadMore()
   }
 
   return (
@@ -144,6 +170,7 @@ export default function TokenList() {
                   iterations: 1
                 });
               }
+              onRefresh()
             }}
             className=' hidden mdup:flex size-[3.125rem] border-[2px] border-red-10 rounded-[0.625rem] items-center justify-center'
           >
@@ -154,14 +181,15 @@ export default function TokenList() {
       </div>
 
       <div className=' mt-4 flex flex-col gap-[0.94rem] mdup:gap-x-[1.67rem] mdup:gap-y-[1.25rem] mdup:flex-row mdup:flex-wrap'>
-        {Array.from({length: 15}).map((_, index) => (
+        {Array.from({length: tokens}).map((_, index) => (
           <TokenCard 
             key={index} 
             className=' mdup:w-[calc(25%-1.26rem)]'
            />
         ))}
       </div>
-
+      {loading && <LoadingMore className='mt-[3rem]' />}
+      <div ref={loadMoreRef} className="h-4 w-full"></div>
 
     </div>
   )
