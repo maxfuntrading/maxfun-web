@@ -9,9 +9,8 @@ import MoviesIcon from '@/assets/icons/movies.png'
 import { useState } from 'react'
 import Select, { SelectOptionType } from '../../../components/Select';
 import { TokenTag, SortType } from '../type';
-import { Button } from '@chakra-ui/react'
-import { useNavigate } from 'react-router-dom'
 import { AscendingIcon, DescendingIcon, RefreshIcon } from './Icon'
+import TokenCard from '@/components/TokenCard'
 
 const TokenTagSelectList: SelectOptionType<TokenTag>[] = [
   {
@@ -81,14 +80,12 @@ export default function TokenList() {
   const [selectSort, setSelectSort] = useState<SelectOptionType<SortType>>(SortSelectList[0])
   const [isAscending, setIsAscending] = useState(true) // 是否升序
 
-  const navigate = useNavigate()
-
   const onSearch = () => {
     console.log('search', search);
   }
 
   return (
-    <div className="w-full my-container mx-auto h-[126.7rem] pt-[1.1rem] px-4 mdup:px-0">
+    <div className="w-full my-container mx-auto pt-[1.1rem] px-4 mdup:px-0">
       
       <div className="w-full flex flex-col mdup:flex-row mdup:gap-[2.55rem]">
         {/* 搜索 */}
@@ -156,8 +153,13 @@ export default function TokenList() {
         </div>
       </div>
 
-      <div>
-        <Button onClick={() => navigate('/token/1')}>Token Detail</Button>
+      <div className=' mt-4 flex flex-col gap-[0.94rem] mdup:gap-x-[1.67rem] mdup:gap-y-[1.25rem] mdup:flex-row mdup:flex-wrap'>
+        {Array.from({length: 10}).map((_, index) => (
+          <TokenCard 
+            key={index} 
+            className=' mdup:w-[calc(25%-1.26rem)]'
+           />
+        ))}
       </div>
 
 
