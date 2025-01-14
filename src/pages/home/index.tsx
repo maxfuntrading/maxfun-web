@@ -10,6 +10,7 @@ export default function Home() {
       <HotTx />
       <Banner />
       <TokenList />
+      <div className="h-[3rem] mdup:h-[5rem]"></div>
     </div>
   )
 }

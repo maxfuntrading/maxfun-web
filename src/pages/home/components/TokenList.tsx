@@ -154,7 +154,7 @@ export default function TokenList() {
       </div>
 
       <div className=' mt-4 flex flex-col gap-[0.94rem] mdup:gap-x-[1.67rem] mdup:gap-y-[1.25rem] mdup:flex-row mdup:flex-wrap'>
-        {Array.from({length: 10}).map((_, index) => (
+        {Array.from({length: 15}).map((_, index) => (
           <TokenCard 
             key={index} 
             className=' mdup:w-[calc(25%-1.26rem)]'
