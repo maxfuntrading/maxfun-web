@@ -9,3 +9,7 @@ export function formatNumber(number: number) {
   if (number === undefined || number === null) return ''
   return numeral(number).format('0.00a').toUpperCase();
 }
+
+export function copyText(text: string) {
+  navigator.clipboard.writeText(text)
+}

@@ -41,7 +41,7 @@ export default function TokenCard({className}: TokenCardProps) {
           ModernCat($ MCAT)
         </div>
         
-        <div className='text-white opacity-60 mt-[0.56rem] line-clamp-3'>
+        <div className='text-white opacity-60 mt-[0.56rem] line-clamp-4'>
           !ALPHA ALERT! ModernCat ($MCAT) brings anime and cats together creating a world of art.!ALPHA ALERT! ModernCat ($MCAT)
           !ALPHA ALERT! ModernCat ($MCAT) brings anime and cats together creating a world of art.!ALPHA ALERT! ModernCat ($MCAT)
         </div>
