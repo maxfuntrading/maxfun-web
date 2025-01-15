@@ -1,11 +1,11 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
-import App from "../pages/app";
-import Home from "../pages/home";
-import Main from "@/pages/main";
-import Ranking from "@/pages/ranking";
-import Refferal from "@/pages/refferal";
-import Launcher from "@/pages/launcher";
-import TokenDetail from "@/pages/token-detail";
+import { createBrowserRouter, Navigate } from 'react-router-dom'
+import App from '../pages/app'
+import Home from '../pages/home'
+import Main from '@/pages/main'
+import Ranking from '@/pages/ranking'
+import Profile from '@/pages/profile'
+import Launcher from '@/pages/launcher'
+import TokenDetail from '@/pages/token-detail'
 
 const AppRouter = createBrowserRouter([
   {
@@ -22,28 +22,28 @@ const AppRouter = createBrowserRouter([
           },
           {
             path: 'token/:tokenId',
-            element: <TokenDetail />
+            element: <TokenDetail />,
           },
           {
             path: 'launcher',
-            element: <Launcher />
+            element: <Launcher />,
           },
           {
-            path: 'refferal',
-            element: <Refferal />
+            path: 'profile',
+            element: <Profile />,
           },
           {
             path: 'ranking',
-            element: <Ranking />
+            element: <Ranking />,
           },
-        ]
+        ],
       },
       {
-        path: "*",
+        path: '*',
         element: <Navigate to="/" />,
       },
-    ]
-  }
+    ],
+  },
 ])
 
-export default AppRouter;
+export default AppRouter
