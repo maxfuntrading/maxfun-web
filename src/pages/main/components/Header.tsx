@@ -1,6 +1,6 @@
 import AppContext from "@/store/app"
 import { useContext, useEffect, useRef, useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useAccount } from "wagmi"
 import { NavData } from "../type"
 import logo from '@/assets/images/logo.png'
@@ -39,6 +39,8 @@ export default function Header({ navData }: { navData: NavData[] }) {
   const pcMenuRef = useRef<HTMLDivElement>(null)
   const [isOpenPcMenu, setIsOpenPcMenu] = useState(false)
   useClickAway(pcMenuRef, () => setIsOpenPcMenu(false))
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (!isConnected) {
@@ -80,12 +82,18 @@ export default function Header({ navData }: { navData: NavData[] }) {
             </span>
 
             {isOpenPcMenu && <div onClick={(e) => e.stopPropagation()} className=" absolute top-[3.12rem] left-0 w-full rounded-[0.625rem] bg-black-30 py-[1.25rem] px-[0.99rem] flex flex-col gap-[1rem] cursor-default">
-              <div className="flex items-center justify-start gap-[0.45rem] cursor-pointer">
+              <div onClick={() => {
+                navigate('/profile')
+                setIsOpenPcMenu(false)
+              }} className="flex items-center justify-start gap-[0.45rem] cursor-pointer">
                 <ProfileIcon />
                 <span className="text-[0.937rem] font-medium">Portfolio</span>
               </div>
 
-              <div onClick={onDisconnectWallet} className="flex items-center justify-start gap-[0.45rem] cursor-pointer">
+              <div onClick={() => {
+                onDisconnectWallet()
+                setIsOpenPcMenu(false)
+              }} className="flex items-center justify-start gap-[0.45rem] cursor-pointer">
                 <DisconnectIcon />
                 <span className="text-[0.937rem] font-medium">Disconnect</span>
               </div>

@@ -1,12 +1,55 @@
 import { useState } from "react";
 import BaseInfo from "./components/BaseInfo";
 import { SubTabType, TabType } from "./type";
-
+import clsx from "clsx";
+import PriceChart from "./components/PriceChart";
+import { useBreakpoint } from "@/hooks/useBreakpoint";
+import BuyAndSell from "./components/BuyAndSell";
+import Description from "./components/Description";
+import Holder from "./components/Holder";
+import Comments from "./components/Comments";
+import TradingHistory from "./components/TradingHistory";
 
 export default function TokenDetail() {
+  const { isSM } = useBreakpoint()
   const [tab, setTab] = useState<TabType>(TabType.BuyOreSell)
   const [subTab, setSubTab] = useState<SubTabType>(SubTabType.Comments)
 
+
+  return (
+    <div className=" my-container mx-auto px-4 mdup:px-0 mt-2 pt-2">
+      <BaseInfo />
+
+      <Tab tab={tab} setTab={setTab} className="flex mdup:hidden" />
+      
+      <div className="flex justify-between gap-[1.32rem] h-fit mdup:mt-[1.26rem]">
+        <PriceChart className={`${isSM && tab === TabType.Chart ? 'flex' : 'hidden mdup:flex'}`} />
+        <BuyAndSell className={`${isSM && tab === TabType.BuyOreSell ? 'flex' : 'hidden mdup:flex'}`} />
+      </div>
+
+      <div className="flex flex-col mdup:flex-row gap-[0.94rem] mdup:gap-[1.32rem] mt-[0.94rem] mdup:mt-[1.26rem]">
+        {/* Comments / Trading History */}
+        {(!isSM || tab === TabType.Chart) && <div className="w-full mdup:flex-1 h-[31.25rem] bg-black-10">
+          <SubTab subTab={subTab} setSubTab={setSubTab} />
+          {subTab === SubTabType.Comments && <Comments />}
+          {subTab === SubTabType.TradingHistory && <TradingHistory />}
+        </div>}
+
+        {/* Description / Holder */}
+        {(!isSM || tab === TabType.BuyOreSell) && <div className="w-full mdup:w-[30rem] flex flex-col gap-[0.94rem] mdup:gap-[1.25rem]">
+          <Description />
+          <Holder />
+        </div>}
+        
+      </div>
+
+      <div className="h-[3rem] mdup:h-[5rem]"></div>
+
+    </div>
+  )
+}
+
+function Tab({ tab, setTab, className }: { tab: TabType, setTab: (tab: TabType) => void, className?: string }) {
   const tabList = [
     {
       name: TabType.BuyOreSell,
@@ -18,6 +61,19 @@ export default function TokenDetail() {
     },
   ]
 
+  return (
+    <div className={clsx('flex flex-row justify-start items-center gap-[1.55rem] font-medium mt-[1rem] h-[4rem]', className)}>
+      {tabList.map((item, index) => (
+        <div key={index} onClick={() => setTab(item.name)} className="relative cursor-pointer flex-center">
+          <span className={`${item.isActive ? 'text-red-10' : 'text-white'} transition-all duration-300`}>{item.name}</span>
+          <div className={`${item.isActive ? 'bg-red-10 w-full opacity-100' : 'w-0 opacity-0'} absolute bottom-[-0.75rem] h-[0.1875rem] transition-all duration-300`}></div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function SubTab({ subTab, setSubTab, className }: { subTab: SubTabType, setSubTab: (subTab: SubTabType) => void, className?: string }) {
   const subTabList = [
     {
       name: SubTabType.Comments,
@@ -30,29 +86,14 @@ export default function TokenDetail() {
   ]
 
   return (
-    <div className=" my-container mx-auto px-4 mdup:px-0 mt-2 pt-2">
-      <BaseInfo />
-
-      <div className="flex flex-row justify-start items-center gap-[1.55rem] font-medium mt-[1.74rem]">
-        {tabList.map((item, index) => (
-          <div key={index} onClick={() => setTab(item.name)} className="relative cursor-pointer flex-center">
-            <span className={`${item.isActive ? 'text-red-10' : 'text-white'} transition-all duration-300`}>{item.name}</span>
-            <div className={`${item.isActive ? 'bg-red-10 w-full opacity-100' : 'w-0 opacity-0'} absolute bottom-[-0.7rem] h-[0.207rem] transition-all duration-300`}></div>
-          </div>
-        ))}
-      </div>
-
-      <div className="relative flex flex-row justify-start items-center gap-[1.55rem] font-medium mt-[1.74rem]">
-        {subTabList.map((item, index) => (
-          <div key={index} onClick={() => setSubTab(item.name)} className="relative cursor-pointer flex-center">
-            <span className={`${item.isActive ? 'text-red-10' : 'text-white'} transition-all duration-300`}>{item.name}</span>
-            <div className={`${item.isActive ? 'bg-red-10 w-full opacity-100' : 'w-0 opacity-0'} absolute bottom-[-0.75rem] h-[0.1875rem] transition-all duration-300`}></div>
-          </div>
-        ))}
-        <div className="absolute bottom-[-0.7rem] w-full h-[0.0625rem] bg-white/10"></div>
-      </div>
-
-
+    <div className={clsx('relative flex flex-row justify-start items-center gap-[1.55rem] font-medium mt-[1.74rem]', className)}>
+      {subTabList.map((item, index) => (
+        <div key={index} onClick={() => setSubTab(item.name)} className="relative cursor-pointer flex-center">
+          <span className={`${item.isActive ? 'text-red-10' : 'text-white'} transition-all duration-300`}>{item.name}</span>
+          <div className={`${item.isActive ? 'bg-red-10 w-full opacity-100' : 'w-0 opacity-0'} absolute bottom-[-0.75rem] h-[0.1875rem] transition-all duration-300`}></div>
+        </div>
+      ))}
+      <div className="absolute bottom-[-0.7rem] w-full h-[0.0625rem] bg-white/10"></div>
     </div>
   )
 }

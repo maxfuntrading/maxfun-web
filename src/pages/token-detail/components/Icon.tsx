@@ -28,7 +28,7 @@ export const TelegramIcon = ({ className }: { className?: string }) => {
 export const WebsiteIcon = ({ className }: { className?: string }) => {
   return (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" width="13" height="12" viewBox="0 0 13 12" fill="none">
-      <path d="M7.94287 5.25L8.94287 4.5L11.1929 6V8.5L8.69287 10L6.19287 8.5V3.25L3.44287 1.75L1.19287 3.25V6L3.44287 7.5L4.44287 6.75" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M7.94287 5.25L8.94287 4.5L11.1929 6V8.5L8.69287 10L6.19287 8.5V3.25L3.44287 1.75L1.19287 3.25V6L3.44287 7.5L4.44287 6.75" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   )
 }

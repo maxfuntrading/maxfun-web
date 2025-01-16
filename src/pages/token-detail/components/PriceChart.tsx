@@ -1,7 +1,8 @@
 import { createChart, IChartApi } from 'lightweight-charts'
 import { useEffect, useRef } from 'react'
+import clsx from 'clsx'
 
-export default function PriceChart() {
+export default function PriceChart({className}: {className?: string}) {
   const chartContainerRef = useRef<HTMLDivElement>(null)
   const chartRef = useRef<IChartApi | null>(null)
 
@@ -111,8 +112,9 @@ export default function PriceChart() {
   }, [])
 
   return (
-    <div className="w-full bg-[#1E222D]">
-      <div ref={chartContainerRef} className="w-full" />
+    <div className={clsx("w-full md:flex-1 h-[17.5rem] mdup:h-[25rem] rounded-[0.625rem] bg-black-10", className)}>
+      {/* <div ref={chartContainerRef} className="w-full" /> */}
+      Price Chart
     </div>
   )
 }
