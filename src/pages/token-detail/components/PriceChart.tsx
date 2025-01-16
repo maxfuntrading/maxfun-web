@@ -112,7 +112,7 @@ export default function PriceChart({className}: {className?: string}) {
   }, [])
 
   return (
-    <div className={clsx("w-full md:flex-1 h-[17.5rem] mdup:h-[25rem] rounded-[0.625rem] bg-black-10", className)}>
+    <div className={clsx("w-full md:flex-1 rounded-[0.625rem] bg-black-10", className)}>
       {/* <div ref={chartContainerRef} className="w-full" /> */}
       Price Chart
     </div>
