@@ -8,7 +8,7 @@ export default function Profile() {
   const [index, setIndex] = useState(0)
 
   return (
-    <div className="w-full h-full flex flex-col px-[1.0625rem] mdup:px-[3.625rem]  items-center">
+    <div className="w-full h-full flex flex-col px-[1.0625rem] mdup:px-[3.625rem] items-center">
       <div className="w-full h-full flex flex-col max-w-[87.5rem]">
         <div className="w-full mdup:h-[12rem] flex flex-col items-center mdup:mt-9 relative">
           <img

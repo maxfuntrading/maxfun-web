@@ -4,6 +4,7 @@ import FlatButton from '@/components/button/FlatButton'
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll'
 import TokenCard from '@/components/TokenCard'
 import LoadingMore from '@/components/LoadingMore'
+import { useNavigate } from 'react-router-dom'
 
 export enum TokenListType {
   Owned = 0,
@@ -17,6 +18,7 @@ export default function UserTokenList({
 }) {
   const [tokens, setTokens] = useState(0)
   const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
 
   const onLoadMore = () => {
     if (loading) return
@@ -43,7 +45,10 @@ export default function UserTokenList({
             }}
           />
         </div>
-        <FlatButton className="w-[7.5rem] mdup:w-[10rem]">
+        <FlatButton
+          className="w-[7.5rem] mdup:w-[10rem]"
+          onClick={() => navigate('/launcher')}
+        >
           Create Token
         </FlatButton>
       </div>
