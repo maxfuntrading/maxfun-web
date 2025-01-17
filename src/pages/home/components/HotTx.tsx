@@ -22,7 +22,7 @@ export default function HotTx() {
   }
 
   return (
-    <div className=" px-4 mdup:px-[3.62rem] ">
+    <div className=" w-full ">
       <Slider {...settings} className='w-full flex flex-col mdup:flex-row h-20 mdup:h-[5.625rem] overflow-hidden'>
         {Array.from({ length: 10 }).map((_, index) => (
           <HotTxItem key={index} index={index} />

@@ -17,33 +17,35 @@ export default function TokenDetail() {
 
 
   return (
-    <div className=" my-container mx-auto px-4 mdup:px-0 mt-2 pt-2">
-      <BaseInfo />
+    <div className="px-4 mdup:px-[3.62rem] mt-2 pt-2">
+      <div className=" my-container mx-auto">
+        <BaseInfo />
 
-      <Tab tab={tab} setTab={setTab} className="flex mdup:hidden" />
-      
-      <div className="flex justify-between gap-[1.32rem] h-fit mdup:mt-[1.26rem]">
-        <PriceChart className={`${isSM && tab === TabType.Chart ? 'flex' : 'hidden mdup:flex'}`} />
-        <BuyAndSell className={`${isSM && tab === TabType.BuyOreSell ? 'flex' : 'hidden mdup:flex'}`} />
+        <Tab tab={tab} setTab={setTab} className="flex mdup:hidden" />
+
+        <div className="flex justify-between gap-[1.32rem] h-fit mdup:mt-[1.26rem]">
+          <PriceChart className={`${isSM && tab === TabType.Chart ? 'flex' : 'hidden mdup:flex'}`} />
+          <BuyAndSell className={`${isSM && tab === TabType.BuyOreSell ? 'flex' : 'hidden mdup:flex'}`} />
+        </div>
+
+        <div className="flex flex-col mdup:flex-row gap-[0.94rem] mdup:gap-[1.32rem] mt-[0.94rem] mdup:mt-[1.26rem]">
+          {/* Comments / Trading History */}
+          {(!isSM || tab === TabType.Chart) && <div className="w-full mdup:flex-1 bg-black-10 py-[0.79rem] rounded-[0.625rem]">
+            <SubTab subTab={subTab} setSubTab={setSubTab} className=" px-[1.08rem] mdup:px-[1.88rem]" />
+            {subTab === SubTabType.Comments && <Comments />}
+            {subTab === SubTabType.TradingHistory && <TradingHistory />}
+          </div>}
+
+          {/* Description / Holder */}
+          {(!isSM || tab === TabType.BuyOreSell) && <div className="w-full mdup:w-[30rem] flex flex-col gap-[0.94rem] mdup:gap-[1.25rem]">
+            <Description />
+            <Holder />
+          </div>}
+          
+        </div>
+
+        <div className="h-[3rem] mdup:h-[5rem]"></div>
       </div>
-
-      <div className="flex flex-col mdup:flex-row gap-[0.94rem] mdup:gap-[1.32rem] mt-[0.94rem] mdup:mt-[1.26rem]">
-        {/* Comments / Trading History */}
-        {(!isSM || tab === TabType.Chart) && <div className="w-full mdup:flex-1 h-[31.25rem] bg-black-10">
-          <SubTab subTab={subTab} setSubTab={setSubTab} />
-          {subTab === SubTabType.Comments && <Comments />}
-          {subTab === SubTabType.TradingHistory && <TradingHistory />}
-        </div>}
-
-        {/* Description / Holder */}
-        {(!isSM || tab === TabType.BuyOreSell) && <div className="w-full mdup:w-[30rem] flex flex-col gap-[0.94rem] mdup:gap-[1.25rem]">
-          <Description />
-          <Holder />
-        </div>}
-        
-      </div>
-
-      <div className="h-[3rem] mdup:h-[5rem]"></div>
 
     </div>
   )
@@ -86,14 +88,14 @@ function SubTab({ subTab, setSubTab, className }: { subTab: SubTabType, setSubTa
   ]
 
   return (
-    <div className={clsx('relative flex flex-row justify-start items-center gap-[1.55rem] font-medium mt-[1.74rem]', className)}>
+    <div className={clsx('w-full relative flex flex-row justify-start items-center gap-[1.55rem] font-medium mb-[0.75rem]', className)}>
       {subTabList.map((item, index) => (
         <div key={index} onClick={() => setSubTab(item.name)} className="relative cursor-pointer flex-center">
-          <span className={`${item.isActive ? 'text-red-10' : 'text-white'} transition-all duration-300`}>{item.name}</span>
+          <span className={`${item.isActive ? 'text-red-10' : 'text-white'} transition-all duration-300 text-[1rem] font-medium mdup:text-[1.25rem] mdup:font-semibold`}>{item.name}</span>
           <div className={`${item.isActive ? 'bg-red-10 w-full opacity-100' : 'w-0 opacity-0'} absolute bottom-[-0.75rem] h-[0.1875rem] transition-all duration-300`}></div>
         </div>
       ))}
-      <div className="absolute bottom-[-0.7rem] w-full h-[0.0625rem] bg-white/10"></div>
+      <div className="absolute bottom-[-0.7rem] left-0 w-full h-[0.0625rem] bg-white/10"></div>
     </div>
   )
 }
