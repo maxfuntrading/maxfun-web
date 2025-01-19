@@ -1,8 +1,10 @@
+import Select, { SelectOptionType } from '@/components/Select'
 import GainerRankingPanel from './components/GainerRankingPanel'
 import MarketCapRankingPanel from './components/MarketCapRankingPanel'
 import ProgressRankingPanel from './components/ProgressRankingPanel'
 import TradingVolumeRankingPanel from './components/TradingVolumeRankingPanel'
 import { ProgressRankingInfo } from './type'
+import { useState } from 'react'
 
 const items: ProgressRankingInfo[] = [
   { name: 'Laptop', marketCap: 1000000000, progress: 80, icon: '/avatar.png' },
@@ -62,7 +64,42 @@ const items: ProgressRankingInfo[] = [
   },
 ]
 
+enum RankingType {
+  Progress = 'Progress',
+  Gainers = '24 Hours Gainers',
+  MarketCap = 'Market Cap',
+  TradingVolume = '24 Hours Trading Volume',
+}
+
+const rankingTypeList: SelectOptionType<RankingType>[] = [
+  {
+    key: RankingType.Progress,
+    value: 'Progress Ranking',
+  },
+  {
+    key: RankingType.Gainers,
+    value: '24 Hours Gainers Ranking',
+  },
+  {
+    key: RankingType.MarketCap,
+    value: 'Market Cap Ranking',
+  },
+  {
+    key: RankingType.TradingVolume,
+    value: '24 Hours Trading Volume',
+  },
+]
+
 export default function Ranking() {
+  const [rankingType, setRankingType] = useState<SelectOptionType<RankingType>>(
+    rankingTypeList[0]
+  )
+
+  const progressRankingPanel = <ProgressRankingPanel items={items} />
+  const gainersRankingPanel = <GainerRankingPanel items={items} />
+  const marketCapRankingPanel = <MarketCapRankingPanel items={items} />
+  const tradingVolumeRankingPanel = <TradingVolumeRankingPanel items={items} />
+
   return (
     <div className="w-full min-h-screen bg-[#141516] flex flex-col items-center py-4 px-4">
       <div className="w-full h-full flex flex-col max-w-[87.5rem] items-center">
@@ -73,15 +110,37 @@ export default function Ranking() {
           The data was last updated at 2024/12/28 16:45:47 (UTC+8)
         </span>
         <div className="w-full mdup:px-10 h-100 flex flex-col">
-          <div className="flex flex-col mdup:flex-row w-full gap-10 mt-12">
-            <ProgressRankingPanel items={items} />
-            <GainerRankingPanel items={items} />
+          <div className="flex flex-row items-center mdup:hidden mt-4 mb-2">
+            <div className="w-[0.1875rem] h-[0.875rem] bg-red-10" />
+            <Select
+              className="sm:w-[14rem] border-none text-bold"
+              defaultOption={rankingType}
+              options={rankingTypeList}
+              onSelect={(val) => setRankingType(val)}
+            />
           </div>
-          <div className="flex flex-col mdup:flex-row w-full gap-10 mt-12">
-            <MarketCapRankingPanel items={items} />
-            <TradingVolumeRankingPanel items={items} />
+          <div className="flex mdup:hidden flex-col w-full">
+            {rankingType.key === RankingType.Progress
+              ? progressRankingPanel
+              : null}
+            {rankingType.key === RankingType.Gainers
+              ? gainersRankingPanel
+              : null}
+            {rankingType.key === RankingType.MarketCap
+              ? marketCapRankingPanel
+              : null}
+            {rankingType.key === RankingType.TradingVolume
+              ? tradingVolumeRankingPanel
+              : null}
           </div>
-          <div className="flex flex-row w-full"></div>
+          <div className="hidden mdup:flex flex-col mdup:flex-row w-full gap-10 mt-12">
+            {progressRankingPanel}
+            {gainersRankingPanel}
+          </div>
+          <div className="hidden mdup:flex flex-col mdup:flex-row w-full gap-10 mt-12">
+            {marketCapRankingPanel}
+            {tradingVolumeRankingPanel}
+          </div>
         </div>
       </div>
     </div>

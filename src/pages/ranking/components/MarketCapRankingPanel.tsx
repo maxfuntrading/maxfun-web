@@ -8,7 +8,9 @@ export default function MarketCapRankingPanel({
 }) {
   return (
     <div className="flex flex-col flex-1">
-      <span className="text-[1.75rem] font-semibold">Market Cap Ranking</span>
+      <span className="text-[1.75rem] font-semibold hidden mdup:inline">
+        Market Cap Ranking
+      </span>
       <div className="rounded-[0.625rem] overflow-hidden mdup:border border-red-10 mt-2">
         <div className="min-w-full">
           <div className="text-base font-semibold hidden h-[4.375rem] mdup:flex flex-row border-b items-center opacity-60">

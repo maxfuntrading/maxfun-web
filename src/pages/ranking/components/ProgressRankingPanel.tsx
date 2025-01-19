@@ -8,7 +8,9 @@ export default function ProgressRankingPanel({
 }) {
   return (
     <div className="flex flex-col flex-1">
-      <span className="text-[1.75rem] font-semibold">Progress Ranking</span>
+      <span className="text-[1.75rem] font-semibold hidden mdup:inline">
+        Progress Ranking
+      </span>
       <div className="rounded-[0.625rem] overflow-hidden mdup:border border-red-10 mt-2">
         <div className="min-w-full">
           <div className="hidden text-base font-semibold h-[4.375rem] flex-row border-b items-center mdup:flex opacity-60">

@@ -1,16 +1,4 @@
-import { Token } from '../typs'
-import max from '@/assets/images/launcher/max.png'
-import eth from '@/assets/images/launcher/eth.png'
-import usdt from '@/assets/images/launcher/usdt.png'
-import usdc from '@/assets/images/launcher/usdc.png'
 import clsx from 'clsx'
-
-const tokenIcons = {
-  [Token.MAX]: max,
-  [Token.ETH]: eth,
-  [Token.USDT]: usdt,
-  [Token.USDC]: usdc,
-}
 
 export default function TokenButton({
   token,
@@ -18,13 +6,11 @@ export default function TokenButton({
   onClick,
   className,
 }: {
-  token: Token
+  token: string
   selected: boolean
   onClick: () => void
   className?: string
 }) {
-  const Icon = tokenIcons[token]
-
   return (
     <button
       className={clsx(
@@ -39,7 +25,7 @@ export default function TokenButton({
         className={`w-full h-full text-base mdup:text-[1.25rem] font-medium flex flex-row items-center gap-2 mdup:py-[0.75rem] mdup:pl-[1.625rem] justify-center`}
       >
         <img
-          src={Icon}
+          src={`/${token}.png`}
           alt=""
           className="mdup:size-[2.8125rem] size-[1.5625rem]"
         />

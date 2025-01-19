@@ -8,7 +8,7 @@ export default function TradingVolumeRankingPanel({
 }) {
   return (
     <div className="flex flex-col flex-1">
-      <span className="text-[1.75rem] font-semibold">
+      <span className="text-[1.75rem] font-semibold hidden mdup:inline">
         24 Hours Trading Volume
       </span>
       <div className="rounded-[0.625rem] overflow-hidden mdup:border border-red-10 mt-2">
