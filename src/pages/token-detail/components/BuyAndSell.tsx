@@ -2,11 +2,17 @@ import clsx from 'clsx'
 import { useState } from 'react'
 import SettingIcon from '@/assets/icons/setting.png'
 import SolidButton from '@/components/button/SolidButton'
+import { useDisclosure } from '@chakra-ui/react'
+import SlippageModal from './SlippageModal'
 
 export default function BuyAndSell({className}: {className?: string}) {
   const [isBuy, setIsBuy] = useState(true)
   const isSell = !isBuy
   const isOnUniswap = true
+
+  const [slippage, setSlippage] = useState(10)
+
+  const { isOpen: isOpenSlippage, onOpen: onOpenSlippage, onClose: onCloseSlippage } = useDisclosure();
 
   return (
     <div className={clsx(" flex-shrink-0 w-full mdup:w-[30rem] flex flex-col gap-[0.62rem] mdup:gap-[0.8rem] bg-black-10 rounded-[0.625rem] px-4 mdup:px-[1.49rem] py-[0.94rem] mdup:py-[1.3rem]", className)}>
@@ -27,7 +33,7 @@ export default function BuyAndSell({className}: {className?: string}) {
         <div className=' h-[1.875rem] bg-white/10 rounded-[0.375rem] flex-center px-[0.69rem] mdup:px-[0.8rem] font-medium text-[0.875rem] mdup:text-[1rem]'>
           Switch to Banana
         </div>
-        <button>
+        <button onClick={onOpenSlippage}>
           <img className='size-[0.875rem] mdup:size-[1.25rem]' src={SettingIcon} alt="setting" />
         </button>
       </div>
@@ -64,6 +70,13 @@ export default function BuyAndSell({className}: {className?: string}) {
       <div className='text-[0.875rem] mdup:text-[1rem] opacity-60 text-red-10 text-center leading-[100%]'>
         The Pool was migrated to UniswapV3
       </div>
+
+      <SlippageModal 
+        isOpen={isOpenSlippage} 
+        onClose={onCloseSlippage} 
+        slippage={slippage} 
+        onSetSlippage={setSlippage} 
+      />
 
     </div>
   )
