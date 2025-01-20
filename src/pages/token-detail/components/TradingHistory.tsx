@@ -1,10 +1,13 @@
+import LoadingMore from "@/components/LoadingMore"
 import { useBreakpoint } from "@/hooks/useBreakpoint"
+import { useInfiniteScroll } from "@/hooks/useInfiniteScroll"
 import { formatAddress } from "@/utils/utils"
 import { Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react"
-
+import { useState } from "react"
 export default function TradingHistory() {
   const { isSM } = useBreakpoint()
-
+  const [data, setData] = useState(0)
+  const [isLoadingList, setIsLoadingList] = useState(false)
   const TradingData = [
     {
       account: '0xF41BBb59B4291Ae8711ef276DdC0a26E6AD0137C',
@@ -31,6 +34,21 @@ export default function TradingHistory() {
       transation: '0x7ee39fa472d58253b167300fc5c3544b41c324cfe9e58b6b769c6885ecd3418b',
     },
   ]
+
+  const onLoadMore = () => {
+    if (isLoadingList) return
+    if (data >= 40) return
+    setIsLoadingList(true)
+    setTimeout(() => {
+      setData(prev => prev + 20)
+      setIsLoadingList(false)
+    }, 1000)
+  }
+
+  const loadMoreRef = useInfiniteScroll({
+    onLoadMore,
+    loading: isLoadingList
+  })
 
   return (
     <div className=" px-[0.91rem] mdup:px-[1.68rem]">
@@ -87,7 +105,11 @@ export default function TradingHistory() {
             const isSell = item.type === 'sell'
 
             return <Tr key={index} className="!font-semibold !h-[3.75rem]">
-              <Td className="!p-0 !border-white/10 !text-[0.875rem] !text-white/60">{formatAddress(item.account, 4, 6)}</Td>
+              <Td className="!p-0 !border-white/10 !text-[0.875rem] !text-white/60">
+                <a href={`https://etherscan.io/address/${item.account}`} target="_blank" className="flex items-center gap-2">
+                  <span>{formatAddress(item.account, 4, 6)}</span>
+                </a>
+              </Td>
               <Td className={`!border-white/10 !text-[0.875rem] !capitalize ${isBuy && 'text-[#06D188]'} ${isSell && 'text-[#FF0021]'}`}>{item.type}</Td>
               <Td className="!border-white/10 !text-[0.875rem] !text-white">{item.token1}</Td>
               <Td className="!border-white/10 !text-[0.875rem] !text-white">{item.token2}</Td>
@@ -102,6 +124,9 @@ export default function TradingHistory() {
           })}
         </Tbody>
       </Table>}
+
+      <div ref={loadMoreRef} className="w-full"></div>
+      {isLoadingList && <LoadingMore />}
 
     </div>
   )

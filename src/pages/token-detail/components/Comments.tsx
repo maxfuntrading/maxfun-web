@@ -1,39 +1,109 @@
 
+import FlatButton from "@/components/button/FlatButton"
 import LoadingMore from "@/components/LoadingMore"
-import { useState } from "react"
+import { useInfiniteScroll } from "@/hooks/useInfiniteScroll"
+import AppContext from "@/store/app"
+import { toastSuccess } from "@/utils/toast"
+import { formatCommentDate } from "@/utils/utils"
+import { useContext, useMemo, useState } from "react"
+import { useAccount } from "wagmi"
 
 export default function Comments() {
+  const { isConnected} = useAccount()
+  const { onConnectWallet } = useContext(AppContext)
   const [comment, setComment] = useState('')
-  const [isLoading,] = useState(false)
+  const [isLoadingSubmit, setIsLoadingSubmit] = useState(false)
+  const [data, setData] = useState(0)
+  const [isLoadingList, setIsLoadingList] = useState(false)
+  // const [pageSize] = useState(20)
+  
+
+  const isDisabled = useMemo(() => {
+    if (!isConnected) {
+      return true
+    }
+
+    if (comment.length === 0) {
+      return true;
+    }
+
+    if (isLoadingSubmit) {
+      return true;
+    }
+
+    return false;
+  }, [comment, isLoadingSubmit, isConnected])
+
+  const submitComment = () => {
+    setIsLoadingSubmit(true)
+    setTimeout(() => {
+      setIsLoadingSubmit(false)
+      setComment('')
+      toastSuccess('Comment successful ')
+      // toastError('Comment failed, please try again')
+    }, 1000)
+  }
+
+  const onLoadMore = () => {
+    if (isLoadingList) return
+    if (data >= 40) return
+    setIsLoadingList(true)
+    setTimeout(() => {
+      setData(prev => prev + 20)
+      setIsLoadingList(false)
+    }, 1000)
+  }
+
+  const loadMoreRef = useInfiniteScroll({
+    onLoadMore,
+    loading: isLoadingList
+  })
 
   return (
     <div className="w-full px-[0.91rem] mdup:px-[1.88rem] flex flex-col mt-[2rem]">
       <div className="w-full h-[9.375rem] mdup:h-[7.5rem] bg-white/20 rounded-[0.625rem] px-[1.35rem] py-[0.83rem] flex flex-col">
         <textarea 
+          disabled={isLoadingSubmit}
           className=" w-full flex-1 font-medium text-white placeholder:text-white/40 bg-transparent outline-none resize-none" 
           placeholder="Write your comments"
           maxLength={250}
           value={comment}
           onChange={(e) => setComment(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              submitComment()
+            }
+          }}
         />
         <div className="text-[0.875rem] text-white">{comment.length}/250</div>
       </div>
-      <button className="self-end w-[7.5rem] h-[2.25rem] bg-red-10 rounded-[0.625rem] text-[1rem] mdup:text-[1.125rem] font-medium text-white mt-[1.16rem]">Submit</button>
+
+      { !isConnected && <FlatButton onClick={onConnectWallet} className="self-end !w-fit h-[2.25rem] mt-[1.16rem] px-[0.68rem]">
+        Connect Wallet
+      </FlatButton>}
+      { isConnected && <FlatButton isDisabled={isDisabled} onClick={submitComment} className="self-end !w-[7.5rem] h-[2.25rem] mt-[1.16rem]">
+        { !isLoadingSubmit && <span className={`text-[1rem] mdup:text-[1.125rem] font-medium text-white ${!isDisabled ? 'text-white' : 'text-black-40'}`}>
+          Submit
+        </span>}
+        { isLoadingSubmit && <LoadingMore isDark={true} className="text-black-40 gap-1" />}
+      </FlatButton>}
       
       <div className="text-[1rem] mdup:text-[1.125rem] font-medium text-white mt-[1.16rem]">Comment (30)</div>
 
       <div className="w-full flex flex-col">
-        {Array.from({ length: 30 }).map((_, index) => (
-          <CommentItem key={index} />
+        {Array.from({ length: data }).map((_, index) => (
+          <CommentItem key={index} index={index} />
         ))}
+        <div ref={loadMoreRef} className="w-full"></div>
+        { isLoadingList && <LoadingMore />}
       </div>
 
-      { isLoading && <LoadingMore />}
+      
     </div>
   )
 }
 
-function CommentItem() {
+function CommentItem({index}: {index: number}) {
   return (
     <div className="w-full flex flex-col border-b border-white/10 py-[1.1rem] mdup:py-[1.65rem] gap-[0.84rem] mdup:gap-[0.57rem]">
       <div className="flex justify-between items-center">
@@ -52,12 +122,12 @@ function CommentItem() {
               <path d="M10.5259 2.72205V5.05538" stroke="white" strokeWidth="2" strokeLinecap="round"/>
             </g>
           </svg>
-          <span className="text-[0.75rem] mdup:text-[0.875rem] font-medium text-white/50">2 days</span>
+          <span className="text-[0.75rem] mdup:text-[0.875rem] font-medium text-white/50">{formatCommentDate(1716489600000)}</span>
         </div>
       </div>
 
       <div className="text-[0.875rem] mdup:text-[1rem]">
-        Launch of the main token snake coin 2025!  Hey! Launch of the main token snake coin 2025!
+        {index + 1}-Launch of the main token snake coin 2025!  Hey! Launch of the main token snake coin 2025!
         Hey! Launch of the main token snake coin 2025!  Hey! Launch of the main token snake coin 2025!
       </div>
     </div>

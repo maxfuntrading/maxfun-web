@@ -1,6 +1,26 @@
+import LoadingMore from '@/components/LoadingMore'
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll'
 import clsx from 'clsx'
-
+import { useState } from 'react'
 export default function Holder({className}: {className?: string}) {
+  const [data, setData] = useState(0)
+  const [isLoadingList, setIsLoadingList] = useState(false)
+
+  const onLoadMore = () => {
+    if (isLoadingList) return
+    if (data >= 40) return
+    setIsLoadingList(true)
+    setTimeout(() => {
+      setData(prev => prev + 20)
+      setIsLoadingList(false)
+    }, 1000)
+  }
+
+  const loadMoreRef = useInfiniteScroll({
+    onLoadMore,
+    loading: isLoadingList
+  })
+
   return (
     <div className={clsx("w-full bg-black-10 rounded-[0.625rem] px-[0.91rem] py-4 mdup:px-[1.55rem] mdup:py-[1.37rem]", className)}>
       <div className='flex justify-between items-center'>
@@ -29,6 +49,8 @@ export default function Holder({className}: {className?: string}) {
             <span className='text-[0.75rem] mdup:text-[0.875rem] font-semibold text-[#06D188]'>12.34%</span>
           </div>
         })}
+        <div ref={loadMoreRef} className="w-full"></div>
+        {isLoadingList && <LoadingMore />}
       </div>
 
     </div>
