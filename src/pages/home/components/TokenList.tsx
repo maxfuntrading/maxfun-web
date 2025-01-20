@@ -134,9 +134,9 @@ export default function TokenList() {
           <div className=" absolute w-full left-0 bottom-0 border-b-[2px] border-b-[#fff] rounded-[0.625rem] opacity-20"></div>
         </div>
 
-        {/* 筛选 */}
-        <div className='w-full mdup:w-auto flex gap-[0.62rem] mt-[0.73rem] mdup:mt-0'>
-          <button onClick={() => setIsOnUniswap(prev => !prev)} className=' hidden mdup:flex w-[10.3125rem] md:w-[13.75rem] lg:w-[16.25rem] h-[2.5rem] mdup:h-[3.125rem] rounded-[0.625rem] outline-none bg-black-20 border-[2px] border-red-10  px-[0.56rem] md:px-[1.09rem] lg:px-[1.22rem] cursor-pointer items-center justify-start gap-[0.67rem]'>
+        {/* 筛选-pc端 */}
+        <div className='w-full mdup:w-auto gap-[0.62rem] mt-[0.73rem] mdup:mt-0 hidden mdup:flex'>
+          <button onClick={() => setIsOnUniswap(prev => !prev)} className='flex w-[10.3125rem] md:w-[13.75rem] lg:w-[16.25rem] h-[2.5rem] mdup:h-[3.125rem] rounded-[0.625rem] outline-none bg-black-20 border-[2px] border-red-10  px-[0.56rem] md:px-[1.09rem] lg:px-[1.22rem] cursor-pointer items-center justify-start gap-[0.67rem]'>
             <span className={`size-4 border-[2px] border-white rounded-full ${isOnUniswap ? 'bg-red-10' : 'bg-transparent'}`}></span>
             <span>List on Uniswap</span>
           </button>
@@ -154,7 +154,7 @@ export default function TokenList() {
             options={TokenTagSelectList} 
             onSelect={(val) => setSelectTag(val)} />
 
-          <button onClick={() => setIsAscending(prev => !prev)} className=' hidden mdup:flex size-[3.125rem] border-[2px] border-red-10 rounded-[0.625rem] items-center justify-center'>
+          <button onClick={() => setIsAscending(prev => !prev)} className='flex size-[3.125rem] border-[2px] border-red-10 rounded-[0.625rem] items-center justify-center'>
             {isAscending ? <DescendingIcon className='size-[1.25rem]' /> : <AscendingIcon className='size-[1.25rem]' />}
           </button>
 
@@ -172,11 +172,58 @@ export default function TokenList() {
               }
               onRefresh()
             }}
-            className=' hidden mdup:flex size-[3.125rem] border-[2px] border-red-10 rounded-[0.625rem] items-center justify-center'
+            className='flex size-[3.125rem] border-[2px] border-red-10 rounded-[0.625rem] items-center justify-center'
           >
             <RefreshIcon className="refresh-icon" />
           </button>
+        </div>
 
+        {/* 筛选-手机端 */}
+        <div className='flex mdup:hidden flex-col gap-[0.81rem] mt-[0.78rem]'>
+          <div className='flex justify-between gap-[0.56rem]'>
+            <button onClick={() => setIsOnUniswap(prev => !prev)} className='flex w-1/2 h-[2.5rem] mdup:h-[3.125rem] rounded-[0.625rem] outline-none bg-black-20 border-[2px] border-red-10  px-[0.56rem] md:px-[1.09rem] lg:px-[1.22rem] cursor-pointer items-center justify-start gap-[0.67rem]'>
+              <span className={`size-4 border-[2px] border-white rounded-full ${isOnUniswap ? 'bg-red-10' : 'bg-transparent'}`}></span>
+              <span>List on Uniswap</span>
+            </button>
+
+            <Select 
+              className='sm:w-1/2'
+              defaultOption={selectTag}
+              options={TokenTagSelectList} 
+              onSelect={(val) => setSelectTag(val)} />
+          </div>
+
+          <div className='flex justify-between gap-[0.56rem]'>
+            <Select 
+              className='flex-1'
+              defaultOption={selectSort}
+              options={SortSelectList} 
+              onSelect={(val) => setSelectSort(val)}
+              />
+
+              <button onClick={() => setIsAscending(prev => !prev)} className='flex size-[2.5rem] mdup:size-[3.125rem] border-[2px] border-red-10 rounded-[0.625rem] items-center justify-center'>
+                {isAscending ? <DescendingIcon className='size-[1.25rem]' /> : <AscendingIcon className='size-[1.25rem]' />}
+              </button>
+
+              <button 
+                onClick={() => {
+                  const icon = document.querySelector('.refresh-icon-mobile');
+                  if (icon) {
+                    icon.animate([
+                      { transform: 'rotate(0deg)' },
+                      { transform: 'rotate(360deg)' }
+                    ], {
+                      duration: 500,
+                      iterations: 1
+                    });
+                  }
+                  onRefresh()
+                }}
+                className='flex size-[2.5rem] mdup:size-[3.125rem] border-[2px] border-red-10 rounded-[0.625rem] items-center justify-center'
+              >
+                <RefreshIcon className="refresh-icon-mobile" />
+              </button>
+          </div>
         </div>
       </div>
 
