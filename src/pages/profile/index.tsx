@@ -1,11 +1,20 @@
 import { useState } from 'react'
 import SwitchButton from './components/SwitchButton'
-import UserTokenList, { TokenListType } from './components/UserTokenList'
+import CreatedTokenList from './components/CreatedTokenList'
 import Banner from '@/assets/images/profile/banner.png'
 import Circle from '@/assets/images/profile/circle.svg'
+import OwnedTokenList from './components/OwnedTokenList'
+import { useAccount } from 'wagmi'
+import { formatAddress } from '@/utils/utils'
+import { Navigate } from 'react-router-dom'
 
 export default function Profile() {
   const [index, setIndex] = useState(0)
+  const { isConnected, address } = useAccount()
+
+  if (!isConnected) {
+    return <Navigate to="/" />
+  }
 
   return (
     <div className="w-full h-full flex flex-col px-[1.0625rem] mdup:px-[3.625rem] items-center">
@@ -27,7 +36,7 @@ export default function Profile() {
             className="mdup:absolute mdup:top-1/2 mdup:left-1/2 mdup:-translate-x-1/2 mdup:-translate-y-[2.8rem] size-[4.375rem] mdup:size-[6.25rem] rounded-full"
           />
           <span className="mt-2 mdup:mt-0 mdup:absolute mdup:bottom-2 text-sm mdup:text-base">
-            0xdd…831ec7
+            {formatAddress(address ?? '')}
           </span>
         </div>
         <div className="w-full mdup:w-2/5 flex flex-row items-center justify-between mt-[2.125rem] mdup:mt-12 z-10">
@@ -44,8 +53,8 @@ export default function Profile() {
             />
           </div>
         </div>
-        {index === 0 && <UserTokenList listType={TokenListType.Owned} />}
-        {index === 1 && <UserTokenList listType={TokenListType.Created} />}
+        {index === 0 && <OwnedTokenList />}
+        {index === 1 && <CreatedTokenList />}
       </div>
     </div>
   )

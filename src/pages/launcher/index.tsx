@@ -1,19 +1,14 @@
 import { useContext, useEffect, useMemo, useState } from 'react'
 import InputField from './components/InputField'
-import BnbIcon from '@/assets/images/launcher/bnb.svg'
-import { Token } from './typs'
 import TokenButton from './components/TokenButton'
 import UploadButton from './components/UploadButton'
 import Switch from './components/Switch'
 import Select, { SelectOptionType } from '@/components/Select'
-import FlatButton from '@/components/button/FlatButton'
 import { useAccount } from 'wagmi'
 import AppContext from '@/store/app'
 import SolidButton from '@/components/button/SolidButton'
-
-function formatDateTime(date: Date) {
-  return date.toISOString().slice(0, 19)
-}
+import calendarIcon from '@/assets/images/launcher/calendar.png'
+import TimePicker from './components/TimePicker'
 
 function isValidUrl(url: string) {
   const urlPattern = /^https?:\/\/.+\..+/
@@ -65,13 +60,10 @@ export default function Launcher() {
   const [reservedRatio, setReservedRatio] = useState('0')
   const [liquidityPoolRatio, setLiquidityPoolRatio] = useState('20')
   const [tag, setTag] = useState(tagsList[0])
-  const [extraOptions, setExtraOptions] = useState(false)
   const [raisedToken, setRaisedToken] = useState(raisedTokens[0])
-  const [raisedTokenPrice, setRaisedTokenPrice] = useState(100)
+  const [raisedTokenPrice, setRaisedTokenPrice] = useState(0)
   const [showExtraOptions, setShowExtraOptions] = useState(true)
-  const [currentDateTime, setCurrentDateTime] = useState(
-    formatDateTime(new Date())
-  )
+  const [startTime, setStartTime] = useState<Date | null>(null)
 
   // TODO: get raised token balance from backend or from contract
   const [raisedTokenBalance, setRaisedTokenBalance] = useState(100000)
@@ -100,7 +92,7 @@ export default function Launcher() {
     }
   }, [salesRatio, reservedRatio])
 
-  const isTokenNameValid = () => {
+  const isTokenNameValid = useMemo(() => {
     const trimmedName = name.trim()
 
     if (trimmedName.length > 0 && trimmedName.length > 20) {
@@ -108,9 +100,9 @@ export default function Launcher() {
     }
 
     return true
-  }
+  }, [name])
 
-  const isTokenSymbolValid = () => {
+  const isTokenSymbolValid = useMemo(() => {
     const trimmedSymbol = symbol.trim()
 
     if (trimmedSymbol.length > 0 && trimmedSymbol.length > 10) {
@@ -118,41 +110,41 @@ export default function Launcher() {
     }
 
     return true
-  }
+  }, [symbol])
 
-  const isDescriptionValid = () => {
+  const isDescriptionValid = useMemo(() => {
     if (description.length > 0 && description.length > 256) {
       return false
     }
 
     return true
-  }
+  }, [description])
 
-  const isWebsiteUrlValid = () => {
+  const isWebsiteUrlValid = useMemo(() => {
     if (websiteUrl.length > 0 && !isValidUrl(websiteUrl)) {
       return false
     }
 
     return true
-  }
+  }, [websiteUrl])
 
-  const isTwitterUrlValid = () => {
+  const isTwitterUrlValid = useMemo(() => {
     if (twitterUrl.length > 0 && !isValidUrl(twitterUrl)) {
       return false
     }
 
     return true
-  }
+  }, [twitterUrl])
 
-  const isTelegramUrlValid = () => {
+  const isTelegramUrlValid = useMemo(() => {
     if (telegramUrl.length > 0 && !isValidUrl(telegramUrl)) {
       return false
     }
 
     return true
-  }
+  }, [telegramUrl])
 
-  const isTotalSupplyValid = () => {
+  const isTotalSupplyValid = useMemo(() => {
     const num = Number(totalSupply)
 
     if (num < 1000000) {
@@ -160,9 +152,9 @@ export default function Launcher() {
     }
 
     return true
-  }
+  }, [totalSupply])
 
-  const isRaisedAmountValid = () => {
+  const isRaisedAmountValid = useMemo(() => {
     const num = Number(raisedAmount)
 
     if (num * raisedTokenPrice < 2000) {
@@ -170,7 +162,7 @@ export default function Launcher() {
     }
 
     return true
-  }
+  }, [raisedAmount, raisedTokenPrice])
 
   const isRaisedTokenSufficient = useMemo(() => {
     const num = Number(raisedAmount)
@@ -182,7 +174,50 @@ export default function Launcher() {
     return true
   }, [raisedTokenBalance, raisedAmount])
 
-  const passAllChecks = false
+  const isStartTimeValid = useMemo(() => {
+    if (!startTime) {
+      return true
+    }
+
+    const now = new Date()
+    return startTime.getTime() > now.getTime()
+  }, [startTime])
+
+  const passAllChecks = useMemo(() => {
+    if (iconUrl === '' || name === '' || symbol === '' || description === '') {
+      return false
+    }
+
+    return (
+      isTokenNameValid &&
+      isTokenSymbolValid &&
+      isDescriptionValid &&
+      isWebsiteUrlValid &&
+      isTwitterUrlValid &&
+      isTelegramUrlValid &&
+      isTotalSupplyValid &&
+      isRaisedAmountValid &&
+      isRaisedTokenSufficient &&
+      isStartTimeValid
+    )
+  }, [
+    iconUrl,
+    name,
+    symbol,
+    description,
+    websiteUrl,
+    twitterUrl,
+    telegramUrl,
+    isTotalSupplyValid,
+    isRaisedAmountValid,
+    isRaisedTokenSufficient,
+    isStartTimeValid,
+  ])
+
+  const createToken = () => {
+    // TODO: create token
+    console.log('>create token', startTime)
+  }
 
   return (
     <div className="w-full bg-[#141516] flex flex-col items-center py-8 px-4 relative">
@@ -206,7 +241,7 @@ export default function Launcher() {
               value={name}
               onChange={setName}
               errorInfo={
-                isTokenNameValid()
+                isTokenNameValid
                   ? undefined
                   : 'String must contain at most 20 characters'
               }
@@ -217,7 +252,7 @@ export default function Launcher() {
               value={symbol}
               onChange={setSymbol}
               errorInfo={
-                isTokenSymbolValid()
+                isTokenSymbolValid
                   ? undefined
                   : 'String must contain at most 10 characters'
               }
@@ -285,19 +320,19 @@ export default function Launcher() {
           label="Website"
           value={websiteUrl}
           onChange={setWebsiteUrl}
-          errorInfo={isWebsiteUrlValid() ? undefined : 'Invalid URL'}
+          errorInfo={isWebsiteUrlValid ? undefined : 'Invalid URL'}
         />
         <InputField
           label="Twitter"
           value={twitterUrl}
           onChange={setTwitterUrl}
-          errorInfo={isTwitterUrlValid() ? undefined : 'Invalid URL'}
+          errorInfo={isTwitterUrlValid ? undefined : 'Invalid URL'}
         />
         <InputField
           label="Telegram"
           value={telegramUrl}
           onChange={setTelegramUrl}
-          errorInfo={isTelegramUrlValid() ? undefined : 'Invalid URL'}
+          errorInfo={isTelegramUrlValid ? undefined : 'Invalid URL'}
         />
         <Switch
           checked={showExtraOptions}
@@ -313,7 +348,7 @@ export default function Launcher() {
                 value={totalSupply}
                 onChange={setTotalSupply}
                 errorInfo={
-                  isTotalSupplyValid()
+                  isTotalSupplyValid
                     ? undefined
                     : 'The minimum amount needs to be greater than 1,000,000'
                 }
@@ -328,7 +363,7 @@ export default function Launcher() {
                     value={raisedAmount}
                     onChange={setRaisedAmount}
                     errorInfo={
-                      isRaisedAmountValid()
+                      isRaisedAmountValid
                         ? undefined
                         : 'The minimum amount needs to be greater than $2,000'
                     }
@@ -417,28 +452,24 @@ export default function Launcher() {
               <span className="text-sm mdup:text-xl font-['Outfit']">
                 Start Time
               </span>
-              <input
-                type="datetime-local"
-                className="h-[2.75rem] mdup:h-[4.375rem] rounded-md p-4 w-full border-2 border-[#FFFFFF1A] focus:border-red-10 outline-none"
-                step="1"
-                defaultValue={formatDateTime(new Date())}
-                onChange={(e) => setCurrentDateTime(e.target.value)}
-                style={{
-                  WebkitAppearance: 'none',
-                  maxWidth: '100%',
-                  minHeight: '2.75rem',
-                  fontSize: '1rem',
-                  backgroundColor: '#FFFFFF0D',
-                }}
-              />
+              <TimePicker value={startTime} onChange={setStartTime} />
+              {!isStartTimeValid && (
+                <span className="text-red-600 text-xs mdup:text-sm -mt-1">
+                  Start time must be greater than current time
+                </span>
+              )}
             </div>
           </>
         )}
         <div className="flex flex-row justify-center mt-2 mb-[1.75rem]">
           <SolidButton
-            isDisabled={isConnected && isRaisedTokenSufficient}
+            isDisabled={
+              isConnected && (!isRaisedTokenSufficient || !passAllChecks)
+            }
             onClick={() => {
-              if (!isConnected) {
+              if (isConnected) {
+                createToken()
+              } else {
                 onConnectWallet()
               }
             }}

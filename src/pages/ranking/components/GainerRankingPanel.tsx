@@ -51,9 +51,7 @@ export default function GainerRankingPanel({
                       alt={item.name}
                       className="w-[2.125rem] h-[2.125rem] rounded-full mr-2"
                     />
-                    <span className="text-sm font-semibold w-[8rem] mdup:w-auto">
-                      {item.name}
-                    </span>
+                    <span className="text-sm font-semibold">{item.name}</span>
                   </div>
                 </div>
                 <div className="px-4 py-2 pt-0 mdup:pt-2 flex-1 flex items-center flex-row justify-between">

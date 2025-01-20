@@ -6,16 +6,7 @@ import TokenCard from '@/components/TokenCard'
 import LoadingMore from '@/components/LoadingMore'
 import { useNavigate } from 'react-router-dom'
 
-export enum TokenListType {
-  Owned = 0,
-  Created = 1,
-}
-
-export default function UserTokenList({
-  listType,
-}: {
-  listType: TokenListType
-}) {
+export default function CreatedTokenList() {
   const [tokens, setTokens] = useState(0)
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
@@ -46,7 +37,7 @@ export default function UserTokenList({
           />
         </div>
         <FlatButton
-          className="w-[7.5rem] mdup:w-[10rem]"
+          className="!w-[7.5rem] mdup:!w-[10rem] h-[2.5rem] mdup:h-[3.125rem]"
           onClick={() => navigate('/launcher')}
         >
           Create Token
