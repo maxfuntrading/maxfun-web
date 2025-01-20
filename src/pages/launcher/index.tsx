@@ -7,7 +7,6 @@ import Select, { SelectOptionType } from '@/components/Select'
 import { useAccount } from 'wagmi'
 import AppContext from '@/store/app'
 import SolidButton from '@/components/button/SolidButton'
-import calendarIcon from '@/assets/images/launcher/calendar.png'
 import TimePicker from './components/TimePicker'
 
 function isValidUrl(url: string) {
@@ -44,7 +43,7 @@ export default function Launcher() {
   ]
 
   const raisedTokens = ['MAX', 'ETH', 'USDT', 'USDC']
-  const { isConnected, address } = useAccount()
+  const { isConnected } = useAccount()
   const { onConnectWallet } = useContext(AppContext)
 
   const [iconUrl, setIconUrl] = useState('')
@@ -65,8 +64,7 @@ export default function Launcher() {
   const [showExtraOptions, setShowExtraOptions] = useState(true)
   const [startTime, setStartTime] = useState<Date | null>(null)
 
-  // TODO: get raised token balance from backend or from contract
-  const [raisedTokenBalance, setRaisedTokenBalance] = useState(100000)
+  const [raisedTokenBalance, setRaisedTokenBalance] = useState(0)
 
   useEffect(() => {
     // TODO: get total supply from backend
@@ -76,6 +74,9 @@ export default function Launcher() {
     // TODO: get raised amount from backend
     const raisedAmountNum = 10000
     setRaisedAmount(raisedAmountNum.toString())
+
+    // TODO: get raised token balance from backend or from contract
+    setRaisedTokenBalance(1000000)
   }, [])
 
   useEffect(() => {
