@@ -6,3 +6,5 @@ export const IS_MAIN = import.meta.env.MODE === 'main'
 
 // contract
 export const VITE_CONTRACT_MAX_FUN_FACTORY = import.meta.env.VITE_CONTRACT_MAX_FUN_FACTORY
+export const VITE_CONTRACT_MAX_FUN_CURVE = import.meta.env.VITE_CONTRACT_MAX_FUN_CURVE
+
