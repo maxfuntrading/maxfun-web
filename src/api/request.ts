@@ -1,3 +1,4 @@
+import { toastError } from '@/components/toast';
 import axios, { AxiosRequestConfig } from 'axios'
 
 interface ResponseType<T = any> {
@@ -33,12 +34,16 @@ asioxInstance.interceptors.response.use(response => {
   return Promise.reject(error)
 });
 
-const request = async <T = any>(config: AxiosRequestConfig): Promise<ResponseType<T>> => {
+const request = async <T = any>(config: AxiosRequestConfig, isSpecial: boolean = false): Promise<ResponseType<T>> => {
   try {
     const response = await asioxInstance.request(config)
     return response.data
-  } catch (error) {
-    console.log('request error', error);
+  } catch (error: any) {
+    
+    if (!isSpecial && error?.response?.status !== 403) {
+      toastError(error?.response?.data?.msg || 'Error')
+    }
+    console.error('request error', error);
     
     return Promise.reject(error)
   }
