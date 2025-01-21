@@ -41,7 +41,7 @@ const request = async <T = any>(config: AxiosRequestConfig, isSpecial: boolean =
   } catch (error: any) {
     
     if (!isSpecial && error?.response?.status !== 403) {
-      toastError(error?.response?.data?.msg || 'Error')
+      toastError(error?.response?.data?.msg || 'Server Error')
     }
     console.error('request error', error);
     

@@ -39,6 +39,7 @@ export default function Main() {
     },
   ]
 
+  // login
   useEffect(() => {
     const handleLogin = async () => {
       if (!isConnected || !address || isLogin) {
@@ -74,9 +75,6 @@ export default function Main() {
   
       const prepareMessage = message.prepareMessage()
   
-      console.log('prepareMessage', prepareMessage);
-      
-  
       const signResult = await signMessageAsync({message: prepareMessage}).catch((error) => {
         console.error('signMessageAsync error', error);
         onDisconnectWallet();
@@ -106,6 +104,7 @@ export default function Main() {
     handleLogin()
   }, [address, chainId, dispatch, isConnected, isLogin, onDisconnectWallet, signMessageAsync])
 
+  // 监听 auth_token
   useEffect(() => {
     const authToken = localStorage.getItem('auth_token');
     handleStorage(authToken)
@@ -136,13 +135,15 @@ export default function Main() {
       <Header navData={navData} />
       {/* <Button onClick={handleLogin}>Login</Button> */}
       <div className="flex-1 relative">
+        <div className="w-full h-full relative z-[1]">
+          <Outlet />
+        </div>
+
         <div className=" w-full flex justify-center absolute bottom-0">
           <div className=" w-full mdup:w-[60rem] h-[8rem] mdup:h-[15rem] overflow-y-hidden relative">
             <div className="w-full mdup:w-[60rem] h-[80rem] mdup:h-[163rem] absolute top-0 left-0 translate-y-[6rem] mdup:translate-y-[10rem] opacity-20 bg-red-10 rounded-full blur-[50px] mdup:blur-[100px]" />
           </div>
         </div>
-
-        <Outlet />
       </div>
       <Footer navData={navData} />
     </div>
