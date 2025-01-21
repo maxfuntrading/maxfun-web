@@ -4,6 +4,7 @@ import SettingIcon from '@/assets/icons/setting.png'
 import SolidButton from '@/components/button/SolidButton'
 import { useDisclosure } from '@chakra-ui/react'
 import SlippageModal from './SlippageModal'
+import { toastError, toastInfo, toastSuccess, toastWarning } from '@/components/toast'
 
 export default function BuyAndSell({className}: {className?: string}) {
   const [isBuy, setIsBuy] = useState(true)
@@ -63,7 +64,12 @@ export default function BuyAndSell({className}: {className?: string}) {
       {isBuy && <div className='text-[0.875rem] mdup:text-[1rem] opacity-60 leading-[100%]'>Cost:0.000233 SOL</div>}
       {isSell && <div className='text-[0.875rem] mdup:text-[1rem] opacity-60 leading-[100%]'>You will receive: 1000 BANANA</div>}
 
-      <SolidButton>
+      <SolidButton onClick={() => {
+        toastSuccess('Transaction Success')
+        toastError('Transaction Failed')
+        toastWarning('Transaction Failed')
+        toastInfo('Transaction Success')
+      }}>
         Buy
       </SolidButton>
 

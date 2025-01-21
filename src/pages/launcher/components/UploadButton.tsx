@@ -1,5 +1,5 @@
 import uploadIcon from '@/assets/images/launcher/upload.svg'
-import { toastError } from '@/utils/toast'
+import { toastError } from '@/components/toast'
 import { useState } from 'react'
 
 export default function UploadButton({

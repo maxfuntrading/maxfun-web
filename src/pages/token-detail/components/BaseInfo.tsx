@@ -1,7 +1,7 @@
 import TokenAvatar from '@/assets/images/home/aanana.png'
 import { CopyIcon, TelegramIcon, WebsiteIcon, XIcon } from './Icon'
 import { copyText } from '@/utils/utils'
-import { toastSuccess } from '@/utils/toast'
+import { toastSuccess } from '@/components/toast'
 import clsx from 'clsx'
 
 export default function BaseInfo() {
