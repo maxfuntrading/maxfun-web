@@ -3,3 +3,6 @@ export const VITE_API_HOST = import.meta.env.VITE_API_HOST
 
 export const IS_DEV = import.meta.env.MODE === 'dev'
 export const IS_MAIN = import.meta.env.MODE === 'main'
+
+// contract
+export const VITE_CONTRACT_MAX_FUN_FACTORY = import.meta.env.VITE_CONTRACT_MAX_FUN_FACTORY
