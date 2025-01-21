@@ -4,8 +4,12 @@ import TokenAvatar from '@/assets/images/home/token-avatar.png'
 import Slider, { Settings } from 'react-slick'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { useContext, useEffect } from 'react';
+import { fetchMarquee } from '@/api/home';
+import AppContext from '@/store/app';
 
 export default function HotTx() {
+  const {state: {isLogin}} = useContext(AppContext)
 
   const settings: Settings = {
     dots: false,
@@ -20,6 +24,16 @@ export default function HotTx() {
     variableWidth: true,
     infinite: true,
   }
+
+  useEffect(() => {
+    if (!isLogin) {
+      return
+    }
+
+    fetchMarquee().then((res) => {
+      console.log(res);
+    })
+  }, [isLogin])
 
   return (
     <div className=" w-full ">

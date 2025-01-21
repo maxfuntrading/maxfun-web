@@ -13,10 +13,10 @@ const asioxInstance = axios.create({
 
 asioxInstance.interceptors.request.use(async config => {
   // auth token
-  // const token = localStorage.getItem('auth_token')
-  // if (token) {
-  //   config.headers.Authorization = `Bearer ${token}`
-  // }
+  const token = localStorage.getItem('auth_token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
 
   return config
 }, eror => {
@@ -26,9 +26,9 @@ asioxInstance.interceptors.request.use(async config => {
 asioxInstance.interceptors.response.use(response => {
   return response
 }, error => {
-  // if (error.response && error.response.status === 403) {
-  //   localStorage.removeItem('auth_token')
-  // }
+  if (error.response && error.response.status === 403) {
+    localStorage.removeItem('auth_token')
+  }
 
   return Promise.reject(error)
 });

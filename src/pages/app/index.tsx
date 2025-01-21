@@ -7,6 +7,7 @@ import { useDisconnect } from "wagmi";
 
 export default function App() {
   const contextValue = useCreateReducer<AppIntialState>({initialState: appInitialState})
+  const { dispatch } = contextValue
   const connectWalletRef = useRef<HTMLButtonElement>(null)
   const disconnectWalletRef = useRef<HTMLButtonElement>(null)
   const { disconnectAsync } = useDisconnect()
@@ -17,6 +18,8 @@ export default function App() {
 
   const handleDisconnectWallet = async () => {
     await disconnectAsync()
+    localStorage.removeItem('auth_token')
+    dispatch({field: 'isLogin', value: false})
   }
 
   return (
