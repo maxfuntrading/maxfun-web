@@ -1,8 +1,9 @@
 import { createChart, IChartApi } from 'lightweight-charts'
 import { useEffect, useRef } from 'react'
 import clsx from 'clsx'
+import { TabType } from '../type'
 
-export default function PriceChart({className}: {className?: string}) {
+export default function PriceChart({className, tab}: {className?: string, tab: TabType}) {
   const chartContainerRef = useRef<HTMLDivElement>(null)
   const chartRef = useRef<IChartApi | null>(null)
 
@@ -87,7 +88,7 @@ export default function PriceChart({className}: {className?: string}) {
       window.removeEventListener('resize', handleResize)
       chart.remove()
     }
-  }, [])
+  }, [tab])
 
   // 获取实时数据的示例
   useEffect(() => {
@@ -112,9 +113,19 @@ export default function PriceChart({className}: {className?: string}) {
   }, [])
 
   return (
-    <div className={clsx("w-full md:flex-1 rounded-[0.625rem] bg-black-10", className)}>
-      {/* <div ref={chartContainerRef} className="w-full" /> */}
-      Price Chart
+    <div className={clsx("w-full md:flex-1 rounded-[0.625rem] bg-black-10 overflow-hidden p-4  mdup:px-[1.57rem] mdup:py-[1.4rem]", className)}>
+      <div ref={chartContainerRef} className="w-full" />
     </div>
   )
+}
+
+
+export function PriceChartIframe({className}: {className?: string}) {
+  return <div className={clsx("w-full sm:h-[24rem] rounded-[0.625rem] bg-black-10 overflow-hidden p-4  mdup:px-[1.57rem] mdup:py-[1.4rem]", className)}>
+    <iframe 
+      src="https://www.geckoterminal.com/base/pools/0xc8862e713776eca8e6958c48d2bdce16b8b8035a?embed=1&info=0&swaps=0" 
+      width="100%" 
+      height="100%" 
+    />
+  </div>
 }

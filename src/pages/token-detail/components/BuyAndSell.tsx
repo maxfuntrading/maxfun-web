@@ -11,6 +11,7 @@ export default function BuyAndSell({className}: {className?: string}) {
   const isSell = !isBuy
   const isOnUniswap = true
 
+  const [amount, setAmount] = useState<string>('')
   const [slippage, setSlippage] = useState(10)
 
   const { isOpen: isOpenSlippage, onOpen: onOpenSlippage, onClose: onCloseSlippage } = useDisclosure();
@@ -44,6 +45,15 @@ export default function BuyAndSell({className}: {className?: string}) {
           <input
            className=' w-full outline-none placeholder:text-white/40 placeholder:font-medium text-[1rem] font-medium bg-transparent mt-[0.4rem]'
            placeholder='Enter the amount'
+           type="number"
+           value={amount !== undefined ? amount : ''}
+           min={0}
+           onChange={(e) => setAmount(e.target.value)}
+           onKeyDown={(e) => {
+            if (e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === '-') {
+              e.preventDefault();
+            }
+          }}
           />
           <div className='text-[0.875rem] mdup:text-[1rem]'>Balance: 0 SOL</div>
         </div>

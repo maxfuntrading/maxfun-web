@@ -2,7 +2,7 @@ import { useState } from "react";
 import BaseInfo from "./components/BaseInfo";
 import { SubTabType, TabType } from "./type";
 import clsx from "clsx";
-import PriceChart from "./components/PriceChart";
+import PriceChart, { PriceChartIframe } from "./components/PriceChart";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import BuyAndSell from "./components/BuyAndSell";
 import Description from "./components/Description";
@@ -15,6 +15,8 @@ export default function TokenDetail() {
   const [tab, setTab] = useState<TabType>(TabType.BuyOreSell)
   const [subTab, setSubTab] = useState<SubTabType>(SubTabType.Comments)
 
+  const isOnUniswap = true;
+
 
   return (
     <div className="px-4 mdup:px-[3.62rem] mt-2 pt-2">
@@ -24,7 +26,8 @@ export default function TokenDetail() {
         <Tab tab={tab} setTab={setTab} className="flex mdup:hidden" />
 
         <div className="flex justify-between gap-[1.32rem] h-fit mdup:mt-[1.26rem]">
-          <PriceChart className={`${isSM && tab === TabType.Chart ? 'flex' : 'hidden mdup:flex'}`} />
+          {!isOnUniswap &&<PriceChart tab={tab} className={`${isSM && tab === TabType.Chart ? 'flex' : 'hidden mdup:flex'}`} />}
+          {isOnUniswap && <PriceChartIframe className={`${isSM && tab === TabType.Chart ? 'flex' : 'hidden mdup:flex'}`} />}
           <BuyAndSell className={`${isSM && tab === TabType.BuyOreSell ? 'flex' : 'hidden mdup:flex'}`} />
         </div>
 
