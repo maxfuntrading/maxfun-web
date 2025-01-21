@@ -14,7 +14,7 @@ export default function MaxfunModal({isOpen, onClose, title, children, className
     <Modal isOpen={isOpen} onClose={onClose} isCentered closeOnOverlayClick={true}>
         <ModalOverlay />
         <ModalContent style={{backgroundColor: 'transparent'}}>
-          <div className={clsx('w-[48.625rem] sm:w-full flex flex-col rounded-[0.624rem] px-[1.29rem] mdup:px-[1.6rem] py-[0.95rem] mdup:translate-x-[-23%]', className)} style={{background: '#1E2022'}}>
+          <div className={clsx('w-[48.625rem] sm:w-[calc(100%-2rem)] flex flex-col rounded-[0.624rem] px-[1.29rem] mdup:px-[1.6rem] py-[0.95rem] mdup:translate-x-[-23%] sm:translate-x-[1rem]', className)} style={{background: '#1E2022'}}>
             <div className=' h-full flex justify-between items-center'>
               <div className=' text-[18px] text-white font-medium'>{title}</div>
               <div onClick={onClose} className=' cursor-pointer w-[24px] h-[24px]'>
