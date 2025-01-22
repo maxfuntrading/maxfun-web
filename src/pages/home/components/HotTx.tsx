@@ -21,6 +21,8 @@ export default function HotTx() {
     nextArrow: <></>,
     variableWidth: true,
     infinite: true,
+    pauseOnFocus: true,
+    rtl: false,
   }
 
   useEffect(() => {
@@ -48,7 +50,7 @@ const HotTxItem = ({index}: {index: number}) => {
         <img className='size-[3.375rem]' src={TokenAvatar} alt="" />
         
         <div className='flex flex-col text-[0.875rem] mdup:text-[1rem] leading-[1.4]'>
-          <div className='text-[#DFE2EA] mdup:font-semibold'>0xee…daf999</div>
+          <div className='text-[#DFE2EA] mdup:font-semibold'>0xee…daf999-{index}</div>
           <div>
             <span className={`font-semibold ${isBought ? 'text-[#06D188]' : 'text-[#EC3E6F]'}`}>{isBought ? 'Bought' : 'Sold'}</span>
             {' '}  
