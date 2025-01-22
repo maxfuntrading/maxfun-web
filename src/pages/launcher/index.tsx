@@ -225,7 +225,14 @@ export default function Launcher() {
     setIsLoadingSubmit(false)
 
     // 调用合约lanch方法
-    onLaunch(1, name, symbol, BigInt(raisedAmount), raisedToken, signature)
+    onLaunch({
+      id: 1, 
+      name, 
+      symbol, 
+      amount: BigInt(raisedAmount), 
+      asset: raisedToken, 
+      signature
+    })
   }
 
   useEffect(() => {

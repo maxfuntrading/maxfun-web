@@ -15,7 +15,7 @@ export default function useLaunch() {
     success: false,
   })
 
-  const onLaunch = async (id: number, name: string, symbol: string, amount: bigint, asset: string, signature: string) => {
+  const onLaunch = async ({id, name, symbol, amount, asset, signature}: {id: number, name: string, symbol: string, amount: bigint, asset: string, signature: string}) => {
     if (!address || !publicClient) {
       setState({
         loading: false,
