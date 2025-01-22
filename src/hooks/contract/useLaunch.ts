@@ -15,7 +15,7 @@ export default function useLaunch() {
     success: false,
   })
 
-  const onLaunch = async () => {
+  const onLaunch = async (id: number, name: string, symbol: string, amount: bigint, asset: string, signature: string) => {
     if (!address || !publicClient) {
       setState({
         loading: false,
@@ -32,11 +32,24 @@ export default function useLaunch() {
     })
 
     try {
+      // uint8 id,                    // 用于签名验证的ID
+      // string memory _name,         // Max.Fun Asset Token的名称
+      // string memory _ticker,       // Max.Fun Asset Token的代币符号
+      // uint256 purchaseAmount,      // 创建者购买的资产代币数量
+      // address asset,               // 资产代币的地址（如USDT、USDC等）
+      // bytes memory signature       // 签名数据，用于白名单验证
       const hash = await writeContractAsync({
         address: VITE_CONTRACT_MAX_FUN_FACTORY,
         abi: MAX_FUN_FACTORY_ABI,
         functionName: 'launch',
-        args: [] as any,
+        args: [
+          id,
+          name,
+          symbol,
+          amount,
+          asset as `0x${string}`,
+          signature as any,
+        ],
       })
 
       const receipt = await publicClient.waitForTransactionReceipt({

@@ -8,6 +8,8 @@ import { useAccount } from 'wagmi'
 import AppContext from '@/store/app'
 import SolidButton from '@/components/button/SolidButton'
 import TimePicker from './components/TimePicker'
+import useLaunch from '@/hooks/contract/useLaunch'
+import { toastError, toastSuccess } from '@/components/toast'
 
 function isValidUrl(url: string) {
   const urlPattern = /^https?:\/\/.+\..+/
@@ -65,6 +67,10 @@ export default function Launcher() {
   const [startTime, setStartTime] = useState<Date | null>(null)
 
   const [raisedTokenBalance, setRaisedTokenBalance] = useState(0)
+
+  // write contract
+  const { onLaunch, state: launchState, onReset: onResetLaunch } = useLaunch()
+  const [isLoadingSubmit, setIsLoadingSubmit] = useState(false)
 
   useEffect(() => {
     // TODO: get total supply from backend
@@ -201,24 +207,43 @@ export default function Launcher() {
       isRaisedTokenSufficient &&
       isStartTimeValid
     )
-  }, [
-    iconUrl,
-    name,
-    symbol,
-    description,
-    websiteUrl,
-    twitterUrl,
-    telegramUrl,
-    isTotalSupplyValid,
-    isRaisedAmountValid,
-    isRaisedTokenSufficient,
-    isStartTimeValid,
-  ])
+  }, [iconUrl, name, symbol, description, isTokenNameValid, isTokenSymbolValid, isDescriptionValid, isWebsiteUrlValid, isTwitterUrlValid, isTelegramUrlValid, isTotalSupplyValid, isRaisedAmountValid, isRaisedTokenSufficient, isStartTimeValid])
+
+  const onResetForm = () => {
+    
+  }
 
   const createToken = () => {
-    // TODO: create token
-    console.log('>create token', startTime)
+    if (!isConnected || launchState.loading || isLoadingSubmit) {
+      return
+    }
+
+    // 从后端请求签名
+    setIsLoadingSubmit(true)
+    // TODO: 从后端请求签名
+    const signature = ''
+    setIsLoadingSubmit(false)
+
+    // 调用合约lanch方法
+    onLaunch(1, name, symbol, BigInt(raisedAmount), raisedToken, signature)
   }
+
+  useEffect(() => {
+    if (launchState.success) {
+      onResetForm()
+      onResetLaunch()
+      toastSuccess('Successful launch')
+    }
+
+    if (launchState.error) {
+      onResetLaunch()
+      if (launchState.error.includes('user rejected action')) {
+        toastError('Cancel Approve')
+      } else {
+        toastError('Launch failed')
+      }
+    }
+  }, [launchState.success, launchState.error, onResetLaunch])
 
   return (
     <div className="w-full bg-[#141516] flex flex-col items-center py-8 px-4 relative">
