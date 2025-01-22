@@ -3,9 +3,9 @@ import { toastError } from '@/components/toast'
 import { useState } from 'react'
 
 export default function UploadButton({
-  onUploaded,
+  onUpload,
 }: {
-  onUploaded: (url: string) => void
+  onUpload: (file: File) => void
 }) {
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null)
 
@@ -32,7 +32,7 @@ export default function UploadButton({
     const url = URL.createObjectURL(file)
     console.log('>>url', url)
     setUploadedUrl(url)
-    onUploaded(url)
+    onUpload(file)
   }
 
   return (

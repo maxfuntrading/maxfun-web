@@ -10,6 +10,8 @@ import SolidButton from '@/components/button/SolidButton'
 import TimePicker from './components/TimePicker'
 import useLaunch from '@/hooks/contract/useLaunch'
 import { toastError, toastSuccess } from '@/components/toast'
+import { fetchRaisedToken, fetchTag, fetchUploadTokenIcon, RaisedToken } from '@/api/common'
+import { ERR_CODE } from '@/constants/ERR_CODE'
 
 function isValidUrl(url: string) {
   const urlPattern = /^https?:\/\/.+\..+/
@@ -17,34 +19,8 @@ function isValidUrl(url: string) {
 }
 
 export default function Launcher() {
-  const tagsList: SelectOptionType<string>[] = [
-    {
-      key: 'Ai',
-      value: 'Ai',
-    },
-    {
-      key: 'Game',
-      value: 'Game',
-    },
-    {
-      key: 'Defi',
-      value: 'Defi',
-    },
-    {
-      key: 'Social',
-      value: 'Social',
-    },
-    {
-      key: 'DePin',
-      value: 'DePin',
-    },
-    {
-      key: 'Others',
-      value: 'Others',
-    },
-  ]
 
-  const raisedTokens = ['MAX', 'ETH', 'USDT', 'USDC']
+  // const raisedTokens = ['MAX', 'ETH', 'USDT', 'USDC']
   const { isConnected } = useAccount()
   const { onConnectWallet } = useContext(AppContext)
 
@@ -60,13 +36,19 @@ export default function Launcher() {
   const [salesRatio, setSalesRatio] = useState('80')
   const [reservedRatio, setReservedRatio] = useState('0')
   const [liquidityPoolRatio, setLiquidityPoolRatio] = useState('20')
-  const [tag, setTag] = useState(tagsList[0])
-  const [raisedToken, setRaisedToken] = useState(raisedTokens[0])
+  
+  
   const [raisedTokenPrice, setRaisedTokenPrice] = useState(0)
   const [showExtraOptions, setShowExtraOptions] = useState(true)
   const [startTime, setStartTime] = useState<Date | null>(null)
 
   const [raisedTokenBalance, setRaisedTokenBalance] = useState(0)
+
+  // fetch data
+  const [tags, setTags] = useState<SelectOptionType<string>[]>([])
+  const [tag, setTag] = useState<SelectOptionType<string>>()
+  const [raisedTokens, setRaisedTokens] = useState<RaisedToken[]>([])
+  const [raisedToken, setRaisedToken] = useState<RaisedToken>()
 
   // write contract
   const { onLaunch, state: launchState, onReset: onResetLaunch } = useLaunch()
@@ -98,6 +80,32 @@ export default function Launcher() {
       setLiquidityPoolRatio((100 - salesRatioNum - reservedRatioNum).toString())
     }
   }, [salesRatio, reservedRatio])
+
+  // get tag/raised token
+  useEffect(() => {
+    if (raisedToken || tag) {
+      return
+    }
+
+    const getBaseInfo = async () => {
+      const [tagRes, raisedTokenRes] = await Promise.all([
+        fetchTag(),
+        fetchRaisedToken()
+      ])
+      if (tagRes.code !== ERR_CODE.SUCCESS || raisedTokenRes.code !== ERR_CODE.SUCCESS) {
+        return
+      }
+      const tagList = tagRes.data.list.map((tag) => ({
+        key: `${tag.sort}`,
+        value: tag.name,
+      }))
+      setTags(tagList)
+      setTag(tagList[0])
+      setRaisedTokens(raisedTokenRes.data.list)
+      setRaisedToken(raisedTokenRes.data.list[0])
+    }
+    getBaseInfo()
+  }, [raisedToken, tag])
 
   const isTokenNameValid = useMemo(() => {
     const trimmedName = name.trim()
@@ -209,12 +217,22 @@ export default function Launcher() {
     )
   }, [iconUrl, name, symbol, description, isTokenNameValid, isTokenSymbolValid, isDescriptionValid, isWebsiteUrlValid, isTwitterUrlValid, isTelegramUrlValid, isTotalSupplyValid, isRaisedAmountValid, isRaisedTokenSufficient, isStartTimeValid])
 
+  const onUploadIcon = async (file: File) => {
+    const formData = new FormData()
+    formData.append('file', file)
+    const res = await fetchUploadTokenIcon(formData)
+    if (!res || res.code !== ERR_CODE.SUCCESS) {
+      return
+    }
+    setIconUrl(res.data.url)
+  }
+
   const onResetForm = () => {
     
   }
 
   const createToken = () => {
-    if (!isConnected || launchState.loading || isLoadingSubmit) {
+    if (!isConnected || launchState.loading || isLoadingSubmit || !raisedToken) {
       return
     }
 
@@ -230,7 +248,7 @@ export default function Launcher() {
       name, 
       symbol, 
       amount: BigInt(raisedAmount), 
-      asset: raisedToken, 
+      asset: raisedToken.address, 
       signature
     })
   }
@@ -264,7 +282,9 @@ export default function Launcher() {
               Token Icon <span className="text-red-10">*</span>
             </label>
             <div className="flex flex-row w-full justify-center mdup:justify-start">
-              <UploadButton onUploaded={(url) => setIconUrl(url)} />
+              <UploadButton 
+                onUpload={(file) => onUploadIcon(file)}
+              />
             </div>
           </div>
           <div className="space-y-8 flex flex-col flex-1">
@@ -324,18 +344,18 @@ export default function Launcher() {
               Raised Token
             </label>
           </div>
-          <div className="flex flex-row gap-3 mdup:gap-4 justify-between items-center flex-wrap">
+          <div className={`flex flex-row gap-3 mdup:gap-4 items-center flex-wrap ${raisedTokens.length >= 4 ? 'justify-between' : 'justify-start'}`}>
             {raisedTokens.map((token) => (
               <TokenButton
-                key={token}
+                key={token.address}
                 token={token}
-                selected={raisedToken === token}
+                selected={raisedToken?.address === token.address}
                 onClick={() => setRaisedToken(token)}
               />
             ))}
           </div>
         </div>
-        <div className="flex flex-col gap-2">
+        {tag && <div className="flex flex-col gap-2">
           <div className="flex flex-row">
             <label className="text-sm mdup:text-xl font-['Outfit']">Tag</label>
           </div>
@@ -344,11 +364,11 @@ export default function Launcher() {
               className="!w-full h-[2.75rem] mdup:h-[4.375rem] bg-white/5  border-2 !border-[#FFFFFF1A] focus:border-red-10 text-bold"
               optionPanelClassName="mdup:!top-[4.375rem]"
               defaultOption={tag}
-              options={tagsList}
+              options={tags}
               onSelect={(val) => setTag(val)}
             />
           </div>
-        </div>
+        </div>}
         <InputField
           label="Website"
           value={websiteUrl}
@@ -409,7 +429,7 @@ export default function Launcher() {
                     className="size-4 mdup:size-[1.375rem] mr-1"
                   />
                   <span className="text-sm mdup:text-xl">
-                    {raisedToken}(${raisedTokenPrice * Number(raisedAmount)})
+                    {raisedToken?.symbol}(${raisedTokenPrice * Number(raisedAmount)})
                   </span>
                 </div>
               </div>
@@ -471,7 +491,7 @@ export default function Launcher() {
                 Intial Price:
                 <span className="text-white ml-2">
                   {(Number(totalSupply) / Number(raisedAmount)).toFixed(2)}
-                  {raisedToken}
+                  {raisedToken?.symbol}
                 </span>
               </div>
               <div className="text-white/40">

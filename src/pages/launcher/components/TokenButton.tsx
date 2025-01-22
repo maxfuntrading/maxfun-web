@@ -1,3 +1,4 @@
+import { RaisedToken } from '@/api/common'
 import clsx from 'clsx'
 
 export default function TokenButton({
@@ -6,7 +7,7 @@ export default function TokenButton({
   onClick,
   className,
 }: {
-  token: string
+  token: RaisedToken
   selected: boolean
   onClick: () => void
   className?: string
@@ -22,14 +23,14 @@ export default function TokenButton({
       onClick={onClick}
     >
       <div
-        className={`w-full h-full text-base mdup:text-[1.25rem] font-medium flex flex-row items-center gap-2 mdup:py-[0.75rem] mdup:pl-[1.625rem] justify-center`}
+        className={`w-full h-full text-base mdup:text-[1.25rem] font-medium flex flex-row items-center gap-2 mdup:py-[0.75rem] justify-center`}
       >
         <img
-          src={`/${token}.png`}
-          alt=""
+          src={`${token.icon}`}
+          alt={token.symbol}
           className="mdup:size-[2.8125rem] size-[1.5625rem]"
         />
-        <span className="text-sm mdup:text-base">{token}</span>
+        <span className="text-sm mdup:text-base">{token.symbol}</span>
       </div>
     </button>
   )
