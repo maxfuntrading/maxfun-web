@@ -36,7 +36,7 @@ export default function useLaunch() {
         address: VITE_CONTRACT_MAX_FUN_FACTORY,
         abi: MAX_FUN_FACTORY_ABI,
         functionName: 'launch',
-        args: [address],
+        args: [] as any,
       })
 
       const receipt = await publicClient.waitForTransactionReceipt({
