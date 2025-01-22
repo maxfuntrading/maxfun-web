@@ -5,16 +5,57 @@ import SolidButton from '@/components/button/SolidButton'
 import { useDisclosure } from '@chakra-ui/react'
 import SlippageModal from './SlippageModal'
 import { toastError, toastInfo, toastSuccess, toastWarning } from '@/components/toast'
+import { useReadContract } from 'wagmi'
+import { MaxFunTokenAbi } from '@/constants/abi/MaxFunToken'
+import { VITE_CONTRACT_MAX_FUN_CURVE } from '@/utils/runtime-config'
+import { MaxFunCurveAbi } from '@/constants/abi/MaxFunCurve'
 
 export default function BuyAndSell({className}: {className?: string}) {
   const [isBuy, setIsBuy] = useState(true)
   const isSell = !isBuy
-  const isOnUniswap = true
 
-  const [amount, setAmount] = useState<string>('')
+  const [amount, setAmount] = useState<number>()
   const [slippage, setSlippage] = useState(10)
 
   const { isOpen: isOpenSlippage, onOpen: onOpenSlippage, onClose: onCloseSlippage } = useDisclosure();
+
+  const maxfunTokenAddress = ''
+  const raiseTokenAddress = ''
+
+  // 是否为外盘
+  const { data: isOnUniswap } = useReadContract({
+    address: maxfunTokenAddress as `0x${string}`,
+    abi: MaxFunTokenAbi,
+    functionName: 'transferEnabled',
+    query: {
+      enabled: !!maxfunTokenAddress
+    }
+  })
+
+  // buy-预计收到的token数量
+  const { data: amountOutBuy } = useReadContract({
+    address: VITE_CONTRACT_MAX_FUN_CURVE as `0x${string}`,
+    abi: MaxFunCurveAbi,
+    functionName: 'getAmountsOut',
+    args: [raiseTokenAddress as `0x${string}`, maxfunTokenAddress as `0x${string}`, BigInt(amount ?? 0)],
+    query: {
+      enabled: !!raiseTokenAddress && !!maxfunTokenAddress && !!amount
+    }
+  })
+  console.log('amountOutBuy', amountOutBuy);
+  
+  // sell-预计收到的token数量
+  const { data: amountOutSell } = useReadContract({
+    address: VITE_CONTRACT_MAX_FUN_CURVE as `0x${string}`,
+    abi: MaxFunCurveAbi,
+    functionName: 'getAmountsOut',
+    args: [maxfunTokenAddress as `0x${string}`, raiseTokenAddress as `0x${string}`, BigInt(amount ?? 0)],
+    query: {
+      enabled: !!maxfunTokenAddress && !!raiseTokenAddress && !!amount
+    }
+  })
+  console.log('amountOutSell', amountOutSell);
+  
 
   return (
     <div className={clsx(" flex-shrink-0 w-full mdup:w-[30rem] flex flex-col gap-[0.62rem] mdup:gap-[0.8rem] bg-black-10 rounded-[0.625rem] px-4 mdup:px-[1.49rem] py-[0.94rem] mdup:py-[1.3rem]", className)}>
@@ -48,10 +89,17 @@ export default function BuyAndSell({className}: {className?: string}) {
            type="number"
            value={amount !== undefined ? amount : ''}
            min={0}
-           onChange={(e) => setAmount(e.target.value)}
            onKeyDown={(e) => {
             if (e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === '-') {
               e.preventDefault();
+            }
+          }}
+          onChange={(e) => {
+            const value = e.target.value === '' ? 0 : parseFloat(e.target.value);
+            if (e.target.value === '') {
+              setAmount(undefined)
+            } else {
+              setAmount(value);
             }
           }}
           />
