@@ -16,6 +16,16 @@ export default function useLaunch() {
   })
 
   const onLaunch = async ({id, name, symbol, amount, asset, signature}: {id: number, name: string, symbol: string, amount: bigint, asset: string, signature: string}) => {
+    console.log('launch params', [
+      id,
+      name,
+      symbol,
+      amount,
+      asset,
+      signature,
+    ]);
+    
+    
     if (!address || !publicClient) {
       setState({
         loading: false,
@@ -48,7 +58,7 @@ export default function useLaunch() {
           symbol,
           amount,
           asset as `0x${string}`,
-          signature as any,
+          `0x${signature}`,
         ],
       })
 

@@ -12,6 +12,7 @@ import useLaunch from '@/hooks/contract/useLaunch'
 import { toastError, toastSuccess } from '@/components/toast'
 import { fetchRaisedToken, fetchTag, fetchUploadTokenIcon, RaisedToken } from '@/api/common'
 import { ERR_CODE } from '@/constants/ERR_CODE'
+import { fetchLaunchToken, LaunchTokenParams } from '@/api/launch'
 
 function isValidUrl(url: string) {
   const urlPattern = /^https?:\/\/.+\..+/
@@ -231,20 +232,53 @@ export default function Launcher() {
     
   }
 
-  const createToken = () => {
-    if (!isConnected || launchState.loading || isLoadingSubmit || !raisedToken) {
+  const createToken = async () => {
+    if (!isConnected || launchState.loading || isLoadingSubmit || !raisedToken || !tag) {
+      console.log('createToken error', !isConnected, launchState.loading, isLoadingSubmit, !raisedToken, !tag);
+      
       return
     }
 
     // 从后端请求签名
     setIsLoadingSubmit(true)
-    // TODO: 从后端请求签名
-    const signature = ''
-    setIsLoadingSubmit(false)
+    const launchTokenParams: LaunchTokenParams = {
+      name: name,
+      icon: iconUrl,
+      symbol: symbol,
+      description: description,
+      raised_token: raisedToken.address,
+      tag: tag.value,
+      website: websiteUrl,
+      twitter: twitterUrl,
+      telegram: telegramUrl,
+      total_supply: Number(totalSupply),
+      raised_amount: Number(raisedAmount),
+      sale_ratio: Number(salesRatio),
+      reserved_ratio: Number(reservedRatio),
+      pool_ratio: Number(liquidityPoolRatio)
+    }
+    console.log('launchTokenParams', launchTokenParams);
+    const launchTokenRes = await fetchLaunchToken(launchTokenParams).finally(() => {
+      setIsLoadingSubmit(false)
+    })
+    console.log('launchTokenRes', launchTokenRes);
+    if (!launchTokenRes || launchTokenRes.code !== ERR_CODE.SUCCESS) {
+      return
+    }
+    
+    const id = launchTokenRes.data.id
+    const signature = launchTokenRes.data.signature
+
+    // const id = 2;
+    // const signature = '0xb9659b73c1dd012916d4d0283fdff622948779eaa7ab3a6812581d2dc5fa5e601679eaaf6f67ca2b3ed2830403113f5b731d6d7e6cbc3594b77312f6b9d0bd691b'
+
+    //2 "signature": "b9659b73c1dd012916d4d0283fdff622948779eaa7ab3a6812581d2dc5fa5e601679eaaf6f67ca2b3ed2830403113f5b731d6d7e6cbc3594b77312f6b9d0bd691b"
+    //3 "signature": "3f68b68e5fbc97ecdad0819f39f40301247fa380c4c186d2a63b85501c1b48ff4ab474a51178bff71567f145656e23c7c6a5c241c0bffbbeb15ebe8a99eec4301b"
+    //4 "signature": "28677de1f1eb600e4c0ae046b8f464b874bc4a0cf03feb933ed0baf95f1295692ea0c2a2d907824bacec7bd8fb7734b2cc12981942f1346179939302698c36ab1c"
 
     // 调用合约lanch方法
     onLaunch({
-      id: 1, 
+      id: Number(id), 
       name, 
       symbol, 
       amount: BigInt(raisedAmount), 
@@ -424,7 +458,7 @@ export default function Launcher() {
                 </div>
                 <div className="flex row items-center mb-3 mdup:mb-6">
                   <img
-                    src={`/${raisedToken}.png`}
+                    src={raisedToken?.icon}
                     alt=""
                     className="size-4 mdup:size-[1.375rem] mr-1"
                   />
