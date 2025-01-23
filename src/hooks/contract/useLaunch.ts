@@ -58,7 +58,7 @@ export default function useLaunch() {
           symbol,
           amount,
           asset as `0x${string}`,
-          `0x${signature}`,
+          signature as `0x${string}`,
         ],
       })
 

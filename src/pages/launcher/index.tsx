@@ -21,7 +21,6 @@ function isValidUrl(url: string) {
 
 export default function Launcher() {
 
-  // const raisedTokens = ['MAX', 'ETH', 'USDT', 'USDC']
   const { isConnected } = useAccount()
   const { onConnectWallet } = useContext(AppContext)
 
@@ -234,8 +233,6 @@ export default function Launcher() {
 
   const createToken = async () => {
     if (!isConnected || launchState.loading || isLoadingSubmit || !raisedToken || !tag) {
-      console.log('createToken error', !isConnected, launchState.loading, isLoadingSubmit, !raisedToken, !tag);
-      
       return
     }
 
@@ -243,7 +240,7 @@ export default function Launcher() {
     setIsLoadingSubmit(true)
     const launchTokenParams: LaunchTokenParams = {
       name: name,
-      icon: iconUrl,
+      icon: iconUrl.replace('https://dev-max-fun.s3.ap-southeast-1.amazonaws.com', ''),
       symbol: symbol,
       description: description,
       raised_token: raisedToken.address,
@@ -255,7 +252,8 @@ export default function Launcher() {
       raised_amount: Number(raisedAmount),
       sale_ratio: Number(salesRatio),
       reserved_ratio: Number(reservedRatio),
-      pool_ratio: Number(liquidityPoolRatio)
+      pool_ratio: Number(liquidityPoolRatio),
+      // launch_ts: dayjs(startTime).unix()
     }
     console.log('launchTokenParams', launchTokenParams);
     const launchTokenRes = await fetchLaunchToken(launchTokenParams).finally(() => {
@@ -468,7 +466,7 @@ export default function Launcher() {
                 </div>
               </div>
             </div>
-            <div className="flex flex-row gap-8 items-end mdup:w-2/3">
+            <div className="flex flex-row gap-8 items-end mdup:w-4/5">
               <div className="flex flex-row items-end w-full gap-2">
                 <InputField
                   label="Sales Ratio"
