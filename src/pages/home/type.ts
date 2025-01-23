@@ -1,17 +1,11 @@
-export enum TokenTag {
-  All = "All",
-  Infra = "Infra",
-  Web3Game = "Web3 Game",
-  AiGame = "Ai Game",
-  AiAgent = "Ai Agent",
-  IP = "IP",
-  Esports = "Esports",
-  Movies = "Movies",
+export enum SortType {
+  LaunchedTime = "launch_ts",
+  TradingVolume = "volume_rate24h",
+  MarketCap = "market_cap",
+  LastTrade = "last_trade",
 }
 
-export enum SortType {
-  LaunchedTime = "Launched Time",
-  TradingVolume = "Trading Volume",
-  MarketCap = "Market Cap",
-  LastTrade = "Last Trade",
+export enum SortOrder {
+  Ascending = "asc", // 升序: 小到大
+  Descending = "desc", // 降序: 大到小
 }

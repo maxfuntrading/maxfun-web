@@ -2,7 +2,7 @@ import request from "./request"
 
 export interface Marquee {
   user_address:  string;
-  trade_type:    number;
+  trade_type:    number; // 0: buy, 1: sell
   token_address: string;
   amount:        string;
   icon:          string;

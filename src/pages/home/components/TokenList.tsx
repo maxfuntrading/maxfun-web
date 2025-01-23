@@ -1,60 +1,15 @@
 import SearchIcon from '@/assets/icons/search.png'
-import InfraIcon from '@/assets/icons/infra.png'
-import Web3GameIcon from '@/assets/icons/web3-game.png'
-import AiGameIcon from '@/assets/icons/ai-game.png'
-import AiAgentIcon from '@/assets/icons/ai-agent.png'
-import IpIcon from '@/assets/icons/ip.png'
-import EsportsIcon from '@/assets/icons/esports.png'
-import MoviesIcon from '@/assets/icons/movies.png'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Select, { SelectOptionType } from '../../../components/Select';
-import { TokenTag, SortType } from '../type';
+import { SortOrder, SortType } from '../type';
 import { AscendingIcon, DescendingIcon, RefreshIcon } from './Icon'
 import TokenCard from '@/components/TokenCard'
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll'
 import LoadingMore from '@/components/LoadingMore'
-
-const TokenTagSelectList: SelectOptionType<TokenTag>[] = [
-  {
-    key: TokenTag.All,
-    value: 'All'
-  },
-  {
-    key: TokenTag.Infra,
-    value: 'Infra',
-    icon: InfraIcon
-  },
-  {
-    key: TokenTag.Web3Game,
-    value: 'Web3 Game',
-    icon: Web3GameIcon
-  },
-  {
-    key: TokenTag.AiGame,
-    value: 'Ai Game',
-    icon: AiGameIcon
-  },
-  {
-    key: TokenTag.AiAgent,
-    value: 'Ai Agent',
-    icon: AiAgentIcon
-  },
-  {
-    key: TokenTag.IP,
-    value: 'IP',
-    icon: IpIcon
-  },
-  {
-    key: TokenTag.Esports,
-    value: 'Esports',
-    icon: EsportsIcon
-  },
-  {
-    key: TokenTag.Movies,
-    value: 'Movies',
-    icon: MoviesIcon
-  },
-]
+import { fetchTag } from '@/api/common'
+import { ERR_CODE } from '@/constants/ERR_CODE'
+import { TagIcon } from '@/components/TagIcon'
+import { fetchTokenList, FetchTokenListParams, MaxFunToken } from '@/api/home';
 
 const SortSelectList: SelectOptionType<SortType>[] = [
   {
@@ -78,37 +33,134 @@ const SortSelectList: SelectOptionType<SortType>[] = [
 export default function TokenList() {
   const [search, setSearch] = useState('')
   const [isOnUniswap, setIsOnUniswap] = useState(false)
-  const [selectTag, setSelectTag] = useState<SelectOptionType<TokenTag>>(TokenTagSelectList[0])
+
+  const [tags, setTags] = useState<SelectOptionType<string>[]>([])
+  const [selectTag, setSelectTag] = useState<SelectOptionType<string>>({
+    key: 'All',
+    value: 'All'
+  })
   const [selectSort, setSelectSort] = useState<SelectOptionType<SortType>>(SortSelectList[0])
-  const [isAscending, setIsAscending] = useState(true) // 是否升序
+  const [sortOrder, setSortOrder] = useState<SortOrder>(SortOrder.Descending) // 是否升序
 
   // data
-  const [tokens, setTokens] = useState(0)
   const [loading, setLoading] = useState(false)
+  const [tokenList, setTokenList] = useState<MaxFunToken[]>([])
+  const [page, setPage] = useState(1)
+  const [total, setTotal] = useState<number>()
+  let isFirstLoad = true
 
-  const onSearch = () => {
-    console.log('search', search);
-  }
-
-  const onLoadMore = () => {
+  // 获取token list
+  const getTokenList = async (search: string, tag: string, isOnUniswap: boolean, sortBy: SortType, sortOrder: SortOrder, page: number) => {
     if (loading) return
-    if (tokens >= 30) return
-    setLoading(true)
-    setTimeout(() => {
-      setTokens(prev => prev + 15)
-      setLoading(false)
-    }, 1000)
-  }
+    const params: FetchTokenListParams = {
+      keyword: search,
+      tag,
+      is_launched: isOnUniswap,
+      sort_by: sortBy,
+      sort_order: sortOrder,
+      page: page,
+      page_size: 20
+    }
+    const paramsFilter = Object.fromEntries(Object.entries(params).filter(([, v]) => v || v))
+    if (params.tag === 'All') {
+      delete paramsFilter.tag
+    }
 
+    setLoading(true)
+    const res = await fetchTokenList(paramsFilter).finally(() => {
+      setLoading(false)
+    })
+
+    if (!res || res.code !== ERR_CODE.SUCCESS) return
+    setTotal(res.data.total)
+    setTokenList(prev => [...prev, ...res.data.list])
+  }
+  
+  const onLoadMore = () => {
+    if (loading) return;
+    if (tokenList.length === 0) return;
+    if (!total) return;
+    if (tokenList.length >= total) return;
+
+    setPage(prev => prev + 1)
+    getTokenList(search, selectTag.key, isOnUniswap, selectSort.key, sortOrder, page + 1);
+  }
   const loadMoreRef = useInfiniteScroll({
     onLoadMore,
     loading
   })
 
-  const onRefresh = () => {
-    setTokens(0)
-    onLoadMore()
+  const onSearch = () => {
+    getTokenList(search, selectTag.key, isOnUniswap, selectSort.key, sortOrder, page);
   }
+  
+  const onChangeLaunched = (val: boolean) => {
+    setIsOnUniswap(val)
+    setPage(1)
+    setTokenList([])
+    getTokenList(search, selectTag.key, val, selectSort.key, sortOrder, page);
+  }
+
+  const onChangeSort = (val: SelectOptionType<SortType>) => {
+    setSelectSort(val)
+    setPage(1)
+    setTokenList([])
+    getTokenList(search, selectTag.key, isOnUniswap, val.key, sortOrder, page);
+  }
+
+  const onChangeSortOrder = (val: SortOrder) => {
+    setSortOrder(val)
+    setPage(1)
+    setTokenList([])
+    getTokenList(search, selectTag.key, isOnUniswap, selectSort.key, val, page);
+  }
+
+  const onChangeTag = (val: SelectOptionType<string>) => {
+    setSelectTag(val)
+    setPage(1)
+    setTokenList([])
+    getTokenList(search, val.key, isOnUniswap, selectSort.key, sortOrder, page);
+  }
+
+  const onRefresh = () => {
+    // setTokens(0)
+    // onLoadMore()
+    setPage(1)
+    setTokenList([])
+    getTokenList(search, 'All', isOnUniswap, selectSort.key, sortOrder, 1);
+  }
+
+    // 获取tag
+    useEffect(() => {
+      const getTags = async () => {
+        const res = await fetchTag()
+        if (!res || res.code !== ERR_CODE.SUCCESS || !res.data.list.length) return
+        const tagList = res.data.list.map(item => ({
+          key: `${item.sort}`,
+          value: item.name,
+          icon: TagIcon[item.name] ?? ''
+        }))
+        const all = {
+          key: '',
+          value: 'All',
+        }
+        setTags([all, ...tagList])
+        setSelectTag(all)
+      }
+      getTags()
+    }, [])
+
+  useEffect(() => {
+    if (isFirstLoad) {
+      getTokenList(search, selectTag?.key || 'All', isOnUniswap, selectSort.key, sortOrder, page);
+    }
+
+    return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      isFirstLoad = false
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <div className="w-full my-container mx-auto pt-[1.1rem] px-4 mdup:px-0">
@@ -136,7 +188,7 @@ export default function TokenList() {
 
         {/* 筛选-pc端 */}
         <div className='w-full mdup:w-auto gap-[0.62rem] mt-[0.73rem] mdup:mt-0 hidden mdup:flex'>
-          <button onClick={() => setIsOnUniswap(prev => !prev)} className='flex w-[10.3125rem] md:w-[13.75rem] lg:w-[16.25rem] h-[2.5rem] mdup:h-[3.125rem] rounded-[0.625rem] outline-none bg-black-20 border-[2px] border-red-10  px-[0.56rem] md:px-[1.09rem] lg:px-[1.22rem] cursor-pointer items-center justify-start gap-[0.67rem]'>
+          <button onClick={() => onChangeLaunched(!isOnUniswap)} className='flex w-[10.3125rem] md:w-[13.75rem] lg:w-[16.25rem] h-[2.5rem] mdup:h-[3.125rem] rounded-[0.625rem] outline-none bg-black-20 border-[2px] border-red-10  px-[0.56rem] md:px-[1.09rem] lg:px-[1.22rem] cursor-pointer items-center justify-start gap-[0.67rem]'>
             <span className={`size-4 border-[2px] border-white rounded-full ${isOnUniswap ? 'bg-red-10' : 'bg-transparent'}`}></span>
             <span>List on Uniswap</span>
           </button>
@@ -145,17 +197,17 @@ export default function TokenList() {
             className='sm:w-1/2'
             defaultOption={selectSort}
             options={SortSelectList} 
-            onSelect={(val) => setSelectSort(val)}
+            onSelect={(val) => onChangeSort(val)}
             />
 
-          <Select 
+          {selectTag && <Select 
             className='sm:w-1/2'
             defaultOption={selectTag}
-            options={TokenTagSelectList} 
-            onSelect={(val) => setSelectTag(val)} />
+            options={tags} 
+            onSelect={(val) => onChangeTag(val)} />}
 
-          <button onClick={() => setIsAscending(prev => !prev)} className='flex size-[3.125rem] border-[2px] border-red-10 rounded-[0.625rem] items-center justify-center'>
-            {isAscending ? <DescendingIcon className='size-[1.25rem]' /> : <AscendingIcon className='size-[1.25rem]' />}
+          <button onClick={() => onChangeSortOrder(sortOrder === SortOrder.Descending ? SortOrder.Ascending : SortOrder.Descending)} className='flex size-[3.125rem] border-[2px] border-red-10 rounded-[0.625rem] items-center justify-center'>
+            {sortOrder === SortOrder.Descending ? <DescendingIcon className='size-[1.25rem]' /> : <AscendingIcon className='size-[1.25rem]' />}
           </button>
 
           <button 
@@ -181,16 +233,16 @@ export default function TokenList() {
         {/* 筛选-手机端 */}
         <div className='flex mdup:hidden flex-col gap-[0.81rem] mt-[0.78rem]'>
           <div className='flex justify-between gap-[0.56rem]'>
-            <button onClick={() => setIsOnUniswap(prev => !prev)} className='flex w-1/2 h-[2.5rem] mdup:h-[3.125rem] rounded-[0.625rem] outline-none bg-black-20 border-[2px] border-red-10  px-[0.56rem] md:px-[1.09rem] lg:px-[1.22rem] cursor-pointer items-center justify-start gap-[0.67rem]'>
+            <button onClick={() => onChangeLaunched(!isOnUniswap)} className='flex w-1/2 h-[2.5rem] mdup:h-[3.125rem] rounded-[0.625rem] outline-none bg-black-20 border-[2px] border-red-10  px-[0.56rem] md:px-[1.09rem] lg:px-[1.22rem] cursor-pointer items-center justify-start gap-[0.67rem]'>
               <span className={`size-4 border-[2px] border-white rounded-full ${isOnUniswap ? 'bg-red-10' : 'bg-transparent'}`}></span>
               <span>List on Uniswap</span>
             </button>
 
-            <Select 
+            {selectTag && <Select 
               className='sm:w-1/2'
               defaultOption={selectTag}
-              options={TokenTagSelectList} 
-              onSelect={(val) => setSelectTag(val)} />
+              options={tags} 
+              onSelect={(val) => onChangeTag(val)} />}
           </div>
 
           <div className='flex justify-between gap-[0.56rem]'>
@@ -198,11 +250,11 @@ export default function TokenList() {
               className='flex-1'
               defaultOption={selectSort}
               options={SortSelectList} 
-              onSelect={(val) => setSelectSort(val)}
+              onSelect={(val) => onChangeSort(val)}
               />
 
-              <button onClick={() => setIsAscending(prev => !prev)} className='flex size-[2.5rem] mdup:size-[3.125rem] border-[2px] border-red-10 rounded-[0.625rem] items-center justify-center'>
-                {isAscending ? <DescendingIcon className='size-[1.25rem]' /> : <AscendingIcon className='size-[1.25rem]' />}
+              <button onClick={() => onChangeSortOrder(sortOrder === SortOrder.Descending ? SortOrder.Ascending : SortOrder.Descending)} className='flex size-[2.5rem] mdup:size-[3.125rem] border-[2px] border-red-10 rounded-[0.625rem] items-center justify-center'>
+                {sortOrder === SortOrder.Descending ? <DescendingIcon className='size-[1.25rem]' /> : <AscendingIcon className='size-[1.25rem]' />}
               </button>
 
               <button 
@@ -228,10 +280,11 @@ export default function TokenList() {
       </div>
 
       <div className=' mt-4 flex flex-col gap-[0.94rem] mdup:gap-x-[1.67rem] mdup:gap-y-[1.25rem] mdup:flex-row mdup:flex-wrap'>
-        {Array.from({length: tokens}).map((_, index) => (
+        {tokenList.map((item, index) => (
           <TokenCard 
             key={index} 
             className=' mdup:w-[calc(25%-1.26rem)]'
+            data={item}
            />
         ))}
       </div>

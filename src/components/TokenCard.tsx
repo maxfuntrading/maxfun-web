@@ -1,49 +1,49 @@
-import Gif from '@/assets/images/home/gift2.gif'
-import InfraIcon from '@/assets/icons/infra.png'
 import RocketIcon from '@/assets/images/rocket.png'
 import clsx from 'clsx'
 import { useInView } from 'framer-motion';
 import { useRef } from 'react';
-import { formatNumber } from '@/utils/utils';
+import { formatAddress, formatNumber } from '@/utils/utils';
 import { useNavigate } from 'react-router-dom';
+import { MaxFunToken } from '@/api/home';
+import { VITE_IMG_HOST } from '@/utils/runtime-config';
+import { TagIcon } from './TagIcon';
 interface TokenCardProps {
   className?: string;
+  data: MaxFunToken;
 }
 
-export default function TokenCard({className}: TokenCardProps) {
-  const isUp = true; // 是否上涨
-  const isDown = !isUp; // 是否下跌
-  const isZero = false; // 涨幅是否为0
-  const isOnUniswap = false; // 是否为外盘
+export default function TokenCard({className, data}: TokenCardProps) {
+  const isOnUniswap = data.is_launched; // 是否为外盘
 
   const navigate = useNavigate()
 
   return (
-    <div onClick={() => navigate('/token/123')} className={clsx('w-full mdup:px-0 rounded-[0.625rem] overflow-hidden cursor-pointer', className)}>
+    <div onClick={() => navigate(`/token/${data.token_address}`)} className={clsx('w-full mdup:px-0 rounded-[0.625rem] overflow-hidden cursor-pointer', className)}>
       <div className=" relative h-[18.75rem] bg-black-30">
-        <ImageControl src={Gif} />
-        {!isZero && <div className={`absolute top-[1.81rem] right-[1.31rem] w-[5.81rem] h-[2rem] rounded-[6.25rem] flex-center gap-[0.25rem] ${isUp ? 'bg-[#2FBD85]' : 'bg-[#FF0021]'}`}>
+        <ImageControl src={`${VITE_IMG_HOST}${data.icon}`} />
+        {/* {!isZero && <div className={`absolute top-[1.81rem] right-[1.31rem] w-[5.81rem] h-[2rem] rounded-[6.25rem] flex-center gap-[0.25rem] ${isUp ? 'bg-[#2FBD85]' : 'bg-[#FF0021]'}`}>
            <span className='text-[0.875rem]'>+100.1%</span>
            <UpArrowIcon className={`${isDown ? 'rotate-180' : ''}`} />
-        </div>}
+        </div>} */}
+        <div className=' absolute bottom-0 left-0 w-full h-[5.875rem]' style={{borderRadius: '0.625rem 0.625rem 0rem 0rem', background: 'linear-gradient(180deg, rgba(0, 0, 0, 0.00) 0%, #000 100%)'}}></div>
         <div className='absolute bottom-[1.06rem] left-[1.5rem] size-[2.5rem] bg-red-10 rounded-full border-2 border-white flex-center'>
-          <img className='size-[1.25rem]' src={InfraIcon} alt="" />
+          {TagIcon[data.tag] && <img className='size-[1.25rem]' src={TagIcon[data.tag]} alt={data.symbol} />}
         </div>
+
       </div>
 
       <div className="relative bg-black-30 h-[13.84rem] px-[1.56rem] mdup:px-[0.875rem] pt-[1.44rem] pb-[1rem] mdup:py-[0.63rem] text-[0.875rem] flex flex-col">
         <div className=' font-medium'>
           <span className='text-white opacity-60'>Create By:</span> 
-          0x97...a48b01
+          {formatAddress(data.user_address, 4, 6)}
         </div>
         
         <div className='text-[1rem] font-medium'>
-          ModernCat($ MCAT)
+          {data.name}($ {data.symbol})
         </div>
         
         <div className='text-white opacity-60 mt-[0.56rem] line-clamp-4'>
-          !ALPHA ALERT! ModernCat ($MCAT) brings anime and cats together creating a world of art.!ALPHA ALERT! ModernCat ($MCAT)
-          !ALPHA ALERT! ModernCat ($MCAT) brings anime and cats together creating a world of art.!ALPHA ALERT! ModernCat ($MCAT)
+          {data.description}
         </div>
 
         <div className='w-full flex-1'></div>
@@ -70,7 +70,7 @@ export default function TokenCard({className}: TokenCardProps) {
   )
 }
 
-const UpArrowIcon = ({className}: {className?: string}) => {
+export const UpArrowIcon = ({className}: {className?: string}) => {
   return <svg className={className} xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
     <path d="M7.5 2.25V12.75" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     <path d="M3.75 5.75L7.5 2.25L11.25 5.75" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -83,8 +83,8 @@ const ImageControl = ({src}: {src: string}) => {
   const isGif = src.endsWith('.gif')
 
   if (!isGif) {
-    return <img className='size-full object-cover' src={src} loading="lazy" alt="" />
+    return <img className='size-full object-contain' src={src} loading="lazy" alt="" />
   }
 
-  return <img ref={ref} className='size-full object-cover' src={ inView ? src : ''} loading="lazy" alt="" />
+  return <img ref={ref} className='size-full object-contain' src={ inView ? src : ''} loading="lazy" alt="" />
 }
