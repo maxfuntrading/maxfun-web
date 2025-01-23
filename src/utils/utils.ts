@@ -1,5 +1,7 @@
 import numeral from 'numeral'
 import dayjs from "dayjs"
+import { formatUnits } from 'viem'
+import Big from 'big.js'
 
 export function formatAddress(address: string, startLength: number = 6, endLength: number = 4) {
   if (!address) return ''
@@ -43,4 +45,20 @@ export function formatCommentDate(date: number) {
   }
 
   return `${diffInYears} ${diffInYears === 1 ? 'year' : 'years'} ago`
+}
+
+export function bigintToAmount(num: bigint, decimal: number) {
+  if (num === undefined || num === null || decimal === undefined || decimal === null) {
+    return ''
+  }
+
+  return formatUnits(num, decimal)
+}
+
+export function formatAmount(amount: number | string, decimal: number = 2, round: Big.RoundingMode = Big.roundDown) {
+  if (amount === undefined || amount === null || decimal === undefined || decimal === null) {
+    return ''
+  }
+
+  return Big(amount).round(decimal, round).toFixed()
 }

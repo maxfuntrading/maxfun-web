@@ -13,6 +13,7 @@ import { toastError, toastSuccess } from '@/components/toast'
 import { fetchRaisedToken, fetchTag, fetchUploadTokenIcon, RaisedToken } from '@/api/common'
 import { ERR_CODE } from '@/constants/ERR_CODE'
 import { fetchLaunchToken, LaunchTokenParams } from '@/api/launch'
+import { VITE_IMG_HOST } from '@/utils/runtime-config'
 
 function isValidUrl(url: string) {
   const urlPattern = /^https?:\/\/.+\..+/
@@ -240,7 +241,7 @@ export default function Launcher() {
     setIsLoadingSubmit(true)
     const launchTokenParams: LaunchTokenParams = {
       name: name,
-      icon: iconUrl.replace('https://dev-max-fun.s3.ap-southeast-1.amazonaws.com', ''),
+      icon: iconUrl.replace(VITE_IMG_HOST, ''),
       symbol: symbol,
       description: description,
       raised_token: raisedToken.address,
