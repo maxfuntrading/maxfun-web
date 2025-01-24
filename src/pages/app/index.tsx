@@ -1,8 +1,8 @@
 import WrapperRainbow from "@/components/button/WrapperRainbow";
 import { useCreateReducer } from "@/hooks/useCreateReducer";
 import AppContext, { AppIntialState, appInitialState } from "@/store/app";
-import { useRef } from "react";
-import { Outlet } from "react-router-dom";
+import { useEffect, useRef } from "react";
+import { Outlet, useLocation } from "react-router-dom";
 import { useDisconnect } from "wagmi";
 
 export default function App() {
@@ -11,6 +11,8 @@ export default function App() {
   const connectWalletRef = useRef<HTMLButtonElement>(null)
   const disconnectWalletRef = useRef<HTMLButtonElement>(null)
   const { disconnectAsync } = useDisconnect()
+
+  const location = useLocation()
 
   const handleConnectWallet = () => {
     connectWalletRef.current?.click()
@@ -21,6 +23,11 @@ export default function App() {
     localStorage.removeItem('auth_token')
     dispatch({field: 'isLogin', value: false})
   }
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
 
   return (
     <AppContext.Provider 

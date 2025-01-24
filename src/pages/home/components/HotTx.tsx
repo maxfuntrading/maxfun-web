@@ -5,7 +5,6 @@ import "slick-carousel/slick/slick-theme.css";
 import { useEffect, useState } from 'react';
 import { fetchMarquee, Marquee } from '@/api/home';
 import {formatAddress, formatAmount } from '@/utils/utils';
-import { VITE_IMG_HOST } from '@/utils/runtime-config';
 import { TagIcon } from '@/components/TagIcon';
 
 export default function HotTx() {
@@ -68,7 +67,7 @@ const HotTxItem = ({data}: {data: Marquee}) => {
   return (
     <div className="shrink-0 h-20 bg-black-10 min-w-[18.75rem] mdup:w-[22.5rem] mdup:h-[5.625rem] rounded-[0.625rem] mdup:rounded-none flex justify-between items-center px-[1.32rem] mdup:px-[0.87rem] cursor-pointer border-2 border-transparent hover:border-[#EC3E6F] mdup:hover:rounded-[0.625rem] transition-all duration-300 mr-[0.06rem]">
       <div className='flex items-center gap-[1.71rem] flex-1'>
-        <img className='size-[3.375rem]' src={`${VITE_IMG_HOST}${data.icon}`} alt="token" />
+        <img className='size-[3.375rem]' src={`${data.icon}`} alt="token" />
         
         <div className='flex flex-col flex-1 text-[0.875rem] mdup:text-[1rem] leading-[1.4]'>
           <div className='text-[#DFE2EA] mdup:font-semibold'>{formatAddress(data.user_address, 4, 6)}</div>

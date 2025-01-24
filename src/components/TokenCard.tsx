@@ -5,7 +5,6 @@ import { useRef } from 'react';
 import { formatAddress, formatNumber } from '@/utils/utils';
 import { useNavigate } from 'react-router-dom';
 import { MaxFunToken } from '@/api/home';
-import { VITE_IMG_HOST } from '@/utils/runtime-config';
 import { TagIcon } from './TagIcon';
 interface TokenCardProps {
   className?: string;
@@ -20,7 +19,7 @@ export default function TokenCard({className, data}: TokenCardProps) {
   return (
     <div onClick={() => navigate(`/token/${data.token_address}`)} className={clsx('w-full mdup:px-0 rounded-[0.625rem] overflow-hidden cursor-pointer', className)}>
       <div className=" relative h-[18.75rem] bg-black-30">
-        <ImageControl src={`${VITE_IMG_HOST}${data.icon}`} />
+        <ImageControl src={`${data.icon}`} />
         {/* {!isZero && <div className={`absolute top-[1.81rem] right-[1.31rem] w-[5.81rem] h-[2rem] rounded-[6.25rem] flex-center gap-[0.25rem] ${isUp ? 'bg-[#2FBD85]' : 'bg-[#FF0021]'}`}>
            <span className='text-[0.875rem]'>+100.1%</span>
            <UpArrowIcon className={`${isDown ? 'rotate-180' : ''}`} />
