@@ -9,12 +9,15 @@ import { useAccount, useSignMessage } from 'wagmi'
 import { useContext, useEffect } from 'react'
 import AppContext from '@/store/app'
 import { toastError } from '@/components/toast'
+import Welcome from './components/Welcome'
+
 
 export default function Main() {
   const { state: {isLogin}, onDisconnectWallet, dispatch } = useContext(AppContext)
   const pathname = useLocation().pathname
   const { address, isConnected, chainId } = useAccount()
   const { signMessageAsync } = useSignMessage();
+  
 
   const navData: NavData[] = [
     {
@@ -132,8 +135,9 @@ export default function Main() {
 
   return (
     <div className="w-full h-full flex flex-col min-h-dvh">
+      <Welcome />
+
       <Header navData={navData} />
-      {/* <Button onClick={handleLogin}>Login</Button> */}
       <div className="flex-1 relative">
         <div className="w-full h-full relative z-[1]">
           <Outlet />
