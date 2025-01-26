@@ -9,11 +9,14 @@ import SolidButton from "@/components/button/SolidButton"
 import { useAccount } from "wagmi"
 import { formatAddress } from "@/utils/utils"
 import { DisconnectIcon, ProfileIcon } from "./Icon"
+import { useScrollLock } from "@/hooks/useScrollLock"
 
-export default function MobileNav({ navData, className, onClose }: { navData: NavData[], className?: string, onClose: () => void }) {
+export default function MobileNav({ navData, className, isOpen, onClose }: { navData: NavData[], className?: string, isOpen: boolean, onClose: () => void }) {
   const { onConnectWallet, onDisconnectWallet } = useContext(AppContext)
   const { isConnected, address } = useAccount()
   const navigate = useNavigate()
+
+  useScrollLock(isOpen)
 
   return (
     <div className={clsx("fixed top-0 bottom-0 left-0 right-0 bg-black-20 flex flex-col", className)}>

@@ -103,7 +103,7 @@ export default function Header({ navData }: { navData: NavData[] }) {
 
         <div className="flex mdup:hidden">
           <button onClick={() => setIsOpenMobileNav(true)}><img src={menu} alt="menu" className="size-6" /></button>
-          {isOpenMobileNav && <MobileNav onClose={() => setIsOpenMobileNav(false)} navData={navData} />}
+          {isOpenMobileNav && <MobileNav isOpen={isOpenMobileNav} onClose={() => setIsOpenMobileNav(false)} navData={navData} />}
         </div>
         
       </div>
