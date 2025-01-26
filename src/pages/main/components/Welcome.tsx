@@ -2,10 +2,12 @@ import SolidButton from '@/components/button/SolidButton'
 import bannerVideo from '@/assets/videos/sunpump.mp4'
 import { useState } from 'react'
 import { useScrollLock } from '@/hooks/useScrollLock'
+import { useNavigate } from 'react-router-dom'
 
 export default function Welcome() {
   const [isShowWelcome, setIsShowWelcome] = useState(true)
   useScrollLock(isShowWelcome)
+  const navigate = useNavigate()
 
   if (!isShowWelcome) return null
 
@@ -20,7 +22,10 @@ export default function Welcome() {
         muted={true}
       />
       <div className='w-full absolute bottom-[4rem] mdup:bottom-[11.8rem] px-4 flex justify-center'>
-        <SolidButton onClick={() => setIsShowWelcome(false)} className='w-full mdup:w-[26.8rem]'>
+        <SolidButton onClick={() => {
+          setIsShowWelcome(false)
+          navigate('/')
+        }} className='w-full mdup:w-[26.8rem]'>
           <span>Welcome to max.fun</span>
         </SolidButton>
       </div>
