@@ -53,7 +53,7 @@ export default function useLaunch() {
         abi: MAX_FUN_FACTORY_ABI,
         functionName: 'launch',
         args: [
-          id,
+          BigInt(id),
           name,
           symbol,
           amount,

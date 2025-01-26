@@ -546,6 +546,19 @@ export const MAX_FUN_FACTORY_ABI = [
   },
   {
     "inputs": [],
+    "name": "PERCENTAGE_DECIMALS",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "acceptOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -613,19 +626,6 @@ export const MAX_FUN_FACTORY_ABI = [
   },
   {
     "inputs": [],
-    "name": "fee",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "getBuyFee",
     "outputs": [
       {
@@ -648,6 +648,32 @@ export const MAX_FUN_FACTORY_ABI = [
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getLaunchPointPercentage",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getPercentageDecimals",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "pure",
     "type": "function"
   },
   {
@@ -690,6 +716,25 @@ export const MAX_FUN_FACTORY_ABI = [
         "internalType": "address",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "tokenAddress",
+        "type": "address"
+      }
+    ],
+    "name": "getTokenInitialSupply",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -799,7 +844,7 @@ export const MAX_FUN_FACTORY_ABI = [
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "fee_",
+        "name": "launchFee_",
         "type": "uint256"
       },
       {
@@ -855,9 +900,9 @@ export const MAX_FUN_FACTORY_ABI = [
   {
     "inputs": [
       {
-        "internalType": "uint8",
+        "internalType": "uint256",
         "name": "id",
-        "type": "uint8"
+        "type": "uint256"
       },
       {
         "internalType": "string",
@@ -904,6 +949,19 @@ export const MAX_FUN_FACTORY_ABI = [
       }
     ],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "launchFee",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -1407,11 +1465,6 @@ export const MAX_FUN_FACTORY_ABI = [
       {
         "internalType": "bool",
         "name": "trading",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "tradingOnUniswap",
         "type": "bool"
       }
     ],
