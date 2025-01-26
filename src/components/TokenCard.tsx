@@ -17,21 +17,24 @@ export default function TokenCard({className, data}: TokenCardProps) {
   const navigate = useNavigate()
 
   return (
-    <div onClick={() => navigate(`/token/${data.token_address}`)} className={clsx('w-full mdup:px-0 rounded-[0.625rem] overflow-hidden cursor-pointer', className)}>
+    <div onClick={() => navigate(`/token/${data.token_address}`)} className={clsx('w-full mdup:px-0 rounded-[0.625rem] overflow-hidden cursor-pointer group', className)}>
       <div className=" relative h-[18.75rem] bg-black-30">
         <ImageControl src={`${data.icon}`} />
         {/* {!isZero && <div className={`absolute top-[1.81rem] right-[1.31rem] w-[5.81rem] h-[2rem] rounded-[6.25rem] flex-center gap-[0.25rem] ${isUp ? 'bg-[#2FBD85]' : 'bg-[#FF0021]'}`}>
            <span className='text-[0.875rem]'>+100.1%</span>
            <UpArrowIcon className={`${isDown ? 'rotate-180' : ''}`} />
         </div>} */}
-        <div className=' absolute bottom-0 left-0 w-full h-[5.875rem]' style={{borderRadius: '0.625rem 0.625rem 0rem 0rem', background: 'linear-gradient(180deg, rgba(0, 0, 0, 0.00) 0%, #000 100%)'}}></div>
+
+        <div className=' block group-hover:hidden absolute bottom-0 left-0 w-full h-[5.875rem] translate-y-[1.2rem]' style={{borderRadius: '0.625rem 0.625rem 0rem 0rem', background: 'linear-gradient(180deg, rgba(0, 0, 0, 0.00) 0%, #000 100%)'}}></div>
+        <div className=" hidden group-hover:block absolute bottom-0 left-0 w-full h-[5.875rem] rounded-t-[0.625rem] bg-gradient-to-b from-transparent to-red-10 translate-y-[1.2rem]"></div>
+        
         <div className='absolute bottom-[1.06rem] left-[1.5rem] size-[2.5rem] bg-red-10 rounded-full border-2 border-white flex-center'>
           {TagIcon[data.tag] && <img className='size-[1.25rem]' src={TagIcon[data.tag]} alt={data.symbol} />}
         </div>
 
       </div>
 
-      <div className="relative bg-black-30 h-[13.84rem] px-[1.56rem] mdup:px-[0.875rem] pt-[1.44rem] pb-[1rem] mdup:py-[0.63rem] text-[0.875rem] flex flex-col">
+      <div className="relative bg-black-30 group-hover:bg-red-10 h-[13.84rem] px-[1.56rem] mdup:px-[0.875rem] pt-[1.44rem] pb-[1rem] mdup:py-[0.63rem] text-[0.875rem] flex flex-col">
         <div className=' font-medium'>
           <span className='text-white opacity-60'>Create By:</span> 
           {formatAddress(data.user_address, 4, 6)}
@@ -41,7 +44,7 @@ export default function TokenCard({className, data}: TokenCardProps) {
           {data.name}($ {data.symbol})
         </div>
         
-        <div className='text-white opacity-60 mt-[0.56rem] line-clamp-4'>
+        <div className='text-white opacity-60 group-hover:opacity-70 mt-[0.56rem] line-clamp-4'>
           {data.description}
         </div>
 
@@ -54,8 +57,8 @@ export default function TokenCard({className, data}: TokenCardProps) {
         
         {!isOnUniswap && <div className="flex items-center gap-[1.31rem] mt-[0.5rem]">
           <div className="relative flex-1 h-[0.625rem] rounded-[0.625rem]">
-            <div className=' absolute top-0 left-0 w-full h-full rounded-[0.625rem] bg-[#D9D9D9] opacity-20'></div>
-            <div className='w-1/2 h-full absolute top-0 left-0 rounded-[0.625rem]' style={{background: 'linear-gradient(90deg, #EC3E6F 0%, #FFADC4 100%)'}}></div>
+            <div className='absolute top-0 left-0 w-full h-full rounded-[0.625rem] bg-[#D9D9D9] group-hover:bg-white opacity-20'></div>
+            <div className='absolute top-0 left-0 w-1/2 h-full rounded-[0.625rem] bg-gradient-to-r from-red-10 to-[#FFADC4] group-hover:from-white group-hover:to-white'></div>
           </div>
           <div>43.22%</div>
         </div>}
