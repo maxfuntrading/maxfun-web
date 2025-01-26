@@ -22,20 +22,20 @@ export default function Holder({className}: {className?: string}) {
   })
 
   return (
-    <div className={clsx("w-full bg-black-10 rounded-[0.625rem] px-[0.91rem] py-4 mdup:px-[1.55rem] mdup:py-[1.37rem]", className)}>
-      <div className='flex justify-between items-center'>
+    <div className={clsx("w-full bg-black-10 rounded-[0.625rem] px-[0.91rem] mdup:px-0 py-4 mdup:py-[1.37rem]", className)}>
+      <div className='flex justify-between items-center mdup:px-[1.55rem]'>
         <span className='text-[1.25rem]'>Holder Distribution</span>
         <span className='text-[0.875rem]'>1234</span>
       </div>
 
-      <div className='text-[0.875rem] text-white/60 flex justify-between items-center mt-2'>
+      <div className='text-[0.875rem] text-white/60 flex justify-between items-center mt-2 mdup:px-[1.55rem]'>
         <span>Account</span>
         <span>Percentage</span>
       </div>
 
-      <div className='mt-3'>
-        {Array.from({length: 10}).map((_, index) => {
-          return <div key={index} className='flex justify-between items-center h-[2.5rem] mdup:h-[3.75rem] border-b border-white/10 first:border-t'>
+      <div className='mt-3 scrollbar mdup:scrollbar-none mdup:overflow-y-auto mdup:overflow-x-hidden mdup:h-[38rem] mdup:pl-[1.55rem] mdup:pr-[0.55rem] mdup:mr-[1rem]'>
+        {Array.from({length: 20}).map((_, index) => {
+          return <div key={index} className='mdup:w-[27rem] flex justify-between items-center h-[2.5rem] mdup:h-[3.75rem] border-b border-white/10 first:border-t'>
             <div className='flex items-center gap-[0.59rem]'>
               <a href="https://www.google.com" target='_blank' className='flex items-center gap-[0.59rem]'>
                 <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
