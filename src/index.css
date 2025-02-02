@@ -78,18 +78,22 @@ body {
 [role="status"] > [data-status="success"] {
   background-color: #E8FFF7;
   border-radius: 0.625rem;
+  color: #000;
 }
 [role="status"] > [data-status="error"] {
   background-color: #FFF6F8;
   border-radius: 0.625rem;
+  color: #000;
 }
 [role="status"] > [data-status="warning"] {
   background-color: #FFF6E3;
   border-radius: 0.625rem;
+  color: #000;
 }
 [role="status"] > [data-status="info"] {
   background-color: #E6F7FF;
   border-radius: 0.625rem;
+  color: #000;
 }
 
 /* 滚动条样式 */

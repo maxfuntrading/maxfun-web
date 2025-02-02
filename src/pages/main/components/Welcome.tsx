@@ -5,7 +5,7 @@ import { useScrollLock } from '@/hooks/useScrollLock'
 import { useNavigate } from 'react-router-dom'
 
 export default function Welcome() {
-  const [isShowWelcome, setIsShowWelcome] = useState(true)
+  const [isShowWelcome, setIsShowWelcome] = useState(false)
   useScrollLock(isShowWelcome)
   const navigate = useNavigate()
 

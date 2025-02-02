@@ -2,6 +2,7 @@ import { MAX_FUN_FACTORY_ABI } from "@/constants/abi/MaxFunFactory"
 import { WriteContractState } from "@/types/contract"
 import { VITE_CONTRACT_MAX_FUN_FACTORY } from "@/utils/runtime-config"
 import { useState } from "react"
+import { parseEther } from "viem"
 import { useAccount, usePublicClient, useWriteContract } from "wagmi"
 
 export default function useLaunch() {
@@ -24,6 +25,8 @@ export default function useLaunch() {
       asset,
       signature,
     ]);
+    console.log('VITE_CONTRACT_MAX_FUN_FACTORY', VITE_CONTRACT_MAX_FUN_FACTORY);
+    
     
     
     if (!address || !publicClient) {
@@ -56,7 +59,9 @@ export default function useLaunch() {
           BigInt(id),
           name,
           symbol,
-          amount,
+          // amount,
+          // BigInt(201e18),
+          parseEther('201'),
           asset as `0x${string}`,
           signature as `0x${string}`,
         ],
