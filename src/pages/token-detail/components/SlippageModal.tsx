@@ -15,7 +15,7 @@ export default function SlippageModal({isOpen, onClose, slippage, onSetSlippage}
 
   return (
     <MaxfunModal isOpen={isOpen} onClose={onClose} title="">
-      <div className="w-full flex flex-col items-center">
+      <div className="w-full flex flex-col items-center text-white">
         <div className="text-[1.25rem] font-semibold text-center">Set max. slippage (%)</div>
         
         <div className="w-full flex justify-between mt-[1.74rem] gap-[0.49rem] flex-wrap">

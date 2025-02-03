@@ -4,11 +4,13 @@ import SettingIcon from '@/assets/icons/setting.png'
 import SolidButton from '@/components/button/SolidButton'
 import { useDisclosure } from '@chakra-ui/react'
 import SlippageModal from './SlippageModal'
-import { toastError, toastInfo, toastSuccess, toastWarning } from '@/components/toast'
 import { useReadContract } from 'wagmi'
 import { MaxFunTokenAbi } from '@/constants/abi/MaxFunToken'
 import { VITE_CONTRACT_MAX_FUN_CURVE } from '@/utils/runtime-config'
 import { MaxFunCurveAbi } from '@/constants/abi/MaxFunCurve'
+import Big from 'big.js'
+import useBuy from '@/hooks/contract/useBuy'
+import useSell from '@/hooks/contract/useSell'
 
 export default function BuyAndSell({className}: {className?: string}) {
   const [isBuy, setIsBuy] = useState(true)
@@ -19,8 +21,15 @@ export default function BuyAndSell({className}: {className?: string}) {
 
   const { isOpen: isOpenSlippage, onOpen: onOpenSlippage, onClose: onCloseSlippage } = useDisclosure();
 
-  const maxfunTokenAddress = ''
-  const raiseTokenAddress = ''
+  const maxfunTokenAddress = '0xE16205C3224449573Cc706d25B6870957aff255A' // "LUNA
+  // 0xB2284B8eee1E364F6bD4fA814e64303819a16aE8 ABAD
+  const raiseTokenAddress = '0xd97642E26F86310693324a3F0cC97e9eAA6436c6'
+
+  // write contract
+  const { onBuy, state: buyState } = useBuy()
+  const { onSell, state: sellState } = useSell()
+  console.log('sellState', sellState);
+  console.log('buyState', buyState);
 
   // 是否为外盘
   const { data: isOnUniswap } = useReadContract({
@@ -37,7 +46,11 @@ export default function BuyAndSell({className}: {className?: string}) {
     address: VITE_CONTRACT_MAX_FUN_CURVE as `0x${string}`,
     abi: MaxFunCurveAbi,
     functionName: 'getAmountsOut',
-    args: [raiseTokenAddress as `0x${string}`, maxfunTokenAddress as `0x${string}`, BigInt(amount ?? 0)],
+    args: amount ? [ 
+      raiseTokenAddress as `0x${string}`,
+      maxfunTokenAddress as `0x${string}`, 
+      BigInt(Big(amount).times(1-(slippage / 100)).times(Big(10).pow(18)).toFixed(0))
+    ] : undefined,
     query: {
       enabled: !!raiseTokenAddress && !!maxfunTokenAddress && !!amount
     }
@@ -49,12 +62,40 @@ export default function BuyAndSell({className}: {className?: string}) {
     address: VITE_CONTRACT_MAX_FUN_CURVE as `0x${string}`,
     abi: MaxFunCurveAbi,
     functionName: 'getAmountsOut',
-    args: [maxfunTokenAddress as `0x${string}`, raiseTokenAddress as `0x${string}`, BigInt(amount ?? 0)],
+    args: amount ? [
+      maxfunTokenAddress as `0x${string}`, 
+      raiseTokenAddress as `0x${string}`,  
+      BigInt(Big(amount).times(1-(slippage / 100)).times(Big(10).pow(18)).toFixed(0))
+    ] : undefined,
     query: {
       enabled: !!maxfunTokenAddress && !!raiseTokenAddress && !!amount
     }
   })
   console.log('amountOutSell', amountOutSell);
+
+  const onBuyHandler = async () => {
+    if (!amount) return
+    if (!amountOutBuy) return
+
+    onBuy({
+        amountIn: BigInt(Big(amount).times(Big(10).pow(18)).toFixed(0)),
+        tokenAddress: maxfunTokenAddress,
+        amountMinOut: amountOutBuy,
+        asset: raiseTokenAddress
+    })
+  }
+
+  const onSellHandler = async () => {
+    if (!amount) return
+    if (!amountOutSell) return
+
+    onSell({
+      amountIn: BigInt(Big(amount).times(Big(10).pow(18)).toFixed(0)),
+      tokenAddress: maxfunTokenAddress,
+      amountMinOut: amountOutSell,
+      asset: raiseTokenAddress
+    })
+  }
   
 
   return (
@@ -123,10 +164,8 @@ export default function BuyAndSell({className}: {className?: string}) {
       {isSell && <div className='text-[0.875rem] mdup:text-[1rem] opacity-60 leading-[100%]'>You will receive: 1000 BANANA</div>}
 
       <SolidButton onClick={() => {
-        toastSuccess('Transaction Success')
-        toastError('Transaction Failed')
-        toastWarning('Transaction Failed')
-        toastInfo('Transaction Success')
+        isBuy && onBuyHandler()
+        isSell && onSellHandler()
       }}>
         Buy
       </SolidButton>

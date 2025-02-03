@@ -1,6 +1,6 @@
 import { MAX_FUN_FACTORY_ABI } from "@/constants/abi/MaxFunFactory"
 import { WriteContractState } from "@/types/contract"
-import { VITE_CONTRACT_MAX_FUN_FACTORY } from "@/utils/runtime-config"
+import { VITE_CONTRACT_MAX_FUN_CURVE, VITE_CONTRACT_MAX_FUN_FACTORY } from "@/utils/runtime-config"
 import { useState } from "react"
 import { erc20Abi } from "viem"
 import { useAccount, usePublicClient, useWriteContract } from "wagmi"
@@ -46,6 +46,7 @@ export default function useSell() {
     })
 
     const maxFunFactoryAddress = VITE_CONTRACT_MAX_FUN_FACTORY as `0x${string}`
+    const maxFunCurveAddress = VITE_CONTRACT_MAX_FUN_CURVE as `0x${string}`
 
     try {
       // approve
@@ -53,7 +54,7 @@ export default function useSell() {
         address: tokenAddress as `0x${string}`,
         abi: erc20Abi,
         functionName: 'allowance',
-        args: [address as `0x${string}`, maxFunFactoryAddress as `0x${string}`],
+        args: [address as `0x${string}`, maxFunCurveAddress as `0x${string}`],
       })
 
       if (allowance < amountIn) {
@@ -61,7 +62,7 @@ export default function useSell() {
           address: tokenAddress as `0x${string}`,
           abi: erc20Abi,
           functionName: 'approve',
-          args: [maxFunFactoryAddress as `0x${string}`, amountIn],
+          args: [maxFunCurveAddress as `0x${string}`, amountIn],
         })
 
         const receiptApprove = await publicClient.waitForTransactionReceipt({
