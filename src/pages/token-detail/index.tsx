@@ -56,8 +56,8 @@ export default function TokenDetail() {
           <LoadingMore />
         </div>}
         
-        { !isLoadingBaseInfo && tokenBaseInfo && <>
-          <BaseInfo data={tokenBaseInfo} />
+        { !isLoadingBaseInfo && tokenBaseInfo && maxfunTokenAddress && <>
+          <BaseInfo data={tokenBaseInfo} tokenAddress={maxfunTokenAddress} />
 
           <Tab tab={tab} setTab={setTab} className="flex mdup:hidden" />
 
@@ -71,7 +71,7 @@ export default function TokenDetail() {
             {/* Comments / Trading History */}
             {(!isSM || tab === TabType.Chart) && <div className="w-full mdup:flex-1 bg-black-10 py-[0.79rem] rounded-[0.625rem]">
               <SubTab subTab={subTab} setSubTab={setSubTab} className=" px-[1.08rem] mdup:px-[1.88rem]" />
-              {subTab === SubTabType.Comments && <Comments />}
+              {subTab === SubTabType.Comments && <Comments tokenAddress={maxfunTokenAddress} />}
               {subTab === SubTabType.TradingHistory && <TradingHistory />}
             </div>}
 

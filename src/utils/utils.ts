@@ -27,7 +27,7 @@ export function formatCommentDate(date: number) {
   if (!date) return ''
 
   const now = dayjs()
-  const target = dayjs(date)
+  const target = dayjs.unix(date)
   const diffInMinutes = now.diff(target, 'minute')
   const diffInHours = now.diff(target, 'hour')
   const diffInDays = now.diff(target, 'day')

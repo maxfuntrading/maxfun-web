@@ -4,20 +4,24 @@ import LoadingMore from "@/components/LoadingMore"
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll"
 import AppContext from "@/store/app"
 import { toastSuccess } from "@/components/toast"
-import { formatCommentDate } from "@/utils/utils"
-import { useContext, useMemo, useState } from "react"
+import { formatAddress, formatCommentDate } from "@/utils/utils"
+import { useContext, useEffect, useMemo, useState } from "react"
 import { useAccount } from "wagmi"
+import { fetchCommentHistory } from "@/api/token-detila"
+import { CommentItemResponse } from "../types/response"
 
-export default function Comments() {
+export default function Comments({tokenAddress}: {tokenAddress: string}) {
   const { isConnected} = useAccount()
   const { onConnectWallet } = useContext(AppContext)
   const [comment, setComment] = useState('')
   const [isLoadingSubmit, setIsLoadingSubmit] = useState(false)
-  const [data, setData] = useState(0)
-  const [isLoadingList, setIsLoadingList] = useState(false)
-  // const [pageSize] = useState(20)
-  
 
+  // comment list
+  const [data, setData] = useState<CommentItemResponse[]>([])
+  const [isLoadingList, setIsLoadingList] = useState(false)
+  const [total, setTotal] = useState<number>()
+  const [page, setPage] = useState(1)
+  
   const isDisabled = useMemo(() => {
     if (!isConnected) {
       return true
@@ -46,18 +50,38 @@ export default function Comments() {
 
   const onLoadMore = () => {
     if (isLoadingList) return
-    if (data >= 40) return
-    setIsLoadingList(true)
-    setTimeout(() => {
-      setData(prev => prev + 20)
-      setIsLoadingList(false)
-    }, 1000)
+    if (data.length === 0) return
+    if (!total) return
+    if (data.length >= total) return
+    
+    setPage(prev => prev + 1)
+    getCommentHistory(page + 1)
   }
 
   const loadMoreRef = useInfiniteScroll({
     onLoadMore,
     loading: isLoadingList
   })
+
+  const getCommentHistory = async (page: number) => {
+    setIsLoadingList(true)
+    fetchCommentHistory(tokenAddress, page).then(res => {
+      setTotal(res.data.total)
+      if (page === 1) {
+        setData(res.data.list)
+      } else {
+        setData(prev => [...prev, ...res.data.list])
+      }
+      setIsLoadingList(false)
+    }).finally(() => {
+      setIsLoadingList(false)
+    })
+  }
+
+  useEffect(() => {
+    getCommentHistory(page)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <div className="w-full px-[0.91rem] mdup:px-[1.88rem] flex flex-col mt-[2rem]">
@@ -88,11 +112,11 @@ export default function Comments() {
         { isLoadingSubmit && <LoadingMore isDark={true} className="text-black-40 gap-1" />}
       </FlatButton>}
       
-      <div className="text-[1rem] mdup:text-[1.125rem] font-medium text-white mt-[1.16rem]">Comment (30)</div>
+      <div className="text-[1rem] mdup:text-[1.125rem] font-medium text-white mt-[1.16rem]">Comment {total ? `(${total})` : ''}</div>
 
       <div className="w-full flex flex-col">
-        {Array.from({ length: data }).map((_, index) => (
-          <CommentItem key={index} index={index} />
+        {data.map((item, index) => (
+          <CommentItem key={index} data={item} />
         ))}
         <div ref={loadMoreRef} className="w-full"></div>
         { isLoadingList && <LoadingMore />}
@@ -103,13 +127,15 @@ export default function Comments() {
   )
 }
 
-function CommentItem({index}: {index: number}) {
+function CommentItem({data}: {data: CommentItemResponse}) {
   return (
     <div className="w-full flex flex-col border-b border-white/10 py-[1.1rem] mdup:py-[1.65rem] gap-[0.84rem] mdup:gap-[0.57rem]">
       <div className="flex justify-between items-center">
         <div className="relative w-[8.09rem] h-[1.875rem] mdup:w-[10rem] mdup:h-[2.125rem] rounded-[0.375rem] border border-red-10 flex items-center gap-[0.52rem] mdup:gap-[0.78rem]">
-          <div className=" size-[1.875rem] mdup:size-[2.125rem] bg-red-10 rounded-[0.25rem] overflow-hidden"></div>
-          <span className="text-[0.75rem] mdup:text-[0.875rem] font-medium">0x97...a48b01</span>
+          <div className=" size-[1.875rem] mdup:size-[2.125rem] bg-red-10 rounded-[0.25rem] overflow-hidden p-[0.06rem] pl-0">
+            <img src={data.user_avatar} alt="avatar" className="w-full h-full object-cover rounded-[0.35rem]" />
+          </div>
+          <span className="text-[0.75rem] mdup:text-[0.875rem] font-medium">{formatAddress(data.user_address, 4, 6)}</span>
         </div>
 
         <div className="text-[0.875rem] mdup:text-[1rem] font-medium text-white flex items-center gap-[0.62rem]">
@@ -122,13 +148,12 @@ function CommentItem({index}: {index: number}) {
               <path d="M10.5259 2.72205V5.05538" stroke="white" strokeWidth="2" strokeLinecap="round"/>
             </g>
           </svg>
-          <span className="text-[0.75rem] mdup:text-[0.875rem] font-medium text-white/50">{formatCommentDate(1716489600000)}</span>
+          <span className="text-[0.75rem] mdup:text-[0.875rem] font-medium text-white/50">{formatCommentDate(data.create_ts)}</span>
         </div>
       </div>
 
       <div className="text-[0.875rem] mdup:text-[1rem]">
-        {index + 1}-Launch of the main token snake coin 2025!  Hey! Launch of the main token snake coin 2025!
-        Hey! Launch of the main token snake coin 2025!  Hey! Launch of the main token snake coin 2025!
+        {data.comment}
       </div>
     </div>
   )

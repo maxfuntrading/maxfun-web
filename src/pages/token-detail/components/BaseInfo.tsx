@@ -1,13 +1,11 @@
 import { CopyIcon, TelegramIcon, WebsiteIcon, XIcon } from './Icon'
-import { copyText, formatNumber } from '@/utils/utils'
+import { copyText, formatAddress, formatNumber } from '@/utils/utils'
 import { toastSuccess } from '@/components/toast'
 import clsx from 'clsx'
 import { TokenBaseInfoResponse } from '../types/response'
-import { useParams } from 'react-router-dom'
 
-export default function BaseInfo({data}: {data: TokenBaseInfoResponse}) {
+export default function BaseInfo({data, tokenAddress}: {data: TokenBaseInfoResponse, tokenAddress: string}) {
   const {token_basic} = data
-  const maxfunTokenAddress = useParams().tokenId;
 
   const LinkData = [
     {
@@ -65,9 +63,10 @@ export default function BaseInfo({data}: {data: TokenBaseInfoResponse}) {
                 <span className='text-white/60 text-[0.875rem]'>Contract:</span><br className='block mdup:hidden' />
                 {` `}
                 <span className='font-medium text-[0.875rem]'>
-                  {maxfunTokenAddress} 
+                  <span className=' mdup:inline-block hidden'>{tokenAddress}</span> 
+                  <span className='inline-block mdup:hidden'>{formatAddress(tokenAddress, 9, 9)}</span>
                   <button onClick={() => {
-                    copyText(maxfunTokenAddress ?? '')
+                    copyText(tokenAddress)
                     toastSuccess('Copied')
                   }} className='ml-[0.8rem]'><CopyIcon className='inline-block size-[0.75rem]' /></button>
                 </span>
