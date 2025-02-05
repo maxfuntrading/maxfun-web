@@ -1,12 +1,13 @@
-import TokenAvatar from '@/assets/images/home/aanana.png'
 import { CopyIcon, TelegramIcon, WebsiteIcon, XIcon } from './Icon'
 import { copyText, formatNumber } from '@/utils/utils'
 import { toastSuccess } from '@/components/toast'
 import clsx from 'clsx'
 import { TokenBaseInfoResponse } from '../types/response'
+import { useParams } from 'react-router-dom'
 
 export default function BaseInfo({data}: {data: TokenBaseInfoResponse}) {
   const {token_basic} = data
+  const maxfunTokenAddress = useParams().tokenId;
 
   const LinkData = [
     {
@@ -38,36 +39,35 @@ export default function BaseInfo({data}: {data: TokenBaseInfoResponse}) {
     },
     {
       name: 'Virtual Liquidity',
-      value: '$698.3K',
+      value: formatNumber(token_basic.liquidity),
     },
     {
       name: '24H Volume',
-      value: '$698.3K',
+      value: formatNumber(token_basic.volume24h),
     },
     {
       name: 'Total Supply',
-      value: '100,000,000',
+      value: formatNumber(token_basic.total_supply),
     }
   ]
 
   return (
     <div className=" bg-black-10 rounded-[0.625rem] px-[0.63rem] mdup:px-8 py-[1.19rem] mdup:py-[1.25rem]">
       <div className='flex justify-start gap-[1.41rem] mdup:gap-[1.76rem]'>
-        <img className='w-[6.07rem] h-[8.125rem] mdup:w-[7.5rem] mdup:h-[10.03rem] rounded-[0.625rem] object-cover' src={TokenAvatar} alt="" />
+        <img className='w-[6.07rem] h-[8.125rem] mdup:w-[7.5rem] mdup:h-[10.03rem] rounded-[0.625rem] object-contain' src={token_basic.icon} alt="" />
         <div className='w-full flex flex-col justify-between'>
           <div className='w-full flex flex-col mdup:flex-row justify-between'>
             <div>
               <div className='text-white font-medium mdup:font-normal line-clamp-2 mdup:line-clamp-1 mdup:text-[1.75rem]'>
-                Shiba Banana Coin($ BANANA) Shiba
-                Shiba Banana Coin($ BANANA)
+                {token_basic.name}({token_basic.symbol})
               </div>
               <div className='text-[0.88rem] mt-[0.31rem]'>
                 <span className='text-white/60 text-[0.875rem]'>Contract:</span><br className='block mdup:hidden' />
                 {` `}
                 <span className='font-medium text-[0.875rem]'>
-                  0x93793Bd...30e486A86 
+                  {maxfunTokenAddress} 
                   <button onClick={() => {
-                    copyText('0x93793Bd...30e486A86')
+                    copyText(maxfunTokenAddress ?? '')
                     toastSuccess('Copied')
                   }} className='ml-[0.8rem]'><CopyIcon className='inline-block size-[0.75rem]' /></button>
                 </span>
@@ -88,7 +88,10 @@ export default function BaseInfo({data}: {data: TokenBaseInfoResponse}) {
               <div key={index} className='flex flex-col items-start justify-center bg-white/10 w-1/5 rounded-[0.625rem] px-[1.75rem] md:px-[1.33rem] py-[0.8rem]'>
                 <div className='flex gap-[0.67rem]'>
                   <span className='text-white/60 font-semibold'>{item.name}</span>
-                  {item.change && <span className='text-[#06D188] font-semibold'>{item.change} <ArrowIcon isUp={true} className='inline-block size-[0.875rem] mt-[-3px]' /></span>}
+                  {item.change && <span className={`${item.change.startsWith('-') ? 'text-[#FF0021]' : 'text-[#06D188]'} font-semibold`}>
+                    {item.change.replace('-', '')}% 
+                    <ArrowIcon isUp={!item.change.startsWith('-')} className='inline-block size-[0.875rem] mt-[-3px]' />
+                  </span>}
                 </div>
                 <div className='text-white text-[1.25rem] font-semibold'>{item.value}</div>
               </div>
