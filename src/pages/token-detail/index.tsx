@@ -1,6 +1,6 @@
 import { useState } from "react";
 import BaseInfo from "./components/BaseInfo";
-import { SubTabType, TabType } from "./type";
+import { SubTabType, TabType } from "./types/type";
 import clsx from "clsx";
 import PriceChart, { PriceChartIframe } from "./components/PriceChart";
 import { useBreakpoint } from "@/hooks/useBreakpoint";

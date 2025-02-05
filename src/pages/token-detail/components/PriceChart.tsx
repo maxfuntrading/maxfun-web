@@ -1,7 +1,7 @@
 import { createChart, IChartApi } from 'lightweight-charts'
 import { useEffect, useRef } from 'react'
 import clsx from 'clsx'
-import { TabType } from '../type'
+import { TabType } from '../types/type'
 
 export default function PriceChart({className, tab}: {className?: string, tab: TabType}) {
   const chartContainerRef = useRef<HTMLDivElement>(null)
