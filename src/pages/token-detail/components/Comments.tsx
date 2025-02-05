@@ -7,10 +7,12 @@ import { toastSuccess } from "@/components/toast"
 import { formatAddress, formatCommentDate } from "@/utils/utils"
 import { useContext, useEffect, useMemo, useState } from "react"
 import { useAccount } from "wagmi"
-import { fetchCommentHistory } from "@/api/token-detila"
+import { fetchCommentHistory, fetchCommentSubmit } from "@/api/token-detila"
 import { CommentItemResponse } from "../types/response"
+import { ERR_CODE } from "@/constants/ERR_CODE"
 
 export default function Comments({tokenAddress}: {tokenAddress: string}) {
+  const { state: {isLogin} } = useContext(AppContext)
   const { isConnected} = useAccount()
   const { onConnectWallet } = useContext(AppContext)
   const [comment, setComment] = useState('')
@@ -27,6 +29,10 @@ export default function Comments({tokenAddress}: {tokenAddress: string}) {
       return true
     }
 
+    if (!isLogin) {
+      return true
+    }
+
     if (comment.length === 0) {
       return true;
     }
@@ -36,16 +42,23 @@ export default function Comments({tokenAddress}: {tokenAddress: string}) {
     }
 
     return false;
-  }, [comment, isLoadingSubmit, isConnected])
+  }, [isConnected, isLogin, comment.length, isLoadingSubmit])
 
   const submitComment = () => {
     setIsLoadingSubmit(true)
-    setTimeout(() => {
-      setIsLoadingSubmit(false)
+    
+    fetchCommentSubmit(tokenAddress, comment).then(res => {
+      if (res.code !== ERR_CODE.SUCCESS) {
+        return
+      }
+
       setComment('')
       toastSuccess('Comment successful ')
+    }).catch(() => {
       // toastError('Comment failed, please try again')
-    }, 1000)
+    }).finally(() => {
+      setIsLoadingSubmit(false)
+    })
   }
 
   const onLoadMore = () => {

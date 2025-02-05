@@ -21,7 +21,7 @@ export const fetchKline = async (tokenAddress: string) => {
   })
 }
 
-export const fetchCommentHistory = async (tokenAddress: string, page: number = 1, pageSize: number = 2) => {
+export const fetchCommentHistory = async (tokenAddress: string, page: number = 1, pageSize: number = 20) => {
   return request<{list: CommentItemResponse[], total: number}>({
     url: `/api/token/detail/comment-history`,
     method: 'GET',
@@ -29,6 +29,16 @@ export const fetchCommentHistory = async (tokenAddress: string, page: number = 1
       token_address: tokenAddress,
       page,
       page_size: pageSize,
+    },
+  })
+}
+export const fetchCommentSubmit = async (tokenAddress: string, comment: string) => {
+  return request({
+    url: `/api/token/detail/comment-submit`,
+    method: 'POST',
+    data: {
+      token_address: tokenAddress,
+      comment,
     },
   })
 }
