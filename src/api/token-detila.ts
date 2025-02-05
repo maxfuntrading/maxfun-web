@@ -3,7 +3,7 @@ import request from "./request";
 
 export const fetchBaseInfo = async (tokenAddress: string) => {
   return request<TokenBaseInfoResponse>({
-    url: `/api/token/basic-info`,
+    url: `/api/token/detail/basic-info`,
     method: 'GET',
     params: {
       token_address: tokenAddress,
@@ -13,7 +13,7 @@ export const fetchBaseInfo = async (tokenAddress: string) => {
 
 export const fetchKline = async (tokenAddress: string) => {
   return request<{list: TokenKlineItemResponse[]}>({
-    url: `/api/token/detail/kline`,
+    url: `/api/token/detail/detail/kline`,
     method: 'GET',
     params: {
       token_address: tokenAddress,

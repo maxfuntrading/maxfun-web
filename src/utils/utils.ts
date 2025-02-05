@@ -8,9 +8,15 @@ export function formatAddress(address: string, startLength: number = 6, endLengt
   return address.slice(0, startLength) + '...' + address.slice(-endLength)
 }
 
-export function formatNumber(number: number) {
-  if (number === undefined || number === null) return ''
-  return numeral(number).format('0.00a').toUpperCase();
+export function formatNumber(number: number | string, decimalPlaces: number = 2) {
+  if (number === undefined || number === null) return '';
+
+  const num = new Big(number);
+  const truncatedValue = num.round(decimalPlaces, Big.roundDown); // 截断（不四舍五入）
+
+  const formatted = numeral(truncatedValue.toString()).format(`0.[${'0'.repeat(decimalPlaces)}]a`).toUpperCase();
+
+  return formatted.replace(/\.?0*([KMBT])$/, '$1'); // 去掉无意义的 .0
 }
 
 export function copyText(text: string) {

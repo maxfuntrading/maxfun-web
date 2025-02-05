@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BaseInfo from "./components/BaseInfo";
 import { SubTabType, TabType } from "./types/type";
 import clsx from "clsx";
@@ -9,45 +9,83 @@ import Description from "./components/Description";
 import Holder from "./components/Holder";
 import Comments from "./components/Comments";
 import TradingHistory from "./components/TradingHistory";
+import { TokenBaseInfoResponse } from "./types/response";
+import { useParams } from "react-router-dom";
+import { fetchBaseInfo } from "@/api/token-detila";
+import { ERR_CODE } from "@/constants/ERR_CODE";
+import LoadingMore from "@/components/LoadingMore";
 
 export default function TokenDetail() {
   const { isSM } = useBreakpoint()
   const [tab, setTab] = useState<TabType>(TabType.BuyOreSell)
   const [subTab, setSubTab] = useState<SubTabType>(SubTabType.Comments)
 
+  // API data
+  const [tokenBaseInfo, setTokenBaseInfo] = useState<TokenBaseInfoResponse>()
+  const [isLoadingBaseInfo, setIsLoadingBaseInfo] = useState(false)
+
   const isOnUniswap = true;
+  const maxfunTokenAddress = useParams().tokenId;
+
+  // get base info
+  useEffect(() => {
+    if (!maxfunTokenAddress) return;
+
+    const getBaseInfo = async () => {
+      setIsLoadingBaseInfo(true)
+
+      fetchBaseInfo(maxfunTokenAddress).then((res) => {
+        if (!res || res.code !== ERR_CODE.SUCCESS) {
+          return
+        }
+        setTokenBaseInfo(res.data)
+      }).finally(() => {
+        setIsLoadingBaseInfo(false)
+      })
+    }
+
+    getBaseInfo()
+  }, [maxfunTokenAddress])
 
 
   return (
     <div className="px-4 mdup:px-[3.62rem] mt-2 pt-2">
       <div className=" my-container mx-auto">
-        <BaseInfo />
 
-        <Tab tab={tab} setTab={setTab} className="flex mdup:hidden" />
+        {isLoadingBaseInfo && <div className="flex justify-center items-center">
+          <LoadingMore />
+        </div>}
+        
+        { !isLoadingBaseInfo && tokenBaseInfo && <>
+          <BaseInfo data={tokenBaseInfo} />
 
-        <div className="flex justify-between gap-[1.32rem] h-fit mdup:mt-[1.26rem]">
-          {!isOnUniswap &&<PriceChart tab={tab} className={`${isSM && tab === TabType.Chart ? 'flex' : 'hidden mdup:flex'}`} />}
-          {isOnUniswap && <PriceChartIframe className={`${isSM && tab === TabType.Chart ? 'flex' : 'hidden mdup:flex'}`} />}
-          <BuyAndSell className={`${isSM && tab === TabType.BuyOreSell ? 'flex' : 'hidden mdup:flex'}`} />
-        </div>
+          <Tab tab={tab} setTab={setTab} className="flex mdup:hidden" />
 
-        <div className="flex flex-col mdup:flex-row gap-[0.94rem] mdup:gap-[1.32rem] mt-[0.94rem] mdup:mt-[1.26rem]">
-          {/* Comments / Trading History */}
-          {(!isSM || tab === TabType.Chart) && <div className="w-full mdup:flex-1 bg-black-10 py-[0.79rem] rounded-[0.625rem]">
-            <SubTab subTab={subTab} setSubTab={setSubTab} className=" px-[1.08rem] mdup:px-[1.88rem]" />
-            {subTab === SubTabType.Comments && <Comments />}
-            {subTab === SubTabType.TradingHistory && <TradingHistory />}
-          </div>}
+          <div className="flex justify-between gap-[1.32rem] h-fit mdup:mt-[1.26rem]">
+            {!isOnUniswap &&<PriceChart tab={tab} className={`${isSM && tab === TabType.Chart ? 'flex' : 'hidden mdup:flex'}`} />}
+            {isOnUniswap && <PriceChartIframe className={`${isSM && tab === TabType.Chart ? 'flex' : 'hidden mdup:flex'}`} />}
+            <BuyAndSell className={`${isSM && tab === TabType.BuyOreSell ? 'flex' : 'hidden mdup:flex'}`} />
+          </div>
 
-          {/* Description / Holder */}
-          {(!isSM || tab === TabType.BuyOreSell) && <div className="w-full mdup:w-[30rem] flex flex-col gap-[0.94rem] mdup:gap-[1.25rem]">
-            <Description />
-            <Holder />
-          </div>}
-          
-        </div>
+          <div className="flex flex-col mdup:flex-row gap-[0.94rem] mdup:gap-[1.32rem] mt-[0.94rem] mdup:mt-[1.26rem]">
+            {/* Comments / Trading History */}
+            {(!isSM || tab === TabType.Chart) && <div className="w-full mdup:flex-1 bg-black-10 py-[0.79rem] rounded-[0.625rem]">
+              <SubTab subTab={subTab} setSubTab={setSubTab} className=" px-[1.08rem] mdup:px-[1.88rem]" />
+              {subTab === SubTabType.Comments && <Comments />}
+              {subTab === SubTabType.TradingHistory && <TradingHistory />}
+            </div>}
 
-        <div className="h-[3rem] mdup:h-[5rem]"></div>
+            {/* Description / Holder */}
+            {(!isSM || tab === TabType.BuyOreSell) && <div className="w-full mdup:w-[30rem] flex flex-col gap-[0.94rem] mdup:gap-[1.25rem]">
+              <Description />
+              <Holder />
+            </div>}
+            
+          </div>
+
+          <div className="h-[3rem] mdup:h-[5rem]"></div>
+        </>}
+
       </div>
 
     </div>

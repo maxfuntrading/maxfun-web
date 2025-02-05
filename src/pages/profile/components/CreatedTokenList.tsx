@@ -2,7 +2,7 @@ import { useState } from 'react'
 import SearchInput from './SearchInput'
 import FlatButton from '@/components/button/FlatButton'
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll'
-import TokenCard from '@/components/TokenCard'
+// import TokenCard from '@/components/TokenCard'
 import LoadingMore from '@/components/LoadingMore'
 import { useNavigate } from 'react-router-dom'
 
@@ -45,7 +45,8 @@ export default function CreatedTokenList() {
       </div>
       <div className=" mt-4 flex flex-col gap-[0.94rem] mdup:gap-x-[1.67rem] mdup:gap-y-[1.25rem] mdup:flex-row mdup:flex-wrap">
         {Array.from({ length: tokens }).map((_, index) => (
-          <TokenCard key={index} className=" mdup:w-[calc(25%-1.26rem)]" />
+          // <TokenCard key={index} className=" mdup:w-[calc(25%-1.26rem)]" />
+          <div key={index}></div>
         ))}
       </div>
       {loading && <LoadingMore className="mt-[3rem]" />}

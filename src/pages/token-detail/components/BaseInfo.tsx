@@ -1,24 +1,27 @@
 import TokenAvatar from '@/assets/images/home/aanana.png'
 import { CopyIcon, TelegramIcon, WebsiteIcon, XIcon } from './Icon'
-import { copyText } from '@/utils/utils'
+import { copyText, formatNumber } from '@/utils/utils'
 import { toastSuccess } from '@/components/toast'
 import clsx from 'clsx'
+import { TokenBaseInfoResponse } from '../types/response'
 
-export default function BaseInfo() {
+export default function BaseInfo({data}: {data: TokenBaseInfoResponse}) {
+  const {token_basic} = data
+
   const LinkData = [
     {
       name: 'x',
-      link: 'https://twitter.com/shibabana_coin',
+      link: token_basic.twitter,
       icon: <XIcon />
     },
     {
       name: 'Telegram',
-      link: 'https://twitter.com/shibabana_coin',
+      link: token_basic.telegram,
       icon: <TelegramIcon />
     },
     {
       name: 'Website',
-      link: 'https://twitter.com/shibabana_coin',
+      link: token_basic.website,
       icon: <WebsiteIcon />
     }
   ]
@@ -26,12 +29,12 @@ export default function BaseInfo() {
   const MetricData = [
     {
       name: 'Price',
-      value: '0.001233343',
-      change: '1.23%'
+      value: formatNumber(token_basic.price),
+      change: formatNumber(token_basic.price_rate24h)
     },
     {
       name: 'Market Cap',
-      value: '$698.3K',
+      value: formatNumber(token_basic.market_cap),
     },
     {
       name: 'Virtual Liquidity',
