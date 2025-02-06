@@ -62,13 +62,18 @@ export default function Holder({className, tokenAddress}: {className?: string, t
         {data.map((item, index) => {
           return <div key={index} className='mdup:w-[27rem] flex justify-between items-center h-[2.5rem] mdup:h-[3.75rem] border-b border-white/10 first:border-t'>
             <div className='flex items-center gap-[0.59rem]'>
-              <a href={`${chain?.blockExplorers?.default.url}/address/${item.user_address}`} target='_blank' className='flex items-center gap-[0.59rem]'>
-                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
-                  <path d="M8.30737 2.177H12.3907V6.26034" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M12.3906 9.0235V11.802C12.3906 12.2853 11.9989 12.677 11.5156 12.677H2.76562C2.28238 12.677 1.89062 12.2853 1.89062 11.802V3.052C1.89062 2.56875 2.28238 2.177 2.76562 2.177H5.39062" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M7.66553 6.90195L12.128 2.43945" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <a href={`${chain?.blockExplorers?.default.url}/address/${item.user_address}`} target='_blank' className='flex items-center gap-[0.59rem] group'>
+                <svg className='block group-hover:hidden' xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M11.6665 2.5H17.4998V8.33333" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M17.5 12.2807V16.25C17.5 16.9404 16.9404 17.5 16.25 17.5H3.75C3.05965 17.5 2.5 16.9404 2.5 16.25V3.75C2.5 3.05965 3.05965 2.5 3.75 2.5H7.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M10.75 9.25L17.125 2.875" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                <span className='text-[0.75rem] mdup:text-[0.875rem] font-medium'>{formatAddress(item.user_address, 10, 9)}</span>
+
+                <svg className='hidden group-hover:block' xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                  <path d="M10.6667 1.5H16.5V7.33333M16.5 11.2807V15.25C16.5 15.9404 15.9404 16.5 15.25 16.5H2.75C2.05965 16.5 1.5 15.9404 1.5 15.25V2.75C1.5 2.05965 2.05965 1.5 2.75 1.5H6.5M9.74992 8.24996L16.1249 1.87496" stroke="#EC3E6F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+
+                <span className='text-[0.75rem] mdup:text-[0.875rem] font-medium hover:text-red-10'>{formatAddress(item.user_address, 10, 9)}</span>
               </a>
             </div>
             <span className='text-[0.75rem] mdup:text-[0.875rem] font-semibold text-[#06D188]'>{item.percentage}%</span>

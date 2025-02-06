@@ -8,6 +8,7 @@ import { useEffect, useState } from "react"
 import { TradeLogItemResponse } from "../types/response"
 import { ERR_CODE } from "@/constants/ERR_CODE"
 import { useAccount } from "wagmi"
+import clsx from "clsx"
 
 export default function TradingHistory({ tokenAddress }: { tokenAddress: string }) {
   const { isSM } = useBreakpoint()
@@ -124,7 +125,7 @@ export default function TradingHistory({ tokenAddress }: { tokenAddress: string 
 
             return <Tr key={index} className="!font-semibold !h-[3.75rem]">
               <Td className="!p-0 !border-white/10 !text-[0.875rem] !text-white/60">
-                <a href={`${chain?.blockExplorers?.default.url}/address/${item.user_address}`} target="_blank" className="flex items-center gap-2">
+                <a href={`${chain?.blockExplorers?.default.url}/address/${item.user_address}`} target="_blank" className="flex items-center gap-2 hover:text-red-10">
                   <span>{formatAddress(item.user_address, 4, 6)}</span>
                 </a>
               </Td>
@@ -133,7 +134,7 @@ export default function TradingHistory({ tokenAddress }: { tokenAddress: string 
               <Td className="!border-white/10 !text-[0.875rem] !text-white">{formatNumber(item.token2_amount)}</Td>
               <Td className="!border-white/10 !text-[0.875rem] !text-white">{formatCommentDate(item.block_time)}</Td>
               <Td className="!p-0 !border-white/10 !text-[0.875rem] !text-white">
-                <a href={`${chain?.blockExplorers?.default.url}/tx/${item.txn_hash}`} target="_blank" className="flex items-center gap-2">
+                <a href={`${chain?.blockExplorers?.default.url}/tx/${item.txn_hash}`} target="_blank" className="flex items-center gap-2 group hover:text-red-10">
                   <TxIcon />
                   <span>{formatAddress(item.txn_hash, 6, 4)}</span>
                 </a>
@@ -151,9 +152,16 @@ export default function TradingHistory({ tokenAddress }: { tokenAddress: string 
 }
 
 function TxIcon({ className }: { className?: string }) {
-  return <svg className={className} xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21" fill="none">
-    <g opacity="0.6">
-      <path d="M13.3906 9.17971L15.0573 7.92971L18.8073 10.4297V14.5964L14.6406 17.0964L10.474 14.5964V5.84637L5.89062 3.34637L2.14062 5.84637V10.4297L5.89062 12.9297L7.55729 11.6797" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    </g>
-  </svg>
+  return <div>
+    <svg className={clsx(className, 'block group-hover:hidden')} xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21" fill="none">
+      <g opacity="0.6">
+        <path d="M13.3906 9.17971L15.0573 7.92971L18.8073 10.4297V14.5964L14.6406 17.0964L10.474 14.5964V5.84637L5.89062 3.34637L2.14062 5.84637V10.4297L5.89062 12.9297L7.55729 11.6797" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      </g>
+    </svg>
+
+    <svg className={clsx(className, 'hidden group-hover:block')} xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21" fill="none">
+      <path d="M13.0396 9.57265L14.7062 8.32265L18.4562 10.8227V14.9893L14.2896 17.4893L10.1229 14.9893V6.23932L5.53955 3.73932L1.78955 6.23932V10.8227L5.53955 13.3227L7.20622 12.0727" stroke="#EC3E6F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+  </div>
 }
