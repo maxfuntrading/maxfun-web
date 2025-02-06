@@ -41,8 +41,12 @@ export default function Comments({tokenAddress}: {tokenAddress: string}) {
       return true;
     }
 
+    if (comment.trim().length < 1) {
+      return true
+    }
+
     return false;
-  }, [isConnected, isLogin, comment.length, isLoadingSubmit])
+  }, [isConnected, isLogin, comment, isLoadingSubmit])
 
   const submitComment = () => {
     setIsLoadingSubmit(true)
@@ -107,6 +111,7 @@ export default function Comments({tokenAddress}: {tokenAddress: string}) {
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           onKeyDown={(e) => {
+            if (isDisabled) return
             if (e.key === 'Enter' && !e.shiftKey) {
               submitComment()
             }
