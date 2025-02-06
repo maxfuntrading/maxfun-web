@@ -64,7 +64,12 @@ export default function TokenDetail() {
           <div className="flex justify-between gap-[1.32rem] h-fit mdup:mt-[1.26rem]">
             {!isOnUniswap &&<PriceChart tab={tab} className={`${isSM && tab === TabType.Chart ? 'flex' : 'hidden mdup:flex'}`} />}
             {isOnUniswap && <PriceChartIframe className={`${isSM && tab === TabType.Chart ? 'flex' : 'hidden mdup:flex'}`} />}
-            <BuyAndSell className={`${isSM && tab === TabType.BuyOreSell ? 'flex' : 'hidden mdup:flex'}`} />
+            <BuyAndSell 
+              tokenAddress={maxfunTokenAddress} 
+              raiseTokenIcon={tokenBaseInfo.raised_token.icon} 
+              maxfunTokenIcon={tokenBaseInfo.token_basic.icon}
+              className={`${isSM && tab === TabType.BuyOreSell ? 'flex' : 'hidden mdup:flex'}`} 
+            />
           </div>
 
           <div className="flex flex-col mdup:flex-row gap-[0.94rem] mdup:gap-[1.32rem] mt-[0.94rem] mdup:mt-[1.26rem]">

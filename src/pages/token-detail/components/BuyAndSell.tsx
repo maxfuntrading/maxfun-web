@@ -4,40 +4,105 @@ import SettingIcon from '@/assets/icons/setting.png'
 import SolidButton from '@/components/button/SolidButton'
 import { useDisclosure } from '@chakra-ui/react'
 import SlippageModal from './SlippageModal'
-import { useReadContract } from 'wagmi'
+import { useAccount, useReadContract, useReadContracts } from 'wagmi'
 import { MaxFunTokenAbi } from '@/constants/abi/MaxFunToken'
 import { VITE_CONTRACT_MAX_FUN_CURVE } from '@/utils/runtime-config'
 import { MaxFunCurveAbi } from '@/constants/abi/MaxFunCurve'
 import Big from 'big.js'
 import useBuy from '@/hooks/contract/useBuy'
 import useSell from '@/hooks/contract/useSell'
+import { erc20Abi, formatUnits } from 'viem'
 
-export default function BuyAndSell({className}: {className?: string}) {
+interface BuyAndSellProps {
+  className?: string
+  tokenAddress: string
+  raiseTokenIcon: string
+  maxfunTokenIcon: string
+}
+
+export default function BuyAndSell({className, tokenAddress, raiseTokenIcon, maxfunTokenIcon}: BuyAndSellProps) {
+  const { address } = useAccount()
+  
   const [isBuy, setIsBuy] = useState(true)
   const isSell = !isBuy
 
-  const [amount, setAmount] = useState<number>()
+  const [amount, setAmount] = useState<string>()
   const [slippage, setSlippage] = useState(10)
 
   const { isOpen: isOpenSlippage, onOpen: onOpenSlippage, onClose: onCloseSlippage } = useDisclosure();
 
+  // const maxfunTokenAddress = tokenAddress
+  // const maxfunTokenAddress = raiseToken.address
+  console.log('tokenAddress', tokenAddress);
   const maxfunTokenAddress = '0xE16205C3224449573Cc706d25B6870957aff255A' // "LUNA
-  // 0xB2284B8eee1E364F6bD4fA814e64303819a16aE8 ABAD
   const raiseTokenAddress = '0xd97642E26F86310693324a3F0cC97e9eAA6436c6'
 
   // write contract
   const { onBuy, state: buyState } = useBuy()
+  const isLoadingBuy = buyState.loading
   const { onSell, state: sellState } = useSell()
-  console.log('sellState', sellState);
-  console.log('buyState', buyState);
+  const isLoadingSell = sellState.loading
+  const isLoadingTrade = isLoadingBuy || isLoadingSell
 
-  // 是否为外盘
-  const { data: isOnUniswap } = useReadContract({
+  // 获取token基本信息
+  const { data: contractInfo} = useReadContracts({
+    allowFailure: false,
+    contracts: [
+      {
+        address: maxfunTokenAddress as `0x${string}`,
+        abi: MaxFunTokenAbi,
+        functionName: 'transferEnabled',
+      },
+      {
+        address: maxfunTokenAddress as `0x${string}`,
+        abi: MaxFunTokenAbi,
+        functionName: 'decimals',
+      },
+      {
+        address: maxfunTokenAddress as `0x${string}`,
+        abi: MaxFunTokenAbi,
+        functionName: 'symbol',
+      },
+      {
+        address: raiseTokenAddress as `0x${string}`,
+        abi: erc20Abi,
+        functionName: 'decimals',
+      },
+      {
+        address: raiseTokenAddress as `0x${string}`,
+        abi: erc20Abi,
+        functionName: 'symbol',
+      },
+    ],
+    query: {
+      enabled: !!maxfunTokenAddress && !!raiseTokenAddress
+    }
+  })
+  const isOnUniswap = contractInfo?.[0]
+  const maxfunTokenDecimal = contractInfo?.[1]
+  const maxfunTokenSymbol = contractInfo?.[2]
+  const raiseTokenDecimal = contractInfo?.[3]
+  const raiseTokenSymbol = contractInfo?.[4]
+
+  // raise token balance
+  const { data: raiseTokenBalance } = useReadContract({
+    address: raiseTokenAddress as `0x${string}`,
+    abi: erc20Abi,
+    functionName: 'balanceOf',
+    args: [address as `0x${string}`],
+    query: {
+      enabled: !!address && !!raiseTokenAddress
+    }
+  })
+
+  // maxfun token balance
+  const { data: maxfunTokenBalance } = useReadContract({
     address: maxfunTokenAddress as `0x${string}`,
     abi: MaxFunTokenAbi,
-    functionName: 'transferEnabled',
+    functionName: 'balanceOf',
+    args: [address as `0x${string}`],
     query: {
-      enabled: !!maxfunTokenAddress
+      enabled: !!address && !!maxfunTokenAddress
     }
   })
 
@@ -46,34 +111,32 @@ export default function BuyAndSell({className}: {className?: string}) {
     address: VITE_CONTRACT_MAX_FUN_CURVE as `0x${string}`,
     abi: MaxFunCurveAbi,
     functionName: 'getAmountsOut',
-    args: amount ? [ 
+    args: amount && raiseTokenDecimal ? [ 
       raiseTokenAddress as `0x${string}`,
       maxfunTokenAddress as `0x${string}`, 
-      BigInt(Big(amount).times(1-(slippage / 100)).times(Big(10).pow(18)).toFixed(0))
+      BigInt(Big(amount).times(1-(slippage / 100)).times(Big(10).pow(raiseTokenDecimal)).toFixed(0))
     ] : undefined,
     query: {
       enabled: !!raiseTokenAddress && !!maxfunTokenAddress && !!amount
     }
   })
-  console.log('amountOutBuy', amountOutBuy);
   
   // sell-预计收到的token数量
   const { data: amountOutSell } = useReadContract({
     address: VITE_CONTRACT_MAX_FUN_CURVE as `0x${string}`,
     abi: MaxFunCurveAbi,
     functionName: 'getAmountsOut',
-    args: amount ? [
+    args: amount && maxfunTokenDecimal ? [
       maxfunTokenAddress as `0x${string}`, 
       raiseTokenAddress as `0x${string}`,  
-      BigInt(Big(amount).times(1-(slippage / 100)).times(Big(10).pow(18)).toFixed(0))
+      BigInt(Big(amount).times(1-(slippage / 100)).times(Big(10).pow(maxfunTokenDecimal)).toFixed(0))
     ] : undefined,
     query: {
-      enabled: !!maxfunTokenAddress && !!raiseTokenAddress && !!amount
+      enabled: !!maxfunTokenAddress && !!raiseTokenAddress && !!amount && !!raiseTokenDecimal
     }
   })
-  console.log('amountOutSell', amountOutSell);
 
-  const onBuyHandler = async () => {
+  const onBuyHandle = async () => {
     if (!amount) return
     if (!amountOutBuy) return
 
@@ -85,7 +148,7 @@ export default function BuyAndSell({className}: {className?: string}) {
     })
   }
 
-  const onSellHandler = async () => {
+  const onSellHandle = async () => {
     if (!amount) return
     if (!amountOutSell) return
 
@@ -122,50 +185,85 @@ export default function BuyAndSell({className}: {className?: string}) {
         </button>
       </div>
 
-      <div className=' bg-white/20 rounded-[0.625rem] px-[0.97rem] mdup:px-[1.22rem] py-[0.5rem] flex justify-between gap-4'>
-        <div className='flex-1'>
+      <div className=' bg-white/20 rounded-[0.625rem] px-[0.97rem] mdup:px-[1.22rem] py-[0.5rem] flex justify-between gap-[0.478rem] mdup:gap-[0.54rem] flex-col'>
+        <div className='flex-1 flex gap-4'>
           <input
            className=' w-full outline-none placeholder:text-white/40 placeholder:font-medium text-[1rem] font-medium bg-transparent mt-[0.4rem]'
            placeholder='Enter the amount'
-           type="number"
+           type="text"
+           inputMode='decimal'
            value={amount !== undefined ? amount : ''}
            min={0}
+           disabled={isLoadingTrade}
            onKeyDown={(e) => {
             if (e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === '-') {
               e.preventDefault();
             }
           }}
           onChange={(e) => {
-            const value = e.target.value === '' ? 0 : parseFloat(e.target.value);
-            if (e.target.value === '') {
-              setAmount(undefined)
-            } else {
-              setAmount(value);
+            let inputValue = e.target.value;
+            inputValue = inputValue.replace(/[^0-9.]/g, "");
+
+            // 防止小数点开头，自动补 0
+            if (inputValue.startsWith(".")) {
+              inputValue = "0" + inputValue;
             }
+
+            // 确保小数点只出现一次
+            if (inputValue.split(".").length > 2) {
+              inputValue = inputValue.slice(0, inputValue.lastIndexOf("."));
+            }
+            setAmount(inputValue);
           }}
           />
-          <div className='text-[0.875rem] mdup:text-[1rem]'>Balance: 0 SOL</div>
+
+          <div className='self-start flex items-center gap-2 mdup:gap-[0.7rem]'>
+            <span className='font-medium text-[1rem] mdup:text-[1.125rem]'>{ isBuy ? raiseTokenSymbol : maxfunTokenSymbol }</span>
+            <div className='size-[1.875rem] rounded-full'>
+              <img src={isBuy ? raiseTokenIcon : maxfunTokenIcon} alt="raise token" />
+            </div>
+          </div>
         </div>
-        <div className='self-start flex items-center gap-2 mdup:gap-[0.7rem]'>
-          <span className='font-medium text-[1rem] mdup:text-[1.125rem]'>Sol</span>
-          <div className='size-[1.875rem] rounded-full bg-blue-400'></div>
+
+        <div className='text-[0.875rem] mdup:text-[1rem]'>
+          {isBuy && <span>Balance: { raiseTokenBalance !== undefined && raiseTokenDecimal !== undefined ? `${formatUnits(raiseTokenBalance, raiseTokenDecimal)} ${raiseTokenSymbol ?? ''}` : 'N/A' }</span>}
+          {isSell && <span>Balance: { maxfunTokenBalance !== undefined && maxfunTokenDecimal !== undefined ? `${formatUnits(maxfunTokenBalance, maxfunTokenDecimal)} ${maxfunTokenSymbol ?? ''}` : 'N/A' }</span>}
         </div>
+        
       </div>
 
       <div className='flex justify-between gap-2'>
-        {[1000, 5000, 10000, 50000].map((item, index) => (
-          <button key={index} className='flex-1 h-[1.875rem] mdup:h-[2.25rem] flex-center rounded-[0.625rem] border-[2px] border-white/20 text-[0.75rem] font-medium'>
-            {`${item} SOL`}
+        {isBuy && [1000, 5000, 10000, 50000].map((item, index) => (
+          <button disabled={isLoadingTrade} key={index} onClick={() => setAmount(item.toString())} className='flex-1 h-[1.875rem] mdup:h-[2.25rem] flex-center rounded-[0.625rem] border-[2px] border-white/20 text-[0.75rem] font-medium opacity-60'>
+            {`${item} ${raiseTokenSymbol ?? ''}`}
+          </button>
+        ))}
+
+        {isSell && [0.25, 0.5, 0.75, 1].map((item, index) => (
+          <button disabled={isLoadingTrade} key={index} onClick={() => {
+            if (maxfunTokenBalance === undefined || maxfunTokenDecimal === undefined) {
+              return;
+            }
+
+            if (item === 1) {
+              setAmount(formatUnits(maxfunTokenBalance, maxfunTokenDecimal))
+              return;
+            }
+
+            const amount = formatUnits(BigInt(Big(maxfunTokenBalance.toString()).times(item).toFixed(0)), maxfunTokenDecimal)
+            setAmount(amount)
+          }} className='flex-1 h-[1.875rem] mdup:h-[2.25rem] flex-center rounded-[0.625rem] border-[2px] border-white/20 text-[0.75rem] font-medium opacity-60'>
+            {`${item * 100}%`}
           </button>
         ))}
       </div>
 
-      {isBuy && <div className='text-[0.875rem] mdup:text-[1rem] opacity-60 leading-[100%]'>Cost:0.000233 SOL</div>}
-      {isSell && <div className='text-[0.875rem] mdup:text-[1rem] opacity-60 leading-[100%]'>You will receive: 1000 BANANA</div>}
+      {isBuy && <div className='text-[0.875rem] mdup:text-[1rem] opacity-60 leading-[100%]'>You will receive: {amountOutBuy !== undefined && maxfunTokenDecimal !== undefined ? `${formatUnits(amountOutBuy, maxfunTokenDecimal)} ${maxfunTokenSymbol ?? ''}` : 'N/A'}</div>}
+      {isSell && <div className='text-[0.875rem] mdup:text-[1rem] opacity-60 leading-[100%]'>You will receive: {amountOutSell !== undefined && raiseTokenDecimal !== undefined ? `${formatUnits(amountOutSell, raiseTokenDecimal)} ${raiseTokenSymbol ?? ''}` : 'N/A'}</div>}
 
       <SolidButton onClick={() => {
-        isBuy && onBuyHandler()
-        isSell && onSellHandler()
+        isBuy && onBuyHandle()
+        isSell && onSellHandle()
       }}>
         Buy
       </SolidButton>

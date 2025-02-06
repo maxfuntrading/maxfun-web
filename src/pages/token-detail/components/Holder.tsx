@@ -71,7 +71,7 @@ export default function Holder({className, tokenAddress}: {className?: string, t
                 <span className='text-[0.75rem] mdup:text-[0.875rem] font-medium'>{formatAddress(item.user_address, 10, 9)}</span>
               </a>
             </div>
-            <span className='text-[0.75rem] mdup:text-[0.875rem] font-semibold text-[#06D188]'>12.34%</span>
+            <span className='text-[0.75rem] mdup:text-[0.875rem] font-semibold text-[#06D188]'>{item.percentage}%</span>
           </div>
         })}
         <div ref={loadMoreRef} className="w-full"></div>
