@@ -58,7 +58,7 @@ export const fetchTradeLog = async (tokenAddress: string, lastBlockNumber: numbe
 }
 
 export const fetchHolderDistribution = async (tokenAddress: string, page: number = 1, pageSize: number = 20) => {
-  return request<{list: HolderDistributionItemResponse[],}>({
+  return request<{list: HolderDistributionItemResponse[], total_holders: number}>({
     url: `/api/token/detail/holder-distribution`,
     method: 'GET',
     params: {

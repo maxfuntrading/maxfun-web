@@ -78,7 +78,7 @@ export default function TokenDetail() {
             {/* Description / Holder */}
             {(!isSM || tab === TabType.BuyOreSell) && <div className="w-full mdup:w-[30rem] flex flex-col gap-[0.94rem] mdup:gap-[1.25rem]">
               <Description />
-              <Holder />
+              <Holder tokenAddress={maxfunTokenAddress} />
             </div>}
             
           </div>
