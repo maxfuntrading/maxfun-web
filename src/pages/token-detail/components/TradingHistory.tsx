@@ -1,48 +1,35 @@
+import { fetchTradeLog } from "@/api/token-detila"
 import LoadingMore from "@/components/LoadingMore"
 import { useBreakpoint } from "@/hooks/useBreakpoint"
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll"
-import { formatAddress } from "@/utils/utils"
+import { formatAddress, formatCommentDate, formatNumber } from "@/utils/utils"
 import { Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react"
-import { useState } from "react"
-export default function TradingHistory() {
+import { useEffect, useState } from "react"
+import { TradeLogItemResponse } from "../types/response"
+import { ERR_CODE } from "@/constants/ERR_CODE"
+import { useAccount } from "wagmi"
+
+export default function TradingHistory({ tokenAddress }: { tokenAddress: string }) {
   const { isSM } = useBreakpoint()
-  const [data, setData] = useState(0)
+  const { chain } = useAccount()
+  
+  // 接口参数
+  const [lastBlockNumber, setLastBlockNumber] = useState(1)
+  const [lastTxnIndex, setLastTxnIndex] = useState(1)
+  const [lastLogIndex, setLastLogIndex] = useState(2)
+  const PAGE_SIZE = 20
+
+  // 交易数据
+  const [token1Name, setToken1Name] = useState('')
+  const [token2Name, setToken2Name] = useState('')
+  const [data, setData] = useState<TradeLogItemResponse[]>([])
   const [isLoadingList, setIsLoadingList] = useState(false)
-  const TradingData = [
-    {
-      account: '0xF41BBb59B4291Ae8711ef276DdC0a26E6AD0137C',
-      type: 'buy',
-      token1: 2333.123,
-      token2: 10000000,
-      date: 1737106505,
-      transation: '0x7ee39fa472d58253b167300fc5c3544b41c324cfe9e58b6b769c6885ecd3418b',
-    },
-    {
-      account: '0xF41BBb59B4291Ae8711ef276DdC0a26E6AD0137C',
-      type: 'sell',
-      token1: 2333.123,
-      token2: 10000000,
-      date: 1737106505,
-      transation: '0x7ee39fa472d58253b167300fc5c3544b41c324cfe9e58b6b769c6885ecd3418b',
-    },
-    {
-      account: '0xF41BBb59B4291Ae8711ef276DdC0a26E6AD0137C',
-      type: 'buy',
-      token1: 2333.123,
-      token2: 10000000,
-      date: 1737106505,
-      transation: '0x7ee39fa472d58253b167300fc5c3544b41c324cfe9e58b6b769c6885ecd3418b',
-    },
-  ]
+  const [isFinishedLoadMore, setIsFinishedLoadMore] = useState(false)
 
   const onLoadMore = () => {
     if (isLoadingList) return
-    if (data >= 40) return
-    setIsLoadingList(true)
-    setTimeout(() => {
-      setData(prev => prev + 20)
-      setIsLoadingList(false)
-    }, 1000)
+    if (isFinishedLoadMore) return
+    getTradingHistory(lastBlockNumber, lastTxnIndex, lastLogIndex)
   }
 
   const loadMoreRef = useInfiniteScroll({
@@ -50,37 +37,67 @@ export default function TradingHistory() {
     loading: isLoadingList
   })
 
+  const getTradingHistory = async (lastBlockNumber: number, lastTxnIndex: number, lastLogIndex: number) => {
+    setIsLoadingList(true)
+    console.log('tokenAddress', tokenAddress);
+    fetchTradeLog('0xaa0851f2939ef2d8b51971b510383fcb5c246a11', lastBlockNumber, lastTxnIndex, lastLogIndex, PAGE_SIZE).then(res => {
+      if (res.code !== ERR_CODE.SUCCESS) return
+      setToken1Name(res.data.token1_name)
+      setToken2Name(res.data.token2_name)
+      setData([...data, ...res.data.list])
+
+      const lastRes = res.data.list[res.data.list.length - 1]
+      setLastBlockNumber(lastRes.block_number)
+      setLastTxnIndex(lastRes.txn_index)
+      setLastLogIndex(lastRes.log_index)
+
+      if (res.data.list.length < PAGE_SIZE) {
+        setIsFinishedLoadMore(true)
+      }
+    }).finally(() => {
+      setIsLoadingList(false)
+    })
+  }
+
+  useEffect(() => {
+    getTradingHistory(lastBlockNumber, lastTxnIndex, lastLogIndex)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   return (
     <div className=" px-[0.91rem] mdup:px-[1.68rem]">
       {isSM && <div className="w-full mt-[1.6rem] flex flex-col gap-[0.59rem]">
-        {TradingData.map((item, index) => {
-          const isBuy = item.type === 'buy'
-          const isSell = item.type === 'sell'
+        {data.map((item, index) => {
+          const isBuy = item.trace_type === 0
+          const isSell = item.trace_type === 1
+          const traceType = isBuy ? 'Buy' : 'Sell'
 
           return <div key={index} className=" bg-white/10 rounded-[0.625rem] relative pt-[0.78rem] pb-[1.05rem]">
             <div className="flex justify-between items-center">
-              <div className={`w-[2.5rem] h-[1.25rem] text-[0.75rem] font-semibold flex-center ${isBuy && 'bg-[#06D188]'} ${isSell && 'bg-[#FF0021]'}`} style={{borderRadius: '0rem 1.25rem 1.25rem 0rem'}}>{item.type}</div>
-              <div className="text-[0.75rem] font-semibold pr-[0.75rem]">{item.date}</div>
+              <div className={`w-[2.5rem] h-[1.25rem] text-[0.75rem] font-semibold flex-center ${isBuy && 'bg-[#06D188]'} ${isSell && 'bg-[#FF0021]'}`} style={{borderRadius: '0rem 1.25rem 1.25rem 0rem'}}>{traceType}</div>
+              <div className="text-[0.75rem] font-semibold pr-[0.75rem]">{formatCommentDate(item.block_time)}</div>
             </div>
             <div className="flex flex-col px-[0.75rem] mt-[0.55rem]">
               <div className="flex justify-between items-center">
-                <span className="text-[0.81rem] font-semibold text-white/60">{formatAddress(item.account, 4, 6)}</span>
-                <a href={``} target="_blank" className="flex items-center gap-[0.44rem]">
+                <a href={`${chain?.blockExplorers?.default.url}/address/${item.user_address}`} target="_blank" className="flex items-center gap-[0.44rem]">
+                  <span className="text-[0.81rem] font-semibold text-white/60">{formatAddress(item.user_address, 4, 6)}</span>
+                </a>
+                <a href={`${chain?.blockExplorers?.default.url}/tx/${item.txn_hash}`} target="_blank" className="flex items-center gap-[0.44rem]">
                   <TxIcon className="text-[0.875rem]" />
-                  <span className="text-[0.75rem] font-semibold">{formatAddress(item.transation, 6, 4)}</span>
+                  <span className="text-[0.75rem] font-semibold">{formatAddress(item.txn_hash, 6, 4)}</span>
                 </a>
               </div>
 
               <div className="w-full h-[1px] bg-white/10 mt-[0.67rem]"></div>
 
               <div className="flex justify-between items-center mt-[0.53rem]">
-                <span className="text-[0.81rem] font-semibold text-white/60">Token1</span>
-                <span className="text-[0.75rem] font-semibold">{item.token1}</span>
+                <span className="text-[0.81rem] font-semibold text-white/60">{token1Name}</span>
+                <span className="text-[0.75rem] font-semibold">{formatNumber(item.token1_amount)}</span>
               </div>
 
               <div className="flex justify-between items-center mt-[0.53rem]">
-                <span className="text-[0.81rem] font-semibold text-white/60">Token2</span>
-                <span className="text-[0.75rem] font-semibold">{item.token2}</span>
+                <span className="text-[0.81rem] font-semibold text-white/60">{token2Name}</span>
+                <span className="text-[0.75rem] font-semibold">{formatNumber(item.token2_amount)}</span>
               </div>
 
             </div>
@@ -93,31 +110,32 @@ export default function TradingHistory() {
           <Tr className="!h-[3.75rem]">
             <Th className="!p-0 !text-white  !border-white/10 !capitalize !text-[1rem] !font-semibold">Account</Th>
             <Th className="!text-white !border-white/10 !capitalize !text-[1rem] !font-semibold">Type</Th>
-            <Th className="!text-white !border-white/10 !capitalize !text-[1rem] !font-semibold">Token1</Th>
-            <Th className="!text-white !border-white/10 !capitalize !text-[1rem] !font-semibold">Token2</Th>
+            <Th className="!text-white !border-white/10 !capitalize !text-[1rem] !font-semibold">{token1Name}</Th>
+            <Th className="!text-white !border-white/10 !capitalize !text-[1rem] !font-semibold">{token2Name}</Th>
             <Th className="!text-white !border-white/10 !capitalize !text-[1rem] !font-semibold">Date</Th>
             <Th className="!p-0 !text-white !border-white/10 !capitalize !text-[1rem] !font-semibold">Transation</Th>
           </Tr>
         </Thead>
         <Tbody>
-          {[...TradingData, ...TradingData, ...TradingData].map((item, index) => {
-            const isBuy = item.type === 'buy'
-            const isSell = item.type === 'sell'
+          {data.map((item, index) => {
+            const isBuy = item.trace_type === 0
+            const isSell = item.trace_type === 1
+            const traceType = isBuy ? 'Buy' : 'Sell'
 
             return <Tr key={index} className="!font-semibold !h-[3.75rem]">
               <Td className="!p-0 !border-white/10 !text-[0.875rem] !text-white/60">
-                <a href={`https://etherscan.io/address/${item.account}`} target="_blank" className="flex items-center gap-2">
-                  <span>{formatAddress(item.account, 4, 6)}</span>
+                <a href={`${chain?.blockExplorers?.default.url}/address/${item.user_address}`} target="_blank" className="flex items-center gap-2">
+                  <span>{formatAddress(item.user_address, 4, 6)}</span>
                 </a>
               </Td>
-              <Td className={`!border-white/10 !text-[0.875rem] !capitalize ${isBuy && 'text-[#06D188]'} ${isSell && 'text-[#FF0021]'}`}>{item.type}</Td>
-              <Td className="!border-white/10 !text-[0.875rem] !text-white">{item.token1}</Td>
-              <Td className="!border-white/10 !text-[0.875rem] !text-white">{item.token2}</Td>
-              <Td className="!border-white/10 !text-[0.875rem] !text-white">{item.date}</Td>
+              <Td className={`!border-white/10 !text-[0.875rem] !capitalize ${isBuy && 'text-[#06D188]'} ${isSell && 'text-[#FF0021]'}`}>{traceType}</Td>
+              <Td className="!border-white/10 !text-[0.875rem] !text-white">{formatNumber(item.token1_amount)}</Td>
+              <Td className="!border-white/10 !text-[0.875rem] !text-white">{formatNumber(item.token2_amount)}</Td>
+              <Td className="!border-white/10 !text-[0.875rem] !text-white">{formatCommentDate(item.block_time)}</Td>
               <Td className="!p-0 !border-white/10 !text-[0.875rem] !text-white">
-                <a href={``} target="_blank" className="flex items-center gap-2">
+                <a href={`${chain?.blockExplorers?.default.url}/tx/${item.txn_hash}`} target="_blank" className="flex items-center gap-2">
                   <TxIcon />
-                  <span>{formatAddress(item.transation, 6, 4)}</span>
+                  <span>{formatAddress(item.txn_hash, 6, 4)}</span>
                 </a>
               </Td>
             </Tr>

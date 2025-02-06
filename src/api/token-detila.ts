@@ -1,4 +1,4 @@
-import { CommentItemResponse, HolderDistributionItemResponse, TokenBaseInfoResponse, TokenKlineItemResponse, TradeLogItemResponse } from "@/pages/token-detail/types/response";
+import { CommentItemResponse, HolderDistributionItemResponse, TokenBaseInfoResponse, TokenKlineItemResponse, TradeLogResponse } from "@/pages/token-detail/types/response";
 import request from "./request";
 
 export const fetchBaseInfo = async (tokenAddress: string) => {
@@ -44,7 +44,7 @@ export const fetchCommentSubmit = async (tokenAddress: string, comment: string) 
 }
 
 export const fetchTradeLog = async (tokenAddress: string, lastBlockNumber: number, lastTxnIndex: number, lastLogIndex: number, limit: number = 20) => {
-  return request<{list: TradeLogItemResponse[],}>({
+  return request<TradeLogResponse>({
     url: `/api/token/detail/trade-log`,
     method: 'GET',
     params: {
