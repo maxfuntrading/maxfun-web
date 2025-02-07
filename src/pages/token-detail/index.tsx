@@ -14,6 +14,8 @@ import { useParams } from "react-router-dom";
 import { fetchBaseInfo } from "@/api/token-detila";
 import { ERR_CODE } from "@/constants/ERR_CODE";
 import LoadingMore from "@/components/LoadingMore";
+import { useReadContract } from "wagmi";
+import { MaxFunTokenAbi } from "@/constants/abi/MaxFunToken";
 
 export default function TokenDetail() {
   const { isSM } = useBreakpoint()
@@ -24,8 +26,13 @@ export default function TokenDetail() {
   const [tokenBaseInfo, setTokenBaseInfo] = useState<TokenBaseInfoResponse>()
   const [isLoadingBaseInfo, setIsLoadingBaseInfo] = useState(false)
 
-  const isOnUniswap = true;
   const maxfunTokenAddress = useParams().tokenId;
+
+  const { data: isOnUniswap } = useReadContract({
+    address: maxfunTokenAddress as `0x${string}`,
+    abi: MaxFunTokenAbi,
+    functionName: 'transferEnabled',
+  })
 
   // get base info
   useEffect(() => {
@@ -62,7 +69,7 @@ export default function TokenDetail() {
           <Tab tab={tab} setTab={setTab} className="flex mdup:hidden" />
 
           <div className="flex justify-between gap-[1.32rem] h-fit mdup:mt-[1.26rem]">
-            {!isOnUniswap &&<PriceChart tab={tab} className={`${isSM && tab === TabType.Chart ? 'flex' : 'hidden mdup:flex'}`} />}
+            {!isOnUniswap &&<PriceChart tab={tab} tokenAddress={maxfunTokenAddress} className={`${isSM && tab === TabType.Chart ? 'flex' : 'hidden mdup:flex'}`} />}
             {isOnUniswap && <PriceChartIframe className={`${isSM && tab === TabType.Chart ? 'flex' : 'hidden mdup:flex'}`} />}
             <BuyAndSell 
               tokenAddress={maxfunTokenAddress} 

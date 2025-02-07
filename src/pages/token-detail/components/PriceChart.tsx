@@ -2,8 +2,19 @@ import { createChart, IChartApi } from 'lightweight-charts'
 import { useEffect, useRef } from 'react'
 import clsx from 'clsx'
 import { TabType } from '../types/type'
+import { fetchKline } from '@/api/token-detila'
+import { ERR_CODE } from '@/constants/ERR_CODE'
 
-export default function PriceChart({className, tab}: {className?: string, tab: TabType}) {
+interface KlineData {
+  time: number
+  open: number
+  high: number
+  low: number
+  close: number
+  volume: number
+}
+
+export default function PriceChart({className, tab, tokenAddress}: {className?: string, tab: TabType, tokenAddress: string}) {
   const chartContainerRef = useRef<HTMLDivElement>(null)
   const chartRef = useRef<IChartApi | null>(null)
 
@@ -34,7 +45,6 @@ export default function PriceChart({className, tab}: {className?: string, tab: T
         },
       },
       width: chartContainerRef.current.clientWidth,
-      height: 500,
     })
 
     // 创建K线图系列
@@ -56,20 +66,15 @@ export default function PriceChart({className, tab}: {className?: string, tab: T
     })
 
     // 示例数据
-    const data = [
-      { time: '2023-01-01', open: 100, high: 105, low: 95, close: 102, volume: 1000 },
-      { time: '2023-01-02', open: 102, high: 108, low: 100, close: 105, volume: 1200 },
-      { time: '2023-01-03', open: 105, high: 106, low: 98, close: 99, volume: 1100 },
-      // ... 更多数据
-    ]
+    const data: KlineData[] = []
 
     // 设置数据
-    candlestickSeries.setData(data)
+    candlestickSeries.setData(data as any)
     volumeSeries.setData(data.map(item => ({
       time: item.time,
       value: item.volume,
       color: item.close >= item.open ? '#26a69a' : '#ef5350',
-    })))
+    })) as any)
 
     // 自适应大小
     const handleResize = () => {
@@ -90,30 +95,95 @@ export default function PriceChart({className, tab}: {className?: string, tab: T
     }
   }, [tab])
 
-  // 获取实时数据的示例
+  // // 获取实时数据的示例
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const currentTs = Date.now()
+  //       const klineData = await fetchKline(tokenAddress, currentTs, 20)
+  //       if (!klineData || klineData.code !== ERR_CODE.SUCCESS) {
+  //         return
+  //       }
+
+  //       if (!chartRef.current) return
+
+  //       // Sort data by timestamp and remove duplicates
+  //       // const data = [{
+  //       //   time: Date.now(),
+  //       //   open: Math.random() * 100,
+  //       //   high: Math.random() * 100,
+  //       //   low: Math.random() * 100,
+  //       //   close: Math.random() * 100,
+  //       //   volume: Math.random() * 1000
+  //       // }]
+
+  //       const dataFilter: KlineData[] = klineData.data.list
+  //         .map((item) => ({
+  //           time: item.open_ts,
+  //           open: Number(item.open),
+  //           high: Number(item.high),
+  //           low: Number(item.low),
+  //           close: Number(item.close),
+  //           volume: Number(item.volume),
+  //         }))
+  //         .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime())
+  //         .filter((item, index, self) => 
+  //           index === self.findIndex((t) => t.time === item.time)
+  //         );
+
+  //       const candlestickSeries = chartRef.current.addCandlestickSeries()
+  //       candlestickSeries.setData(dataFilter as any)
+  //     } catch (error) {
+  //       console.error('Failed to fetch data:', error)
+  //     }
+  //   }
+
+  //   // 定期更新数据
+  //   const interval = setInterval(fetchData, 5000)
+  //   return () => clearInterval(interval)
+  // }, [tokenAddress])
+
+  // 获取历史数据
   useEffect(() => {
+    if (!chartRef.current) return
+    if (!tokenAddress) return
+
     const fetchData = async () => {
       try {
-        // 这里替换成您的API
-        // const response = await fetch('your-api-endpoint')
-        // const data = await response.json()
-        
-        // if (chartRef.current) {
-        //   // 更新数据
-        //   // chartRef.current.candlestickSeries.update(data)
-        // }
+        const currentTs = Date.now()
+        const klineData = await fetchKline(tokenAddress, currentTs, 100)
+        if (!klineData || klineData.code !== ERR_CODE.SUCCESS) {
+          return
+        }
+
+        const dataFilter: KlineData[] = klineData.data.list
+          .map((item) => ({
+            time: item.open_ts,
+            open: Number(item.open),
+            high: Number(item.high),
+            low: Number(item.low),
+            close: Number(item.close),
+            volume: Number(item.volume),
+          }))
+          .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime())
+          .filter((item, index, self) => 
+            index === self.findIndex((t) => t.time === item.time)
+          );
+
+        if (!chartRef.current) return
+
+        const candlestickSeries = chartRef.current.addCandlestickSeries()
+        candlestickSeries.setData(dataFilter as any)
       } catch (error) {
         console.error('Failed to fetch data:', error)
       }
     }
 
-    // 定期更新数据
-    const interval = setInterval(fetchData, 5000)
-    return () => clearInterval(interval)
-  }, [])
+    fetchData()
+  }, [tokenAddress])
 
   return (
-    <div className={clsx("w-full md:flex-1 rounded-[0.625rem] bg-black-10 overflow-hidden p-4  mdup:px-[1.57rem] mdup:py-[1.4rem]", className)}>
+    <div className={clsx("w-full mdup:flex-1 rounded-[0.625rem] bg-black-10 overflow-hidden p-4 mdup:px-[1.57rem] mdup:py-[1.4rem]", className)}>
       <div ref={chartContainerRef} className="w-full" />
     </div>
   )

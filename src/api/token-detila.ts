@@ -11,12 +11,14 @@ export const fetchBaseInfo = async (tokenAddress: string) => {
   })
 };
 
-export const fetchKline = async (tokenAddress: string) => {
+export const fetchKline = async (tokenAddress: string, lastOpenTs: number, limit: number = 20) => {
   return request<{list: TokenKlineItemResponse[]}>({
-    url: `/api/token/detail/detail/kline`,
+    url: `/api/token/detail/kline`,
     method: 'GET',
     params: {
       token_address: tokenAddress,
+      last_open_ts: lastOpenTs,
+      limit,
     },
   })
 }
