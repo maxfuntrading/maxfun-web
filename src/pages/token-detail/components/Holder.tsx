@@ -68,9 +68,8 @@ export default function Holder({className, tokenAddress}: {className?: string, t
                   <path d="M17.5 12.2807V16.25C17.5 16.9404 16.9404 17.5 16.25 17.5H3.75C3.05965 17.5 2.5 16.9404 2.5 16.25V3.75C2.5 3.05965 3.05965 2.5 3.75 2.5H7.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   <path d="M10.75 9.25L17.125 2.875" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-
                 <svg className='hidden group-hover:block' xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
-                  <path d="M10.6667 1.5H16.5V7.33333M16.5 11.2807V15.25C16.5 15.9404 15.9404 16.5 15.25 16.5H2.75C2.05965 16.5 1.5 15.9404 1.5 15.25V2.75C1.5 2.05965 2.05965 1.5 2.75 1.5H6.5M9.74992 8.24996L16.1249 1.87496" stroke="#EC3E6F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M10.6667 1.5H16.5V7.33333M16.5 11.2807V15.25C16.5 15.9404 15.9404 16.5 15.25 16.5H2.75C2.05965 16.5 1.5 15.9404 1.5 15.25V2.75C1.5 2.05965 2.05965 1.5 2.75 1.5H6.5M9.74992 8.24996L16.1249 1.87496" stroke="#EC3E6F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
 
                 <span className='text-[0.75rem] mdup:text-[0.875rem] font-medium hover:text-red-10'>{formatAddress(item.user_address, 10, 9)}</span>

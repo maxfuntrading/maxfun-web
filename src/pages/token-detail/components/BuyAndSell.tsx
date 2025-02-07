@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import SettingIcon from '@/assets/icons/setting.png'
 import SolidButton from '@/components/button/SolidButton'
 import { useDisclosure } from '@chakra-ui/react'
@@ -12,6 +12,9 @@ import Big from 'big.js'
 import useBuy from '@/hooks/contract/useBuy'
 import useSell from '@/hooks/contract/useSell'
 import { erc20Abi, formatUnits } from 'viem'
+import AppContext from '@/store/app'
+import LoadingMore from '@/components/LoadingMore'
+import { toastError } from '@/components/toast'
 
 interface BuyAndSellProps {
   className?: string
@@ -20,27 +23,33 @@ interface BuyAndSellProps {
   maxfunTokenIcon: string
 }
 
-export default function BuyAndSell({className, tokenAddress, raiseTokenIcon, maxfunTokenIcon}: BuyAndSellProps) {
-  const { address } = useAccount()
+enum ButtonText {
+  InsufficientAsset = 'Insufficient Asset',
+  Buy = 'Buy',
+  Sell = 'Sell',
+}
+
+export default function BuyAndSell({className, raiseTokenIcon, maxfunTokenIcon}: BuyAndSellProps) {
+  const { address, isConnected } = useAccount()
+  const { onConnectWallet} = useContext(AppContext)
   
   const [isBuy, setIsBuy] = useState(true)
   const isSell = !isBuy
-
-  const [amount, setAmount] = useState<string>()
+  const [amount, setAmount] = useState<string>('')
   const [slippage, setSlippage] = useState(10)
+  const [buttonText, setButtonText] = useState(ButtonText.Buy)
 
   const { isOpen: isOpenSlippage, onOpen: onOpenSlippage, onClose: onCloseSlippage } = useDisclosure();
 
   // const maxfunTokenAddress = tokenAddress
   // const maxfunTokenAddress = raiseToken.address
-  console.log('tokenAddress', tokenAddress);
   const maxfunTokenAddress = '0xE16205C3224449573Cc706d25B6870957aff255A' // "LUNA
   const raiseTokenAddress = '0xd97642E26F86310693324a3F0cC97e9eAA6436c6'
 
   // write contract
-  const { onBuy, state: buyState } = useBuy()
+  const { onBuy, state: buyState, onReset: onResetBuy } = useBuy()
   const isLoadingBuy = buyState.loading
-  const { onSell, state: sellState } = useSell()
+  const { onSell, state: sellState, onReset: onResetSell } = useSell()
   const isLoadingSell = sellState.loading
   const isLoadingTrade = isLoadingBuy || isLoadingSell
 
@@ -73,6 +82,12 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenIcon, max
         abi: erc20Abi,
         functionName: 'symbol',
       },
+      {
+        address: VITE_CONTRACT_MAX_FUN_CURVE as `0x${string}`,
+        abi: MaxFunCurveAbi,
+        functionName: 'getPair',
+        args: [maxfunTokenAddress as `0x${string}`, raiseTokenAddress as `0x${string}`]
+      }
     ],
     query: {
       enabled: !!maxfunTokenAddress && !!raiseTokenAddress
@@ -83,9 +98,10 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenIcon, max
   const maxfunTokenSymbol = contractInfo?.[2]
   const raiseTokenDecimal = contractInfo?.[3]
   const raiseTokenSymbol = contractInfo?.[4]
+  const pairAddress = contractInfo?.[5]
 
   // raise token balance
-  const { data: raiseTokenBalance } = useReadContract({
+  const { data: raiseTokenBalance, refetch: refetchRaiseTokenBalance } = useReadContract({
     address: raiseTokenAddress as `0x${string}`,
     abi: erc20Abi,
     functionName: 'balanceOf',
@@ -96,7 +112,7 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenIcon, max
   })
 
   // maxfun token balance
-  const { data: maxfunTokenBalance } = useReadContract({
+  const { data: maxfunTokenBalance, refetch: refetchMaxfunTokenBalance } = useReadContract({
     address: maxfunTokenAddress as `0x${string}`,
     abi: MaxFunTokenAbi,
     functionName: 'balanceOf',
@@ -136,12 +152,45 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenIcon, max
     }
   })
 
+  const isCanBuy = useMemo(() => {
+    setButtonText(ButtonText.Buy)
+    if (isSell) return false
+    if (isLoadingTrade) return false
+    if (!amount || Number(amount) <= 0) return false
+    if (raiseTokenBalance === undefined || raiseTokenDecimal === undefined) return false
+
+
+    if (Big(amount).times(Big(10).pow(raiseTokenDecimal)).gt(Big(raiseTokenBalance.toString()))) {
+      setButtonText(ButtonText.InsufficientAsset)
+      return false
+    }
+
+    return true
+  }, [amount, isLoadingTrade, isSell, raiseTokenBalance, raiseTokenDecimal])
+  
+
+  const isCanSell = useMemo(() => {
+    if (isBuy) return false
+    if (isLoadingTrade) return false
+    if (!amount) return false
+    if (maxfunTokenBalance === undefined || maxfunTokenDecimal === undefined) return false
+
+    setButtonText(ButtonText.Sell)
+
+    if (Big(amount).times(Big(10).pow(maxfunTokenDecimal)).gt(Big(maxfunTokenBalance.toString()))) {
+      setButtonText(ButtonText.InsufficientAsset)
+      return false
+    }
+
+    return true
+  }, [amount, isBuy, isLoadingTrade, maxfunTokenBalance, maxfunTokenDecimal])
+
   const onBuyHandle = async () => {
     if (!amount) return
     if (!amountOutBuy) return
-
+    if (!raiseTokenDecimal) return
     onBuy({
-        amountIn: BigInt(Big(amount).times(Big(10).pow(18)).toFixed(0)),
+        amountIn: BigInt(Big(amount).times(Big(10).pow(raiseTokenDecimal)).toFixed(0)),
         tokenAddress: maxfunTokenAddress,
         amountMinOut: amountOutBuy,
         asset: raiseTokenAddress
@@ -151,16 +200,56 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenIcon, max
   const onSellHandle = async () => {
     if (!amount) return
     if (!amountOutSell) return
-
+    if (!maxfunTokenDecimal) return
     onSell({
-      amountIn: BigInt(Big(amount).times(Big(10).pow(18)).toFixed(0)),
+      amountIn: BigInt(Big(amount).times(Big(10).pow(maxfunTokenDecimal)).toFixed(0)),
       tokenAddress: maxfunTokenAddress,
       amountMinOut: amountOutSell,
       asset: raiseTokenAddress
     })
   }
-  
 
+  // check buy
+  useEffect(() => {
+    if (buyState.success) {
+      onResetBuy()
+      setAmount('')
+      refetchRaiseTokenBalance()
+      refetchMaxfunTokenBalance()
+      setButtonText(ButtonText.Buy)
+    }
+
+    if (buyState.error) {
+      console.log('buyState.error', buyState.error);
+      onResetBuy()
+      if (buyState.error.includes('User rejected the request')) {
+        toastError('Cancel Approve')
+      } else {
+        toastError('Transaction Failure')
+      }
+    }
+  }, [buyState.success, buyState.error, onResetBuy, refetchRaiseTokenBalance, refetchMaxfunTokenBalance])
+
+  // check sell
+  useEffect(() => {
+    if (sellState.success) {
+      onResetSell()
+      setAmount('') 
+      refetchRaiseTokenBalance()
+      refetchMaxfunTokenBalance()
+      setButtonText(ButtonText.Sell)
+    }
+
+    if (sellState.error) {
+      onResetSell()
+      if (sellState.error.includes('User rejected the request')) {
+        toastError('Cancel Approve')
+      } else {
+        toastError('Transaction Failure')
+      }
+    }
+  }, [sellState.success, sellState.error, onResetSell, refetchRaiseTokenBalance, refetchMaxfunTokenBalance])
+  
   return (
     <div className={clsx(" flex-shrink-0 w-full mdup:w-[30rem] flex flex-col gap-[0.62rem] mdup:gap-[0.8rem] bg-black-10 rounded-[0.625rem] px-4 mdup:px-[1.49rem] py-[0.94rem] mdup:py-[1.3rem]", className)}>
       <div className={`self-end h-[1.875rem] rounded-[5px] text-[0.875rem] mdup:text-[1rem] flex-center px-[0.83rem] mdup:px-[1.34rem] w-fit ${isOnUniswap ? 'border-[2px] border-red-10 text-red-10' : ' bg-white/10'}`}>
@@ -168,19 +257,26 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenIcon, max
       </div>
 
       <div className='flex justify-between gap-[0.44rem] mdup:gap-[0.62rem]'>
-        <button onClick={() => setIsBuy(true)} className={`flex-1 h-[2.5rem] mdup:h-[3.125rem] text-[1rem] mdup:text-[1.25rem] font-medium rounded-[0.625rem] ${isBuy ? 'bg-red-10 hover:bg-red-10' : 'bg-black-10 border-[2px] border-white/10'}`}>
+        <button disabled={isLoadingTrade} onClick={() => {
+          setIsBuy(true)
+          setButtonText(ButtonText.Buy)
+        }} className={`flex-1 h-[2.5rem] mdup:h-[3.125rem] text-[1rem] mdup:text-[1.25rem] font-medium rounded-[0.625rem] ${isBuy ? 'bg-red-10 hover:bg-red-10' : 'bg-black-10 border-[2px] border-white/10'}`}>
           Buy
         </button>
-        <button onClick={() => setIsBuy(false)} className={`flex-1 h-[2.5rem] mdup:h-[3.125rem] text-[1rem] mdup:text-[1.25rem] font-medium rounded-[0.625rem] ${isSell ? 'bg-red-10 hover:bg-red-10' : 'bg-black-10 border-[2px] border-white/10'}`}>
+        <button disabled={isLoadingTrade} onClick={() => {
+          setIsBuy(false)
+          setButtonText(ButtonText.Sell)
+        }} className={`flex-1 h-[2.5rem] mdup:h-[3.125rem] text-[1rem] mdup:text-[1.25rem] font-medium rounded-[0.625rem] ${isSell ? 'bg-red-10 hover:bg-red-10' : 'bg-black-10 border-[2px] border-white/10'}`}>
           Sell
         </button>
       </div>
 
       <div className='flex justify-between items-center'>
-        <div className=' h-[1.875rem] bg-white/10 rounded-[0.375rem] flex-center px-[0.69rem] mdup:px-[0.8rem] font-medium text-[0.875rem] mdup:text-[1rem]'>
+        <div></div>
+        {/* <div className=' h-[1.875rem] bg-white/10 rounded-[0.375rem] flex-center px-[0.69rem] mdup:px-[0.8rem] font-medium text-[0.875rem] mdup:text-[1rem]'>
           Switch to Banana
-        </div>
-        <button onClick={onOpenSlippage}>
+        </div> */}
+        <button disabled={isLoadingTrade} onClick={onOpenSlippage}>
           <img className='size-[0.875rem] mdup:size-[1.25rem]' src={SettingIcon} alt="setting" />
         </button>
       </div>
@@ -258,19 +354,27 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenIcon, max
         ))}
       </div>
 
-      {isBuy && <div className='text-[0.875rem] mdup:text-[1rem] opacity-60 leading-[100%]'>You will receive: {amountOutBuy !== undefined && maxfunTokenDecimal !== undefined ? `${formatUnits(amountOutBuy, maxfunTokenDecimal)} ${maxfunTokenSymbol ?? ''}` : 'N/A'}</div>}
-      {isSell && <div className='text-[0.875rem] mdup:text-[1rem] opacity-60 leading-[100%]'>You will receive: {amountOutSell !== undefined && raiseTokenDecimal !== undefined ? `${formatUnits(amountOutSell, raiseTokenDecimal)} ${raiseTokenSymbol ?? ''}` : 'N/A'}</div>}
+      {isBuy && <div className='text-[0.875rem] mdup:text-[1rem] opacity-60 leading-[100%]'>
+        You will receive: {amountOutBuy !== undefined && maxfunTokenDecimal !== undefined ? `${formatUnits(amountOutBuy, maxfunTokenDecimal)} ${maxfunTokenSymbol ?? ''}` : 'N/A'}
+      </div>}
+      {isSell && <div className='text-[0.875rem] mdup:text-[1rem] opacity-60 leading-[100%]'>
+        You will receive: {amountOutSell !== undefined && raiseTokenDecimal !== undefined ? `${formatUnits(amountOutSell, raiseTokenDecimal)} ${raiseTokenSymbol ?? ''}` : 'N/A'}
+      </div>}
 
-      <SolidButton onClick={() => {
+      {!isConnected && <SolidButton onClick={onConnectWallet}>Connect Wallet</SolidButton>}
+
+      {isConnected && <SolidButton isDisabled={isBuy ? !isCanBuy : !isCanSell} onClick={() => {
         isBuy && onBuyHandle()
         isSell && onSellHandle()
       }}>
-        Buy
-      </SolidButton>
+        {isLoadingTrade 
+         ? <LoadingMore isDark={true} />
+         : <>{buttonText}</>}
+      </SolidButton>}
 
-      <div className='text-[0.875rem] mdup:text-[1rem] opacity-60 text-red-10 text-center leading-[100%]'>
+      {isOnUniswap && <a target='_blank' href={`https://app.uniswap.org/explore/pools/base/${pairAddress}`} className='text-[0.875rem] mdup:text-[1rem] opacity-60 text-red-10 text-center leading-[100%]'>
         The Pool was migrated to UniswapV3
-      </div>
+      </a>}
 
       <SlippageModal 
         isOpen={isOpenSlippage} 
