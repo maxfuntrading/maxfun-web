@@ -12,8 +12,9 @@ import useLaunch from '@/hooks/contract/useLaunch'
 import { toastError, toastSuccess } from '@/components/toast'
 import { fetchRaisedToken, fetchTag, fetchUploadTokenIcon, RaisedToken } from '@/api/common'
 import { ERR_CODE } from '@/constants/ERR_CODE'
-import { fetchLaunchToken, fetchRaisedTokenPrice, LaunchTokenParams } from '@/api/launch'
+import { fetchLaunchToken, LaunchTokenParams } from '@/api/launch'
 import { VITE_IMG_HOST } from '@/utils/runtime-config'
+import LoadingMore from '@/components/LoadingMore'
 
 function isValidUrl(url: string) {
   const urlPattern = /^https?:\/\/.+\..+/
@@ -21,11 +22,15 @@ function isValidUrl(url: string) {
 }
 
 const RaisedTokenTotalPrice = 2000; // 最低筹集要求价值$2000的Raised Token代币
+enum LaunchButtonText {
+  Launch = 'Launch',
+  InsufficientAssets = 'Insufficient Assets',
+}
 
 export default function Launcher() {
 
   const { isConnected } = useAccount()
-  const { onConnectWallet } = useContext(AppContext)
+  const { state: { isLogin }, onConnectWallet } = useContext(AppContext)
 
   const [iconUrl, setIconUrl] = useState('')
   const [name, setName] = useState('')
@@ -44,6 +49,7 @@ export default function Launcher() {
   const [showExtraOptions, setShowExtraOptions] = useState(false)
   // const [startTime, setStartTime] = useState<Date | null>(null)
   const [raisedTokenBalance, setRaisedTokenBalance] = useState(0)
+  const [launchButtonText, ] = useState(LaunchButtonText.Launch)
 
   // fetch data
   const [tags, setTags] = useState<SelectOptionType<string>[]>([])
@@ -54,7 +60,7 @@ export default function Launcher() {
 
   // write contract
   const { onLaunch, state: launchState, onReset: onResetLaunch } = useLaunch()
-  // const isLoadingLaunch = launchState.loading || isLoadingGetSignature
+  const isLoadingLaunch = launchState.loading || isLoadingGetSignature
 
   useEffect(() => {
     // TODO: get total supply from backend
@@ -105,26 +111,13 @@ export default function Launcher() {
       setTag(tagList[0])
       setRaisedTokens(raisedTokenRes.data.list)
       setRaisedToken(raisedTokenRes.data.list[0])
+      setRaisedTokenPrice(Number(raisedTokenRes.data.list[0].price))
+
+      // 计算初始平台token数量
+      setRaisedAmount((Math.ceil(RaisedTokenTotalPrice / Number(raisedTokenRes.data.list[0].price))).toString())
     }
     getBaseInfo()
   }, [raisedToken, tag])
-
-  // get raised token price
-  useEffect(() => {
-    if (!raisedToken) {
-      return
-    }
-
-    const getRaisedTokenPrice = async () => {
-      const res = await fetchRaisedTokenPrice(raisedToken.address)
-      if (res.code !== ERR_CODE.SUCCESS) {
-        return
-      }
-      setRaisedTokenPrice(Number(res.data))
-      setRaisedAmount((Math.ceil(RaisedTokenTotalPrice / Number(res.data))).toString())
-    }
-    getRaisedTokenPrice()
-  }, [raisedToken])
 
   const isTokenNameValid = useMemo(() => {
     const trimmedName = name.trim()
@@ -254,8 +247,34 @@ export default function Launcher() {
   }
 
   const onResetForm = () => {
-    
+    setIconUrl('')
+    setName('')
+    setSymbol('')
+    setDescription('')
+    setWebsiteUrl('')
+    setTwitterUrl('')
+    setTelegramUrl('')
+    setTotalSupply('10000000')
+    setRaisedAmount('0')
+    setSalesRatio('80')
+    setReservedRatio('0')
+    setLiquidityPoolRatio('20')
+    setRaisedToken(raisedTokens[0])
+    setRaisedTokenPrice(Number(raisedTokens[0].price))
+    setTag(tags[0])
+    setShowExtraOptions(false)
+    setIsLoadingGetSignature(false)
   }
+
+  const isCanLaunch = useMemo(() => {
+    if (!isLogin || isLoadingLaunch || !passAllChecks) {
+      return false
+    }
+
+    return true;
+  }, [isLoadingLaunch, isLogin, passAllChecks])
+  console.log('isCanLaunch', isCanLaunch)
+  
 
   const createToken = async () => {
     if (!isConnected || launchState.loading || isLoadingGetSignature || !raisedToken || !tag) {
@@ -302,13 +321,6 @@ export default function Launcher() {
     const id = launchTokenRes.data.id
     const signature = launchTokenRes.data.signature
 
-    // const id = 2;
-    // const signature = '0xb9659b73c1dd012916d4d0283fdff622948779eaa7ab3a6812581d2dc5fa5e601679eaaf6f67ca2b3ed2830403113f5b731d6d7e6cbc3594b77312f6b9d0bd691b'
-
-    //2 "signature": "b9659b73c1dd012916d4d0283fdff622948779eaa7ab3a6812581d2dc5fa5e601679eaaf6f67ca2b3ed2830403113f5b731d6d7e6cbc3594b77312f6b9d0bd691b"
-    //3 "signature": "3f68b68e5fbc97ecdad0819f39f40301247fa380c4c186d2a63b85501c1b48ff4ab474a51178bff71567f145656e23c7c6a5c241c0bffbbeb15ebe8a99eec4301b"
-    //4 "signature": "28677de1f1eb600e4c0ae046b8f464b874bc4a0cf03feb933ed0baf95f1295692ea0c2a2d907824bacec7bd8fb7734b2cc12981942f1346179939302698c36ab1c"
-
     // 调用合约lanch方法
     onLaunch({
       id: Number(id), 
@@ -322,9 +334,9 @@ export default function Launcher() {
 
   useEffect(() => {
     if (launchState.success) {
-      onResetForm()
       onResetLaunch()
       toastSuccess('Successful launch')
+      onResetForm()
     }
 
     if (launchState.error) {
@@ -335,6 +347,7 @@ export default function Launcher() {
         toastError('Launch failed')
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [launchState.success, launchState.error, onResetLaunch])
 
   return (
@@ -351,6 +364,7 @@ export default function Launcher() {
             <div className="flex flex-row w-full justify-center mdup:justify-start">
               <UploadButton 
                 onUpload={(file) => onUploadIcon(file)}
+                isDisabled={isLoadingLaunch}
               />
             </div>
           </div>
@@ -360,6 +374,7 @@ export default function Launcher() {
               required
               value={name}
               onChange={setName}
+              disabled={isLoadingLaunch}
               errorInfo={
                 isTokenNameValid
                   ? undefined
@@ -371,6 +386,7 @@ export default function Launcher() {
               required
               value={symbol}
               onChange={setSymbol}
+              disabled={isLoadingLaunch}
               errorInfo={
                 isTokenSymbolValid
                   ? undefined
@@ -397,6 +413,7 @@ export default function Launcher() {
               }
             }}
             value={description}
+            disabled={isLoadingLaunch}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault()
@@ -417,7 +434,14 @@ export default function Launcher() {
                 key={token.address}
                 token={token}
                 selected={raisedToken?.address === token.address}
-                onClick={() => setRaisedToken(token)}
+                onClick={() => {
+                  if (isLoadingLaunch) {
+                    return
+                  }
+                  setRaisedToken(token)
+                  setRaisedTokenPrice(Number(token.price))
+                  setRaisedAmount((Math.ceil(RaisedTokenTotalPrice / Number(token.price))).toString())
+                }}
               />
             ))}
           </div>
@@ -432,6 +456,7 @@ export default function Launcher() {
               optionPanelClassName="mdup:!top-[4.375rem]"
               defaultOption={tag}
               options={tags}
+              isDisabled={isLoadingLaunch}
               onSelect={(val) => setTag(val)}
             />
           </div>
@@ -440,18 +465,21 @@ export default function Launcher() {
           label="Website"
           value={websiteUrl}
           onChange={setWebsiteUrl}
+          disabled={isLoadingLaunch}
           errorInfo={isWebsiteUrlValid ? undefined : 'Invalid URL'}
         />
         <InputField
           label="Twitter"
           value={twitterUrl}
           onChange={setTwitterUrl}
+          disabled={isLoadingLaunch}
           errorInfo={isTwitterUrlValid ? undefined : 'Invalid URL'}
         />
         <InputField
           label="Telegram"
           value={telegramUrl}
           onChange={setTelegramUrl}
+          disabled={isLoadingLaunch}
           errorInfo={isTelegramUrlValid ? undefined : 'Invalid URL'}
         />
         <Switch
@@ -467,6 +495,7 @@ export default function Launcher() {
                 type="number"
                 value={totalSupply}
                 onChange={setTotalSupply}
+                disabled={isLoadingLaunch}
                 errorInfo={
                   isTotalSupplyValid
                     ? undefined
@@ -483,6 +512,7 @@ export default function Launcher() {
                     type="number"
                     value={raisedAmount}
                     onChange={setRaisedAmount}
+                    disabled={isLoadingLaunch}
                     errorInfo={
                       isRaisedAmountValid
                         ? undefined
@@ -510,6 +540,7 @@ export default function Launcher() {
                   type="number"
                   value={salesRatio}
                   onChange={setSalesRatio}
+                  disabled={isLoadingLaunch}
                   onBlur={() => {
                     const num = Number(salesRatio)
 
@@ -530,6 +561,7 @@ export default function Launcher() {
                   type="number"
                   value={reservedRatio}
                   onChange={setReservedRatio}
+                  disabled={isLoadingLaunch}
                   onBlur={() => {
                     const num = Number(reservedRatio)
 
@@ -550,7 +582,7 @@ export default function Launcher() {
                   type="number"
                   value={liquidityPoolRatio}
                   onChange={setLiquidityPoolRatio}
-                  disabled
+                  disabled={isLoadingLaunch}
                 />
                 <span className="text-sm mdup:text-xl mb-3 mdup:mb-6">%</span>
               </div>
@@ -585,25 +617,27 @@ export default function Launcher() {
           </>
         )}
         <div className="flex flex-row justify-center mt-2 mb-[1.75rem]">
-          <SolidButton
-            isDisabled={
-              isConnected && (!isRaisedTokenSufficient || !passAllChecks)
-            }
+          {!isConnected && <SolidButton
             onClick={() => {
-              if (isConnected) {
-                createToken()
-              } else {
-                onConnectWallet()
-              }
+              onConnectWallet()
             }}
             className="mdup:!w-[26.875rem] mdup:!h-[3.5rem] !w-full !h-[2.5rem]"
           >
-            {isConnected
-              ? isRaisedTokenSufficient
-                ? 'Launch'
-                : 'Insufficient Assets'
-              : 'Connect Wallet'}
-          </SolidButton>
+            Connect Wallet
+          </SolidButton>}
+
+          {isConnected && <SolidButton
+            isDisabled={
+              !isCanLaunch
+            }
+            onClick={() => {
+              createToken()
+            }}
+            className="mdup:!w-[26.875rem] mdup:!h-[3.5rem] !w-full !h-[2.5rem]"
+          >
+            {isLoadingLaunch && <LoadingMore isDark={true} />}
+            {!isLoadingLaunch && launchButtonText}
+          </SolidButton>}
         </div>
       </div>
     </div>

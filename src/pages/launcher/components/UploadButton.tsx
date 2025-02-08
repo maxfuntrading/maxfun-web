@@ -4,8 +4,10 @@ import { useState } from 'react'
 
 export default function UploadButton({
   onUpload,
+  isDisabled,
 }: {
   onUpload: (file: File) => void
+  isDisabled: boolean
 }) {
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null)
 
@@ -40,6 +42,7 @@ export default function UploadButton({
       <input
         type="file"
         className="hidden"
+        disabled={isDisabled}
         accept="image/jpeg,image/png,image/webp,image/gif"
         onChange={handleFileChange}
       />

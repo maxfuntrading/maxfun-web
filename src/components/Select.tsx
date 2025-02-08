@@ -15,6 +15,7 @@ interface SelectProps<T> {
   className?: string
   optionClassName?: string
   optionPanelClassName?: string
+  isDisabled?: boolean
 }
 
 export default function Select<T>({
@@ -24,6 +25,7 @@ export default function Select<T>({
   className,
   optionClassName,
   optionPanelClassName,
+  isDisabled,
 }: SelectProps<T>) {
   const [isOpenOption, setIsOpenOption] = useState(false)
   const selectRef = useRef<HTMLDivElement>(null)
@@ -43,7 +45,12 @@ export default function Select<T>({
     >
       <div
         className={clsx('w-full h-full flex items-center justify-between')}
-        onClick={() => setIsOpenOption((prev) => !prev)}
+        onClick={() => {
+          if (isDisabled) {
+            return
+          }
+          setIsOpenOption((prev) => !prev)
+        }}
       >
         <div>{defaultOption.value}</div>
 
