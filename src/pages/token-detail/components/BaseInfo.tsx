@@ -74,7 +74,7 @@ export default function BaseInfo({data, tokenAddress}: {data: TokenBaseInfoRespo
             </div>
 
             <div className='flex gap-[0.44rem] mdup:mt-2'>
-              {LinkData.map((item, index) => (
+              {LinkData.filter(item => item.link).map((item, index) => (
                 <a key={index} href={item.link} target="_blank" rel="noopener noreferrer" className="size-[1.975rem] bg-white/10 rounded-full flex items-center justify-center">
                   {item.icon}
                 </a>

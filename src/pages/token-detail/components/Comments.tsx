@@ -57,6 +57,7 @@ export default function Comments({tokenAddress}: {tokenAddress: string}) {
       }
 
       setComment('')
+      setData(prev => [res.data,...prev])
       toastSuccess('Comment successful ')
     }).catch(() => {
       // toastError('Comment failed, please try again')
@@ -130,7 +131,7 @@ export default function Comments({tokenAddress}: {tokenAddress: string}) {
         { isLoadingSubmit && <LoadingMore isDark={true} className="text-black-40 gap-1" />}
       </FlatButton>}
       
-      <div className="text-[1rem] mdup:text-[1.125rem] font-medium text-white mt-[1.16rem]">Comment {total ? `(${total})` : ''}</div>
+      {total !== undefined && total > 0 && <div className="text-[1rem] mdup:text-[1.125rem] font-medium text-white mt-[1.16rem]">Comment {total ? `(${total})` : ''}</div>}
 
       <div className="w-full flex flex-col">
         {data.map((item, index) => (

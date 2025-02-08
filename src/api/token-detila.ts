@@ -35,7 +35,7 @@ export const fetchCommentHistory = async (tokenAddress: string, page: number = 1
   })
 }
 export const fetchCommentSubmit = async (tokenAddress: string, comment: string) => {
-  return request({
+  return request<CommentItemResponse>({
     url: `/api/token/detail/comment-submit`,
     method: 'POST',
     data: {
