@@ -7,18 +7,20 @@ import Select, { SelectOptionType } from '@/components/Select'
 import { useAccount } from 'wagmi'
 import AppContext from '@/store/app'
 import SolidButton from '@/components/button/SolidButton'
-import TimePicker from './components/TimePicker'
+// import TimePicker from './components/TimePicker'
 import useLaunch from '@/hooks/contract/useLaunch'
 import { toastError, toastSuccess } from '@/components/toast'
 import { fetchRaisedToken, fetchTag, fetchUploadTokenIcon, RaisedToken } from '@/api/common'
 import { ERR_CODE } from '@/constants/ERR_CODE'
-import { fetchLaunchToken, LaunchTokenParams } from '@/api/launch'
+import { fetchLaunchToken, fetchRaisedTokenPrice, LaunchTokenParams } from '@/api/launch'
 import { VITE_IMG_HOST } from '@/utils/runtime-config'
 
 function isValidUrl(url: string) {
   const urlPattern = /^https?:\/\/.+\..+/
   return urlPattern.test(url)
 }
+
+const RaisedTokenTotalPrice = 2000; // 最低筹集要求价值$2000的Raised Token代币
 
 export default function Launcher() {
 
@@ -32,17 +34,15 @@ export default function Launcher() {
   const [twitterUrl, setTwitterUrl] = useState('')
   const [telegramUrl, setTelegramUrl] = useState('')
   const [description, setDescription] = useState('')
-  const [totalSupply, setTotalSupply] = useState('0')
+  const [totalSupply, setTotalSupply] = useState('10000000')
   const [raisedAmount, setRaisedAmount] = useState('0')
   const [salesRatio, setSalesRatio] = useState('80')
   const [reservedRatio, setReservedRatio] = useState('0')
   const [liquidityPoolRatio, setLiquidityPoolRatio] = useState('20')
   
-  
-  const [raisedTokenPrice, setRaisedTokenPrice] = useState(0)
-  const [showExtraOptions, setShowExtraOptions] = useState(true)
-  const [startTime, setStartTime] = useState<Date | null>(null)
-
+  const [raisedTokenPrice, setRaisedTokenPrice] = useState<number>()
+  const [showExtraOptions, setShowExtraOptions] = useState(false)
+  // const [startTime, setStartTime] = useState<Date | null>(null)
   const [raisedTokenBalance, setRaisedTokenBalance] = useState(0)
 
   // fetch data
@@ -50,14 +50,15 @@ export default function Launcher() {
   const [tag, setTag] = useState<SelectOptionType<string>>()
   const [raisedTokens, setRaisedTokens] = useState<RaisedToken[]>([])
   const [raisedToken, setRaisedToken] = useState<RaisedToken>()
+  const [isLoadingGetSignature, setIsLoadingGetSignature] = useState(false)
 
   // write contract
   const { onLaunch, state: launchState, onReset: onResetLaunch } = useLaunch()
-  const [isLoadingSubmit, setIsLoadingSubmit] = useState(false)
+  // const isLoadingLaunch = launchState.loading || isLoadingGetSignature
 
   useEffect(() => {
     // TODO: get total supply from backend
-    const totalSupplyNum = 1000000
+    const totalSupplyNum = 10000000000
     setTotalSupply(totalSupplyNum.toString())
 
     // TODO: get raised amount from backend
@@ -107,6 +108,23 @@ export default function Launcher() {
     }
     getBaseInfo()
   }, [raisedToken, tag])
+
+  // get raised token price
+  useEffect(() => {
+    if (!raisedToken) {
+      return
+    }
+
+    const getRaisedTokenPrice = async () => {
+      const res = await fetchRaisedTokenPrice(raisedToken.address)
+      if (res.code !== ERR_CODE.SUCCESS) {
+        return
+      }
+      setRaisedTokenPrice(Number(res.data))
+      setRaisedAmount((Math.ceil(RaisedTokenTotalPrice / Number(res.data))).toString())
+    }
+    getRaisedTokenPrice()
+  }, [raisedToken])
 
   const isTokenNameValid = useMemo(() => {
     const trimmedName = name.trim()
@@ -171,6 +189,14 @@ export default function Launcher() {
   }, [totalSupply])
 
   const isRaisedAmountValid = useMemo(() => {
+    if (raisedTokenPrice === undefined) {
+      return false
+    }
+
+    if (!raisedAmount) {
+      return false
+    }
+
     const num = Number(raisedAmount)
 
     if (num * raisedTokenPrice < 2000) {
@@ -190,14 +216,14 @@ export default function Launcher() {
     return true
   }, [raisedTokenBalance, raisedAmount])
 
-  const isStartTimeValid = useMemo(() => {
-    if (!startTime) {
-      return true
-    }
+  // const isStartTimeValid = useMemo(() => {
+  //   if (!startTime) {
+  //     return true
+  //   }
 
-    const now = new Date()
-    return startTime.getTime() > now.getTime()
-  }, [startTime])
+  //   const now = new Date()
+  //   return startTime.getTime() > now.getTime()
+  // }, [startTime])
 
   const passAllChecks = useMemo(() => {
     if (iconUrl === '' || name === '' || symbol === '' || description === '') {
@@ -213,10 +239,9 @@ export default function Launcher() {
       isTelegramUrlValid &&
       isTotalSupplyValid &&
       isRaisedAmountValid &&
-      isRaisedTokenSufficient &&
-      isStartTimeValid
+      isRaisedTokenSufficient
     )
-  }, [iconUrl, name, symbol, description, isTokenNameValid, isTokenSymbolValid, isDescriptionValid, isWebsiteUrlValid, isTwitterUrlValid, isTelegramUrlValid, isTotalSupplyValid, isRaisedAmountValid, isRaisedTokenSufficient, isStartTimeValid])
+  }, [iconUrl, name, symbol, description, isTokenNameValid, isTokenSymbolValid, isDescriptionValid, isWebsiteUrlValid, isTwitterUrlValid, isTelegramUrlValid, isTotalSupplyValid, isRaisedAmountValid, isRaisedTokenSufficient])
 
   const onUploadIcon = async (file: File) => {
     const formData = new FormData()
@@ -233,12 +258,12 @@ export default function Launcher() {
   }
 
   const createToken = async () => {
-    if (!isConnected || launchState.loading || isLoadingSubmit || !raisedToken || !tag) {
+    if (!isConnected || launchState.loading || isLoadingGetSignature || !raisedToken || !tag) {
       return
     }
 
     // 从后端请求签名
-    setIsLoadingSubmit(true)
+    setIsLoadingGetSignature(true)
     const launchTokenParams: LaunchTokenParams = {
       name: name,
       icon: iconUrl.replace(VITE_IMG_HOST, ''),
@@ -256,11 +281,20 @@ export default function Launcher() {
       pool_ratio: Number(liquidityPoolRatio),
       // launch_ts: dayjs(startTime).unix()
     }
-    console.log('launchTokenParams', launchTokenParams);
+    
+    if (websiteUrl.length === 0) {
+      delete launchTokenParams.website
+    }
+    if (twitterUrl.length === 0) {
+      delete launchTokenParams.twitter
+    }
+    if (telegramUrl.length === 0) {
+      delete launchTokenParams.telegram
+    }
+
     const launchTokenRes = await fetchLaunchToken(launchTokenParams).finally(() => {
-      setIsLoadingSubmit(false)
+      setIsLoadingGetSignature(false)
     })
-    console.log('launchTokenRes', launchTokenRes);
     if (!launchTokenRes || launchTokenRes.code !== ERR_CODE.SUCCESS) {
       return
     }
@@ -440,6 +474,7 @@ export default function Launcher() {
                 }
               />
             </div>
+
             <div className="flex flex-col gap-[0.625rem]">
               <div className="flex flex-row gap-2 items-end justify-between w-full">
                 <div className="flex-1">
@@ -462,11 +497,12 @@ export default function Launcher() {
                     className="size-4 mdup:size-[1.375rem] mr-1"
                   />
                   <span className="text-sm mdup:text-xl">
-                    {raisedToken?.symbol}(${raisedTokenPrice * Number(raisedAmount)})
+                    {raisedToken?.symbol}(${raisedTokenPrice && raisedTokenPrice * Number(raisedAmount)})
                   </span>
                 </div>
               </div>
             </div>
+
             <div className="flex flex-row gap-8 items-end mdup:w-4/5">
               <div className="flex flex-row items-end w-full gap-2">
                 <InputField
@@ -519,6 +555,7 @@ export default function Launcher() {
                 <span className="text-sm mdup:text-xl mb-3 mdup:mb-6">%</span>
               </div>
             </div>
+
             <div className="flex flex-col gap-2 items-start  border-[#FFFFFF1A] bg-white/5 rounded-[0.625rem] border-2 p-4">
               <div className="text-white/40">
                 Intial Price:
@@ -534,7 +571,7 @@ export default function Launcher() {
                 </span>
               </div>
             </div>
-            <div className="flex flex-col gap-4 items-start">
+            {/* <div className="flex flex-col gap-4 items-start">
               <span className="text-sm mdup:text-xl font-['Outfit']">
                 Start Time
               </span>
@@ -544,7 +581,7 @@ export default function Launcher() {
                   Start time must be greater than current time
                 </span>
               )}
-            </div>
+            </div> */}
           </>
         )}
         <div className="flex flex-row justify-center mt-2 mb-[1.75rem]">

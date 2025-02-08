@@ -33,3 +33,11 @@ export const fetchLaunchToken = async (data: LaunchTokenParams) => {
     data,
   })
 }
+
+export const fetchRaisedTokenPrice = async (raisedToken: string) => {
+  return request<string>({
+    url: '/api/launcher/raised-token-price',
+    method: 'GET',
+    params: { raised_token: raisedToken }
+  })
+}

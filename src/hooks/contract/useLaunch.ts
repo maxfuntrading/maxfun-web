@@ -1,8 +1,8 @@
 import { MAX_FUN_FACTORY_ABI } from "@/constants/abi/MaxFunFactory"
 import { WriteContractState } from "@/types/contract"
-import { VITE_CONTRACT_MAX_FUN_FACTORY } from "@/utils/runtime-config"
+import { VITE_CONTRACT_FEE_VAULT, VITE_CONTRACT_MAX_FUN_FACTORY } from "@/utils/runtime-config"
 import { useState } from "react"
-import { parseEther } from "viem"
+import { erc20Abi, parseEther, parseUnits } from "viem"
 import { useAccount, usePublicClient, useWriteContract } from "wagmi"
 
 export default function useLaunch() {
@@ -25,9 +25,7 @@ export default function useLaunch() {
       asset,
       signature,
     ]);
-    console.log('VITE_CONTRACT_MAX_FUN_FACTORY', VITE_CONTRACT_MAX_FUN_FACTORY);
-    
-    
+    const amountIn = parseEther('201')
     
     if (!address || !publicClient) {
       setState({
@@ -45,6 +43,65 @@ export default function useLaunch() {
     })
 
     try {
+      // 分别对Factory和TaxVault合约Approve 201e18
+      // 对Factory合约Approve
+      const allowanceFactory = await publicClient.readContract({
+        address: asset as `0x${string}`,
+        abi: erc20Abi,
+        functionName: 'allowance',
+        args: [address as `0x${string}`, VITE_CONTRACT_MAX_FUN_FACTORY as `0x${string}`],
+      })
+
+      if (allowanceFactory < parseUnits('201', 18)) {
+        const hashApprove = await writeContractAsync({
+          address: asset as `0x${string}`,
+          abi: erc20Abi,
+          functionName: 'approve',
+          args: [VITE_CONTRACT_MAX_FUN_FACTORY as `0x${string}`, amountIn],
+        })
+        const receiptApproveFactory = await publicClient.waitForTransactionReceipt({
+          hash: hashApprove,
+        })
+        if (!receiptApproveFactory || receiptApproveFactory.status !== 'success') {
+          setState({
+            loading: false,
+            success: false,
+            error: 'Approve failed',
+          })
+          console.error('Approve failed')
+          return
+        }
+      }
+
+      // 对TaxVault合约Approve
+      const allowanceTaxVault = await publicClient.readContract({
+        address: asset as `0x${string}`,
+        abi: erc20Abi,
+        functionName: 'allowance',
+        args: [address as `0x${string}`, VITE_CONTRACT_FEE_VAULT as `0x${string}`],
+      })
+
+      if (allowanceTaxVault < parseUnits('201', 18)) {
+        const hashApprove = await writeContractAsync({
+          address: asset as `0x${string}`,
+          abi: erc20Abi,
+          functionName: 'approve',
+          args: [VITE_CONTRACT_FEE_VAULT as `0x${string}`, amountIn],
+        })
+        const receiptApproveTaxVault = await publicClient.waitForTransactionReceipt({
+          hash: hashApprove,
+        })
+        if (!receiptApproveTaxVault || receiptApproveTaxVault.status !== 'success') {
+          setState({
+            loading: false,
+            success: false,
+            error: 'Approve failed',
+          })
+          console.error('Approve failed')
+          return
+        }
+      }
+
       // uint8 id,                    // 用于签名验证的ID
       // string memory _name,         // Max.Fun Asset Token的名称
       // string memory _ticker,       // Max.Fun Asset Token的代币符号
@@ -61,7 +118,7 @@ export default function useLaunch() {
           symbol,
           // amount,
           // BigInt(201e18),
-          parseEther('201'),
+          amountIn,
           asset as `0x${string}`,
           signature as `0x${string}`,
         ],
