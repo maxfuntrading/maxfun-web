@@ -1,7 +1,7 @@
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import InputField from './components/InputField'
 import TokenButton from './components/TokenButton'
-import UploadButton from './components/UploadButton'
+import UploadButton, { UploadButtonRef } from './components/UploadButton'
 import Switch from './components/Switch'
 import Select, { SelectOptionType } from '@/components/Select'
 import { useAccount } from 'wagmi'
@@ -28,9 +28,9 @@ enum LaunchButtonText {
 }
 
 export default function Launcher() {
-
   const { isConnected } = useAccount()
   const { state: { isLogin }, onConnectWallet } = useContext(AppContext)
+  const uploadButtonRef = useRef<UploadButtonRef>(null)
 
   const [iconUrl, setIconUrl] = useState('')
   const [name, setName] = useState('')
@@ -248,6 +248,7 @@ export default function Launcher() {
 
   const onResetForm = () => {
     setIconUrl('')
+    uploadButtonRef.current?.reset()
     setName('')
     setSymbol('')
     setDescription('')
@@ -363,6 +364,7 @@ export default function Launcher() {
             </label>
             <div className="flex flex-row w-full justify-center mdup:justify-start">
               <UploadButton 
+                ref={uploadButtonRef}
                 onUpload={(file) => onUploadIcon(file)}
                 isDisabled={isLoadingLaunch}
               />

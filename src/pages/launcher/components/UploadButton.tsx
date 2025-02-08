@@ -1,15 +1,24 @@
 import uploadIcon from '@/assets/images/launcher/upload.svg'
 import { toastError } from '@/components/toast'
-import { useState } from 'react'
+import { forwardRef, useImperativeHandle, useState } from 'react'
 
-export default function UploadButton({
-  onUpload,
-  isDisabled,
-}: {
+interface UploadButtonProps {
   onUpload: (file: File) => void
   isDisabled: boolean
-}) {
+}
+
+export interface UploadButtonRef {
+  reset: () => void
+}
+
+const UploadButton = forwardRef<UploadButtonRef, UploadButtonProps>(({ onUpload, isDisabled }, ref) => {
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null)
+
+  useImperativeHandle(ref, () => ({
+    reset: () => {
+      setUploadedUrl(null)
+    },
+  }))
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -63,4 +72,6 @@ export default function UploadButton({
       </div>
     </label>
   )
-}
+})
+
+export default UploadButton
