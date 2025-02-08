@@ -17,16 +17,18 @@ yarn dev
 ```
 
 ### 测试环境合约
-[MaxFunFactory](https://sepolia.basescan.org/address/0x73AF2842CAf609D3fabcf349Dc7AA5Ba69F84BbD#readProxyContract)
+[MaxFunFactory](https://sepolia.basescan.org/address/0x1196285B248ba9b7760308bb991094F33de337Da#readProxyContract)
 
-[MaxFunManager](https://sepolia.basescan.org/address/0xa5c02FfA471e799e6B3f9Ff13597894929Ed13C8#readProxyContract)
+[MaxFunManager](https://sepolia.basescan.org/address/0x3e24Cbe70FA7d22821147f81c8bA73741Cb509f8#readProxyContract)
 
-[MaxFunCurve](https://sepolia.basescan.org/address/0x4274F0Dfdf7439Fbf970578AB64e889f8971808a#readProxyContract)
+[MaxFunCurve](https://sepolia.basescan.org/address/0xb7DD6d95a081cb1cbc6350D04333c0D566E2801A#readProxyContract)
 
-[MockFeeVault](https://sepolia.basescan.org/address/0x552E2a663AFb9BE0c9FF3441232b520170a01DEC#readProxyContract)
+[MockFeeVault](https://sepolia.basescan.org/address/0xd751e5D6f6E5378dEc86c940b6D65562Eba5d82E#readProxyContract)
 
-[MockWETH](https://sepolia.basescan.org/address/0xd97642E26F86310693324a3F0cC97e9eAA6436c6#readProxyContract)
+[MockWETH](https://sepolia.basescan.org/address/0xF58F5BFee6B2580a983aC25bEc2781E05475341C#readProxyContract)
 
-[UniswapV2Factory](https://sepolia.basescan.org/address/0xEE7C1Fa334410e837962615843904f2e60De6617#readProxyContract)
+[MockMAX](https://sepolia.basescan.org/address/0x99F25Ce00a185D06542B784a0c16d8E4465E5ea1#readProxyContract)
 
-[UniswapV2Router02](https://sepolia.basescan.org/address/0x1fB4815BDc270b5EEbf2e0179D3D098E82e92Ff6#readProxyContract)
+[UniswapV2Factory](https://sepolia.basescan.org/address/0x03cf0A72aAf71A66e9774747860700ADaaB89768#readProxyContract)
+
+[UniswapV2Router02](https://sepolia.basescan.org/address/0x0EE941B8A2a7BD1f7Cdc7F7757166EAb1c690bAd#readProxyContract)

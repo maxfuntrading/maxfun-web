@@ -43,8 +43,8 @@ export default function BuyAndSell({className, raiseTokenIcon, maxfunTokenIcon}:
 
   // const maxfunTokenAddress = tokenAddress
   // const maxfunTokenAddress = raiseToken.address
-  const maxfunTokenAddress = '0xE16205C3224449573Cc706d25B6870957aff255A' // "LUNA
-  const raiseTokenAddress = '0xd97642E26F86310693324a3F0cC97e9eAA6436c6'
+  const maxfunTokenAddress = '0x3532bd1c11fd1a5763a5c445db8b7f7fc10d5ef8'
+  const raiseTokenAddress = '0xF58F5BFee6B2580a983aC25bEc2781E05475341C'
 
   // write contract
   const { onBuy, state: buyState, onReset: onResetBuy } = useBuy()
