@@ -40,9 +40,14 @@ export default function TradingHistory({ tokenAddress }: { tokenAddress: string 
 
   const getTradingHistory = async (lastBlockNumber: number, lastTxnIndex: number, lastLogIndex: number) => {
     setIsLoadingList(true)
-    console.log('tokenAddress', tokenAddress);
-    fetchTradeLog('0xaa0851f2939ef2d8b51971b510383fcb5c246a11', lastBlockNumber, lastTxnIndex, lastLogIndex, PAGE_SIZE).then(res => {
+    // fetchTradeLog('0xaa0851f2939ef2d8b51971b510383fcb5c246a11', lastBlockNumber, lastTxnIndex, lastLogIndex, PAGE_SIZE).then(res => {
+      fetchTradeLog(tokenAddress, lastBlockNumber, lastTxnIndex, lastLogIndex, PAGE_SIZE).then(res => {
       if (res.code !== ERR_CODE.SUCCESS) return
+      if (res.data.list.length === 0) {
+        setIsFinishedLoadMore(true)
+        return
+      }
+
       setToken1Name(res.data.token1_name)
       setToken2Name(res.data.token2_name)
       setData([...data, ...res.data.list])
