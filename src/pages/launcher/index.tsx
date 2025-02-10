@@ -35,7 +35,8 @@ export default function Launcher() {
   const { state: { isLogin }, onConnectWallet } = useContext(AppContext)
   const uploadButtonRef = useRef<UploadButtonRef>(null)
 
-  const [iconUrl, setIconUrl] = useState('')
+  // const [iconUrl, setIconUrl] = useState('')
+  const [iconFile, setIconFile] = useState<File>()
   const [name, setName] = useState('')
   const [symbol, setSymbol] = useState('')
   const [websiteUrl, setWebsiteUrl] = useState('')
@@ -60,10 +61,11 @@ export default function Launcher() {
   const [raisedTokens, setRaisedTokens] = useState<RaisedToken[]>([])
   const [raisedToken, setRaisedToken] = useState<RaisedToken>()
   const [isLoadingGetSignature, setIsLoadingGetSignature] = useState(false)
+  const [isLoadingUploadIcon, setIsLoadingUploadIcon] = useState(false)
 
   // write contract
   const { onLaunch, state: launchState, onReset: onResetLaunch } = useLaunch()
-  const isLoadingLaunch = launchState.loading || isLoadingGetSignature
+  const isLoadingLaunch = launchState.loading || isLoadingGetSignature || isLoadingUploadIcon
 
   // 内盘开启时的价格
   const initialYprice = useMemo(() => {
@@ -98,16 +100,6 @@ export default function Launcher() {
     const priceUniswap = (r * (1 - m)) / (t * l);
     return priceUniswap
   }, [liquidityPoolRatio, raisedAmount, totalSupply])
-
-  // 外盘开启时的价格涨幅
-  const priceIncrease = useMemo(() => {
-    if (!initialYUniswapPrice || !initialYprice) {
-      return undefined
-    }
-
-    const increase = initialYUniswapPrice / initialYprice
-    return increase
-  }, [initialYUniswapPrice, initialYprice])
 
   useEffect(() => {
     // TODO: get total supply from backend
@@ -266,7 +258,7 @@ export default function Launcher() {
   // }, [startTime])
 
   const passAllChecks = useMemo(() => {
-    if (iconUrl === '' || name === '' || symbol === '' || description === '') {
+    if (!iconFile || name === '' || symbol === '' || description === '') {
       return false
     }
 
@@ -281,20 +273,23 @@ export default function Launcher() {
       isRaisedAmountValid &&
       isRaisedTokenSufficient
     )
-  }, [iconUrl, name, symbol, description, isTokenNameValid, isTokenSymbolValid, isDescriptionValid, isWebsiteUrlValid, isTwitterUrlValid, isTelegramUrlValid, isTotalSupplyValid, isRaisedAmountValid, isRaisedTokenSufficient])
+  }, [iconFile, name, symbol, description, isTokenNameValid, isTokenSymbolValid, isDescriptionValid, isWebsiteUrlValid, isTwitterUrlValid, isTelegramUrlValid, isTotalSupplyValid, isRaisedAmountValid, isRaisedTokenSufficient])
 
   const onUploadIcon = async (file: File) => {
     const formData = new FormData()
     formData.append('file', file)
-    const res = await fetchUploadTokenIcon(formData)
+    const res = await fetchUploadTokenIcon(formData).catch(e => {
+      throw e
+    })
     if (!res || res.code !== ERR_CODE.SUCCESS) {
       return
     }
-    setIconUrl(res.data.url)
+
+    return res.data.url
   }
 
   const onResetForm = () => {
-    setIconUrl('')
+    setIconFile(undefined)
     uploadButtonRef.current?.reset()
     setName('')
     setSymbol('')
@@ -321,19 +316,23 @@ export default function Launcher() {
 
     return true;
   }, [isLoadingLaunch, isLogin, passAllChecks])
-  console.log('isCanLaunch', isCanLaunch)
-  
 
   const createToken = async () => {
-    if (!isConnected || launchState.loading || isLoadingGetSignature || !raisedToken || !tag) {
+    if (!isConnected || launchState.loading || isLoadingGetSignature || !raisedToken || !tag || !iconFile) {
       return
     }
+
+    setIsLoadingUploadIcon(true)
+    const tokenAvatarUrl = await onUploadIcon(iconFile).finally(() => {
+      setIsLoadingUploadIcon(false)
+    })
+    if (!tokenAvatarUrl) return;
 
     // 从后端请求签名
     setIsLoadingGetSignature(true)
     const launchTokenParams: LaunchTokenParams = {
       name: name,
-      icon: iconUrl.replace(VITE_IMG_HOST, ''),
+      icon: tokenAvatarUrl.replace(VITE_IMG_HOST, ''),
       symbol: symbol,
       description: description,
       raised_token: raisedToken.address,
@@ -412,7 +411,7 @@ export default function Launcher() {
             <div className="flex flex-row w-full justify-center mdup:justify-start">
               <UploadButton 
                 ref={uploadButtonRef}
-                onUpload={(file) => onUploadIcon(file)}
+                onUpload={(file) => setIconFile(file)}
                 isDisabled={isLoadingLaunch}
               />
             </div>
@@ -648,8 +647,8 @@ export default function Launcher() {
               </div>
               <div className="text-white/40">
                 The biggest increase before list on PancakeSwap :
-                {priceIncrease && <span className="text-white ml-2">
-                  {Big(priceIncrease * 100).toFixed(0)}%
+                {initialYUniswapPrice && initialYprice && <span className="text-white ml-2">
+                  {Big(initialYUniswapPrice / initialYprice * 100).toFixed(0)}%
                 </span>}
               </div>
             </div>
