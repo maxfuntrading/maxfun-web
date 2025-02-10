@@ -584,7 +584,8 @@ export default function Launcher() {
                   type="number"
                   value={liquidityPoolRatio}
                   onChange={setLiquidityPoolRatio}
-                  disabled={isLoadingLaunch}
+                  disabled={true}
+                  inputClassName="!text-[#FFFFFF4C]"
                 />
                 <span className="text-sm mdup:text-xl mb-3 mdup:mb-6">%</span>
               </div>

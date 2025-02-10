@@ -8,6 +8,7 @@ export default function InputField({
   value,
   onChange,
   className,
+  inputClassName,
   errorInfo,
   disabled = false,
   onBlur,
@@ -17,6 +18,7 @@ export default function InputField({
   type?: 'text' | 'number'
   required?: boolean
   className?: string
+  inputClassName?: string
   value: string
   onChange: (value: string) => void
   errorInfo?: string | undefined
@@ -34,7 +36,8 @@ export default function InputField({
         onChange={(e) => onChange(e.target.value)}
         className={clsx(
           'w-full h-[2.75rem] mdup:h-[4.375rem] bg-white/5 rounded-[0.625rem] border-2 border-[#FFFFFF1A] focus:border-red-10 text-white text-base mdup:text-xl px-4 outline-none',
-          disabled ? 'text-[#FFFFFF4C]' : 'hover:border-red-10'
+          disabled ? 'text-[#FFFFFF4C]' : 'hover:border-red-10',
+          inputClassName
         )}
         placeholder={placeholder}
         disabled={disabled}
