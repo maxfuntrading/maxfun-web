@@ -17,6 +17,7 @@ export default function Holder({className, tokenAddress}: {className?: string, t
 
   const onLoadMore = () => {
     if (isLoadingList) return
+    if (data.length === 0) return
     if (total === undefined) return
     if (data.length >= total) return
 
@@ -33,7 +34,11 @@ export default function Holder({className, tokenAddress}: {className?: string, t
     setIsLoadingList(true)
     fetchHolderDistribution(tokenAddress, page, 20).then(res => {
       if (res.code !== ERR_CODE.SUCCESS) return
-      setData([...data, ...res.data.list])
+      if (page === 1) {
+        setData(res.data.list)
+      } else {
+        setData(prev => [...prev, ...res.data.list])
+      }
       total === undefined && setTotal(res.data.total_holders)
       setIsLoadingList(false)
     }).finally(() => {
