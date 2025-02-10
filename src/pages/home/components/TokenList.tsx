@@ -91,7 +91,9 @@ export default function TokenList() {
   })
 
   const onSearch = () => {
-    getTokenList(search, selectTag.key, isOnUniswap, selectSort.key, sortOrder, page);
+    setPage(1)
+    setTokenList([])
+    getTokenList(search, selectTag.key, isOnUniswap, selectSort.key, sortOrder, 1);
   }
   
   const onChangeLaunched = (val: boolean) => {

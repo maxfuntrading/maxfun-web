@@ -28,7 +28,7 @@ export interface MaxFunToken {
   name:          string;
   symbol:        string;
   description:   string;
-  market_cap:    null;
+  market_cap:    string | null;
   bonding_curve: null;
   is_launched:   boolean;
 }

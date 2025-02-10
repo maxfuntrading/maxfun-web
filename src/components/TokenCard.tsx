@@ -1,11 +1,12 @@
 import RocketIcon from '@/assets/images/rocket.png'
 import clsx from 'clsx'
 import { useInView } from 'framer-motion';
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { formatAddress, formatNumber } from '@/utils/utils';
 import { useNavigate } from 'react-router-dom';
 import { MaxFunToken } from '@/api/home';
 import { TagIcon } from './TagIcon';
+import Big from 'big.js';
 interface TokenCardProps {
   className?: string;
   data: MaxFunToken;
@@ -15,6 +16,18 @@ export default function TokenCard({className, data}: TokenCardProps) {
   const isOnUniswap = data.is_launched; // 是否为外盘
 
   const navigate = useNavigate()
+
+  const progress = useMemo(() => {
+    if (!data.market_cap) return 0
+    if (!data.bonding_curve) return 0
+
+    if (data.bonding_curve === '0') return 0
+
+    const marketCap = Big(data.market_cap)
+    const bondingCurve = Big(data.bonding_curve)
+
+    return bondingCurve.div(marketCap).toNumber()
+  }, [data.market_cap, data.bonding_curve])
 
   return (
     <div onClick={() => navigate(`/token/${data.token_address}`)} className={clsx('w-full mdup:px-0 rounded-[0.625rem] overflow-hidden cursor-pointer group', className)}>
@@ -52,15 +65,15 @@ export default function TokenCard({className, data}: TokenCardProps) {
         
         <div className=' '>
           <span className='text-white opacity-60'>Market Cap:</span>  
-          <span className='font-semibold text-[0.875rem]'> ${formatNumber(5485023423)}</span>
+          {data.market_cap && <span className='font-semibold text-[0.875rem]'> ${ formatNumber(data.market_cap) }</span>}
         </div>
         
         {!isOnUniswap && <div className="flex items-center gap-[1.31rem] mt-[0.5rem]">
           <div className="relative flex-1 h-[0.625rem] rounded-[0.625rem]">
             <div className='absolute top-0 left-0 w-full h-full rounded-[0.625rem] bg-[#D9D9D9] group-hover:bg-white opacity-20'></div>
-            <div className='absolute top-0 left-0 w-1/2 h-full rounded-[0.625rem] bg-gradient-to-r from-red-10 to-[#FFADC4] group-hover:from-white group-hover:to-white'></div>
+            <div className={`absolute top-0 left-0 h-full rounded-[0.625rem] bg-gradient-to-r from-red-10 to-[#FFADC4] group-hover:from-white group-hover:to-white`} style={{width: `${progress * 100}%`}}></div>
           </div>
-          <div>43.22%</div>
+          <div>{progress * 100}%</div>
         </div>}
 
         {isOnUniswap && <div className='flex items-center'>
