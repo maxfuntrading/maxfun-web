@@ -98,8 +98,8 @@ const ImageControl = ({src}: {src: string}) => {
   const isGif = src.endsWith('.gif')
 
   if (!isGif) {
-    return <img className='size-full object-contain' src={src} loading="lazy" alt="" />
+    return <img className='size-full object-cover' src={src} loading="lazy" alt="" />
   }
 
-  return <img ref={ref} className='size-full object-contain' src={ inView ? src : ''} loading="lazy" alt="" />
+  return <img ref={ref} className='size-full object-cover' src={ inView ? src : ''} loading="lazy" alt="" />
 }

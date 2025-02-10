@@ -15,6 +15,7 @@ import { ERR_CODE } from '@/constants/ERR_CODE'
 import { fetchLaunchToken, LaunchTokenParams } from '@/api/launch'
 import { VITE_IMG_HOST } from '@/utils/runtime-config'
 import LoadingMore from '@/components/LoadingMore'
+import Big from 'big.js'
 
 function isValidUrl(url: string) {
   const urlPattern = /^https?:\/\/.+\..+/
@@ -26,6 +27,8 @@ enum LaunchButtonText {
   Launch = 'Launch',
   InsufficientAssets = 'Insufficient Assets',
 }
+
+const MIGRATION_TAX = 0; // 发射时收取的手续费比例
 
 export default function Launcher() {
   const { isConnected } = useAccount()
@@ -48,7 +51,7 @@ export default function Launcher() {
   const [raisedTokenPrice, setRaisedTokenPrice] = useState<number>()
   const [showExtraOptions, setShowExtraOptions] = useState(false)
   // const [startTime, setStartTime] = useState<Date | null>(null)
-  const [raisedTokenBalance, setRaisedTokenBalance] = useState(0)
+  // const [raisedTokenBalance, setRaisedTokenBalance] = useState(0)
   const [launchButtonText, ] = useState(LaunchButtonText.Launch)
 
   // fetch data
@@ -62,6 +65,50 @@ export default function Launcher() {
   const { onLaunch, state: launchState, onReset: onResetLaunch } = useLaunch()
   const isLoadingLaunch = launchState.loading || isLoadingGetSignature
 
+  // 内盘开启时的价格
+  const initialYprice = useMemo(() => {
+    if (!raisedAmount || !liquidityPoolRatio || !salesRatio || !totalSupply) {
+      return undefined
+    }
+
+    const r = Number(raisedAmount)                  // 需要筹集的平台币数量
+    const l = Number(liquidityPoolRatio) / 100      // 流动性池占比  
+    const s = Number(salesRatio) / 100              // 销售占比
+    const t = Number(totalSupply)                   // meme币总量
+    const m = MIGRATION_TAX                         // 发射时收取的手续费比例
+
+    // 1 Meme=\frac{R⋅L} {(1−M)⋅S^2⋅T} raised
+    const price = (r * l) / ((1 -m) * Math.pow(s, 2) * t)
+
+    return price
+  }, [raisedAmount, liquidityPoolRatio, salesRatio, totalSupply])
+  
+  // 外盘开启时的价格
+  const initialYUniswapPrice = useMemo(() => {
+    if (!raisedAmount || !liquidityPoolRatio || !totalSupply) {
+      return undefined
+    }
+
+    const r = Number(raisedAmount)                  // 需要筹集的平台币数量
+    const l = Number(liquidityPoolRatio) / 100      // 流动性池占比  
+    const t = Number(totalSupply)                   // meme币总量
+    const m = MIGRATION_TAX                         // 发射时收取的手续费比例
+
+    // \frac{X}{Y}=\frac{R⋅(1−M)}{T⋅L}
+    const priceUniswap = (r * (1 - m)) / (t * l);
+    return priceUniswap
+  }, [liquidityPoolRatio, raisedAmount, totalSupply])
+
+  // 外盘开启时的价格涨幅
+  const priceIncrease = useMemo(() => {
+    if (!initialYUniswapPrice || !initialYprice) {
+      return undefined
+    }
+
+    const increase = initialYUniswapPrice / initialYprice
+    return increase
+  }, [initialYUniswapPrice, initialYprice])
+
   useEffect(() => {
     // TODO: get total supply from backend
     const totalSupplyNum = 10000000000
@@ -72,7 +119,7 @@ export default function Launcher() {
     setRaisedAmount(raisedAmountNum.toString())
 
     // TODO: get raised token balance from backend or from contract
-    setRaisedTokenBalance(1000000)
+    // setRaisedTokenBalance(1000000)
   }, [])
 
   useEffect(() => {
@@ -200,14 +247,14 @@ export default function Launcher() {
   }, [raisedAmount, raisedTokenPrice])
 
   const isRaisedTokenSufficient = useMemo(() => {
-    const num = Number(raisedAmount)
+    // const num = Number(raisedAmount)
 
-    if (raisedTokenBalance < num) {
-      return false
-    }
+    // if (raisedTokenBalance < num) {
+    //   return false
+    // }
 
     return true
-  }, [raisedTokenBalance, raisedAmount])
+  }, [])
 
   // const isStartTimeValid = useMemo(() => {
   //   if (!startTime) {
@@ -594,16 +641,16 @@ export default function Launcher() {
             <div className="flex flex-col gap-2 items-start  border-[#FFFFFF1A] bg-white/5 rounded-[0.625rem] border-2 p-4">
               <div className="text-white/40">
                 Intial Price:
-                <span className="text-white ml-2">
-                  {(Number(totalSupply) / Number(raisedAmount)).toFixed(2)}
-                  {raisedToken?.symbol}
-                </span>
+                {raisedToken && initialYprice && <span className="text-white ml-2">
+                  {Big(initialYprice.toFixed(raisedToken.decimal)).toFixed()}
+                  {raisedToken.symbol}
+                </span>}
               </div>
               <div className="text-white/40">
                 The biggest increase before list on PancakeSwap :
-                <span className="text-white ml-2">
-                  {Number(salesRatio) * 10}%
-                </span>
+                {priceIncrease && <span className="text-white ml-2">
+                  {Big(priceIncrease * 100).toFixed(0)}%
+                </span>}
               </div>
             </div>
             {/* <div className="flex flex-col gap-4 items-start">
