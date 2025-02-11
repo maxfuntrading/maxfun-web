@@ -68,3 +68,30 @@ export function formatAmount(amount: number | string, decimal: number = 2, round
 
   return Big(amount).round(decimal, round).toFixed()
 }
+
+// 数字千分位处理
+export function formatNumberLocale(num: number | string) {
+  if (num === undefined || num === null) {
+    return ''
+  }
+
+  if (typeof num === 'string') {
+    num = parseFloat(num)
+  }
+
+  if (isNaN(num)) {
+    return ''
+  }
+  
+  // 将数字转换为字符串，以便计算小数位
+  const numStr = num.toString();
+  let fractionDigits = 0;
+  if (numStr.includes('.')) {
+    fractionDigits = numStr.split('.')[1].length;
+  }
+
+  return num.toLocaleString(undefined, {
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
+  })
+}

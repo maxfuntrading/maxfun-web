@@ -1,7 +1,8 @@
-import { formatNumber } from '@/utils/utils'
+import { formatNumberLocale } from '@/utils/utils'
 import { RankingItem } from '../type'
 import RankIcon from './RankIcon'
 import { useNavigate } from 'react-router-dom'
+import Big from 'big.js'
 export default function GainerRankingPanel({
   items,
 }: {
@@ -63,7 +64,7 @@ export default function GainerRankingPanel({
                     Market Cap
                   </span>
                   <div className="text-[#fff] text-sm font-semibold mdup:group-hover:text-red-10">
-                    ${formatNumber(item.market_cap)}
+                    ${formatNumberLocale(item.market_cap)}
                   </div>
                 </div>
                 <div className="px-4 py-2 flex-1 flex flex-row justify-between items-center">
@@ -71,7 +72,7 @@ export default function GainerRankingPanel({
                     24h%
                   </span>
                   <div className="w-1/2 mdup:w-full flex flex-row items-center justify-end gap-2 mdup:group-hover:text-red-10">
-                    {item.price_rate24h}%
+                    {Big(item.price_rate24h).times(100).toFixed(2)}%
                   </div>
                 </div>
               </div>
