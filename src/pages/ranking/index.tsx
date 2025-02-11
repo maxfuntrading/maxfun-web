@@ -195,6 +195,8 @@ export default function Ranking() {
               {tradingVolumeRankingPanel}
             </div>
           </> }
+
+          <div className="h-[3rem] mdup:h-[5rem]"></div>
         </div>
       </div>
     </div>
