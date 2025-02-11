@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 import { HolderDistributionItemResponse } from '../types/response'
 import { formatAddress } from '@/utils/utils'
 import { useAccount } from 'wagmi'
+import Big from 'big.js'
 export default function Holder({className, tokenAddress}: {className?: string, tokenAddress: string}) {
   const { chain } = useAccount()
 
@@ -80,7 +81,7 @@ export default function Holder({className, tokenAddress}: {className?: string, t
                 <span className='text-[0.75rem] mdup:text-[0.875rem] font-medium hover:text-red-10'>{formatAddress(item.user_address, 10, 9)}</span>
               </a>
             </div>
-            <span className='text-[0.75rem] mdup:text-[0.875rem] font-semibold text-[#06D188]'>{item.percentage}%</span>
+            <span className='text-[0.75rem] mdup:text-[0.875rem] font-semibold text-[#06D188]'>{Big(item.percentage).times(100).toFixed(2)}%</span>
           </div>
         })}
         <div ref={loadMoreRef} className="w-full"></div>

@@ -3,7 +3,7 @@ import { copyText, formatAddress, formatNumber } from '@/utils/utils'
 import { toastSuccess } from '@/components/toast'
 import clsx from 'clsx'
 import { TokenBaseInfoResponse } from '../types/response'
-
+import Big from 'big.js'
 export default function BaseInfo({data, tokenAddress}: {data: TokenBaseInfoResponse, tokenAddress: string}) {
   const {token_basic} = data
 
@@ -29,7 +29,7 @@ export default function BaseInfo({data, tokenAddress}: {data: TokenBaseInfoRespo
     {
       name: 'Price',
       value: formatNumber(token_basic.price),
-      change: formatNumber(token_basic.price_rate24h)
+      change: Big(token_basic.price_rate24h).times(100).toFixed(2)
     },
     {
       name: 'Market Cap',
