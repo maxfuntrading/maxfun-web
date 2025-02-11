@@ -180,10 +180,10 @@ export default function PriceChart({className, tab, tokenAddress}: {className?: 
     }
 
     fetchData()
-  }, [tokenAddress])
+  }, [tokenAddress, tab])
 
   return (
-    <div className={clsx("w-full mdup:flex-1 rounded-[0.625rem] bg-black-10 overflow-hidden p-4 mdup:px-[1.57rem] mdup:py-[1.4rem]", className)}>
+    <div className={clsx("w-full sm:h-[24rem] mdup:flex-1 rounded-[0.625rem] bg-black-10 overflow-hidden p-4 mdup:px-[1.57rem] mdup:py-[1.4rem]", className)}>
       <div ref={chartContainerRef} className="w-full" />
     </div>
   )
