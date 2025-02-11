@@ -29,7 +29,7 @@ export interface MaxFunToken {
   symbol:        string;
   description:   string;
   market_cap:    string | null;
-  bonding_curve: null;
+  bonding_curve: string | null;
   is_launched:   boolean;
 }
 export interface FetchTokenListParams {
