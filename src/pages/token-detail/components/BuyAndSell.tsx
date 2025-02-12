@@ -19,8 +19,9 @@ import { toastError } from '@/components/toast'
 interface BuyAndSellProps {
   className?: string
   tokenAddress: string
-  raiseTokenIcon: string
   maxfunTokenIcon: string
+  raiseTokenAddress: string
+  raiseTokenIcon: string
 }
 
 enum ButtonText {
@@ -29,7 +30,7 @@ enum ButtonText {
   Sell = 'Sell',
 }
 
-export default function BuyAndSell({className, raiseTokenIcon, maxfunTokenIcon}: BuyAndSellProps) {
+export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, maxfunTokenIcon, raiseTokenIcon}: BuyAndSellProps) {
   const { address, isConnected } = useAccount()
   const { onConnectWallet} = useContext(AppContext)
   
@@ -41,10 +42,9 @@ export default function BuyAndSell({className, raiseTokenIcon, maxfunTokenIcon}:
 
   const { isOpen: isOpenSlippage, onOpen: onOpenSlippage, onClose: onCloseSlippage } = useDisclosure();
 
-  // const maxfunTokenAddress = tokenAddress
-  // const maxfunTokenAddress = raiseToken.address
-  const maxfunTokenAddress = '0x3532bd1c11fd1a5763a5c445db8b7f7fc10d5ef8'
-  const raiseTokenAddress = '0xF58F5BFee6B2580a983aC25bEc2781E05475341C'
+  const maxfunTokenAddress = tokenAddress
+  // const maxfunTokenAddress = '0x3532bd1c11fd1a5763a5c445db8b7f7fc10d5ef8'
+  // const raiseTokenAddress = '0xF58F5BFee6B2580a983aC25bEc2781E05475341C'
 
   // write contract
   const { onBuy, state: buyState, onReset: onResetBuy } = useBuy()

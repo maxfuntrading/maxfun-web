@@ -73,8 +73,9 @@ export default function TokenDetail() {
             {isOnUniswap && <PriceChartIframe className={`${isSM && tab === TabType.Chart ? 'flex' : 'hidden mdup:flex'}`} />}
             <BuyAndSell 
               tokenAddress={maxfunTokenAddress} 
-              raiseTokenIcon={tokenBaseInfo.raised_token.icon} 
+              raiseTokenAddress={tokenBaseInfo.raised_token.address}
               maxfunTokenIcon={tokenBaseInfo.token_basic.icon}
+              raiseTokenIcon={tokenBaseInfo.raised_token.icon} 
               className={`${isSM && tab === TabType.BuyOreSell ? 'flex' : 'hidden mdup:flex'}`} 
             />
           </div>

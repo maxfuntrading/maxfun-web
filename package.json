@@ -28,6 +28,7 @@
     "react": "^18.2.0",
     "react-datepicker": "^7.6.0",
     "react-dom": "^18.2.0",
+    "react-error-boundary": "^5.0.0",
     "react-router-dom": "^6.23.1",
     "react-slick": "^0.30.3",
     "resize-observer-polyfill": "^1.5.1",

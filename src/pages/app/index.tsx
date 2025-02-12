@@ -4,6 +4,8 @@ import AppContext, { AppIntialState, appInitialState } from "@/store/app";
 import { useEffect, useRef } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { useDisconnect } from "wagmi";
+import { ErrorBoundary } from "react-error-boundary";
+import ErrorFallback from "./ErrorFallback";
 
 export default function App() {
   const contextValue = useCreateReducer<AppIntialState>({initialState: appInitialState})
@@ -36,9 +38,13 @@ export default function App() {
         onConnectWallet: handleConnectWallet,
         onDisconnectWallet: handleDisconnectWallet
       }}>
-      <div className="w-screen text-white bg-black-20 font-outfit">
-        <Outlet />
-      </div>
+        <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => {
+          window.location.reload()
+        }}>
+          <div className="w-screen text-white bg-black-20 font-outfit">
+            <Outlet />
+          </div>
+        </ErrorBoundary>
 
       <WrapperRainbow
         connectComponent={<button ref={connectWalletRef} className="w-0 h-0 hidden"></button>}

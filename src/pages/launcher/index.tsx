@@ -101,22 +101,19 @@ export default function Launcher() {
     return priceUniswap
   }, [liquidityPoolRatio, raisedAmount, totalSupply])
 
-  useEffect(() => {
-    // TODO: get total supply from backend
-    const totalSupplyNum = 10000000000
-    setTotalSupply(totalSupplyNum.toString())
-
-    // TODO: get raised amount from backend
-    const raisedAmountNum = 10000
-    setRaisedAmount(raisedAmountNum.toString())
-
-    // TODO: get raised token balance from backend or from contract
-    // setRaisedTokenBalance(1000000)
-  }, [])
+  // useEffect(() => {
+  //   // TODO: get total supply from backend
+  //   const totalSupplyNum = 10000000000
+  //   setTotalSupply(totalSupplyNum.toString())
+  //   // TODO: get raised amount from backend
+  //   const raisedAmountNum = 10000
+  //   setRaisedAmount(raisedAmountNum.toString())
+  //   // TODO: get raised token balance from backend or from contract
+  //   // setRaisedTokenBalance(1000000)
+  // }, [])
 
   useEffect(() => {
-    // TODO: get max token price from backend
-    setRaisedTokenPrice(1)
+    setRaisedTokenPrice(Number(raisedToken?.price))
   }, [raisedToken])
 
   useEffect(() => {
@@ -153,7 +150,7 @@ export default function Launcher() {
       setRaisedTokenPrice(Number(raisedTokenRes.data.list[0].price))
 
       // 计算初始平台token数量
-      setRaisedAmount((Math.ceil(RaisedTokenTotalPrice / Number(raisedTokenRes.data.list[0].price))).toString())
+      setRaisedAmount((RaisedTokenTotalPrice / Number(raisedTokenRes.data.list[0].price)).toString())
     }
     getBaseInfo()
   }, [raisedToken, tag])
