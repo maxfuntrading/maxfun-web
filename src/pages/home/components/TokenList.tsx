@@ -47,6 +47,7 @@ export default function TokenList() {
   const [tokenList, setTokenList] = useState<MaxFunToken[]>([])
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState<number>()
+  const [isStopLoadMore, setIsStopLoadMore] = useState(false)
   let isFirstLoad = true
 
   // 获取token list
@@ -71,15 +72,24 @@ export default function TokenList() {
       setLoading(false)
     })
 
-    if (!res || res.code !== ERR_CODE.SUCCESS) return
-    setTotal(res.data.total)
-    setTokenList(prev => [...prev, ...res.data.list])
+    if (!res || res.code !== ERR_CODE.SUCCESS) {
+      setIsStopLoadMore(true)
+      return
+    }
+
+    if (page === 1) {
+      setTotal(res.data.total)
+      setTokenList(res.data.list)
+    } else {
+      setTokenList(prev => [...prev, ...res.data.list])
+    }
   }
   
   const onLoadMore = () => {
-    if (loading) return;
-    if (tokenList.length === 0) return;
     if (!total) return;
+    if (loading) return;
+    if (isStopLoadMore) return;
+    if (tokenList.length === 0) return;
     if (tokenList.length >= total) return;
 
     setPage(prev => prev + 1)
@@ -91,6 +101,7 @@ export default function TokenList() {
   })
 
   const onSearch = () => {
+    if (loading) return;
     setPage(1)
     setTokenList([])
     getTokenList(search, selectTag.key, isOnUniswap, selectSort.key, sortOrder, 1);

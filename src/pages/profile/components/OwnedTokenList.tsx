@@ -1,120 +1,74 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import SearchInput from './SearchInput'
 import FlatButton from '@/components/button/FlatButton'
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll'
 import LoadingMore from '@/components/LoadingMore'
 import { useNavigate } from 'react-router-dom'
-import OwnedTokenCard, { OwnedTokenInfo } from './OwnedTokenCard'
+import OwnedTokenCard from './OwnedTokenCard'
+import { TokenOwnedItem } from '../type'
+import { fetchTokenOwned } from '@/api/profile'
+import { ERR_CODE } from '@/constants/ERR_CODE'
 
 export default function OwnedTokenList() {
-  const [tokens, setTokens] = useState<OwnedTokenInfo[]>([
-    {
-      name: 'Token 1',
-      symbol: 'TKN1',
-      icon: '/avatar.png',
-      address: '0x43684D03...9d426F042',
-      quantity: 1000000000,
-      value: 1000000000,
-    },
-    {
-      name: 'Token 2',
-      symbol: 'TKN2',
-      icon: '/avatar.png',
-      address: '0x43684D03...9d426F042',
-      quantity: 1000000000,
-      value: 1000000000,
-    },
-    {
-      name: 'Token 3',
-      symbol: 'TKN3',
-      icon: '/avatar.png',
-      address: '0x43684D03...9d426F042',
-      quantity: 1000000000,
-      value: 1000000000,
-    },
-    {
-      name: 'Token 4',
-      symbol: 'TKN4',
-      icon: '/avatar.png',
-      address: '0x43684D03...9d426F042',
-      quantity: 1000000000,
-      value: 1000000000,
-    },
-    {
-      name: 'Token 5',
-      symbol: 'TKN5',
-      icon: '/avatar.png',
-      address: '0x43684D03...9d426F042',
-      quantity: 1000000000,
-      value: 1000000000,
-    },
-    {
-      name: 'Token 6',
-      symbol: 'TKN6',
-      icon: '/avatar.png',
-      address: '0x43684D03...9d426F042',
-      quantity: 1000000000,
-      value: 1000000000,
-    },
-    {
-      name: 'Token 7',
-      symbol: 'TKN7',
-      icon: '/avatar.png',
-      address: '0x43684D03...9d426F042',
-      quantity: 1000000000,
-      value: 1000000000,
-    },
-    {
-      name: 'Token 8',
-      symbol: 'TKN8',
-      icon: '/avatar.png',
-      address: '0x43684D03...9d426F042',
-      quantity: 1000000000,
-      value: 1000000000,
-    },
-    {
-      name: 'Token 9',
-      symbol: 'TKN9',
-      icon: '/avatar.png',
-      address: '0x43684D03...9d426F042',
-      quantity: 1000000000,
-      value: 1000000000,
-    },
-    {
-      name: 'Token 10',
-      symbol: 'TKN10',
-      icon: '/avatar.png',
-      address: '0x43684D03...9d426F042',
-      quantity: 1000000000,
-      value: 1000000000,
-    },
-  ])
-  const [loading, setLoading] = useState(false)
+
+  // data
+  const [tokenList, setTokenList] = useState<TokenOwnedItem[]>([])
+  const [total, setTotal] = useState<number>()
+  const [isLoadingTokenList, setIsLoadingTokenList] = useState(false)
+  const [page, setPage] = useState(1)
+  const [isStopLoadMore, setIsStopLoadMore] = useState(false)
+  let isFirstLoad = true
+
   const navigate = useNavigate()
 
+  const getTokenOwnenData = async (keyword: string, page: number) => {
+    const params = {
+      keyword,
+      page,
+    }
+    setIsLoadingTokenList(true)
+    fetchTokenOwned(params).then((res) => {
+      if (res.code !== ERR_CODE.SUCCESS) {
+        return
+      }
+      if (page === 1) {
+        setTokenList(res.data.list)
+        setTotal(res.data.total)
+      } else {
+        setTokenList((prev) => [...prev, ...res.data.list])
+      }
+    }).catch(() => {
+      setIsStopLoadMore(true)
+    }).finally(() => {
+      setIsLoadingTokenList(false)
+    })
+  }
+
+  useEffect(() => {
+    if (isFirstLoad) {
+      getTokenOwnenData('', 1)
+    }
+    return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      isFirstLoad = false
+    }
+  }, [])
+
   const onLoadMore = () => {
-    if (loading) return
-    if (tokens.length >= 30) return
-    setLoading(true)
-    setTimeout(() => {
-      setTokens((prev) => [
-        ...prev,
-        ...Array.from({ length: 10 }).map((_, index) => ({
-          name: `Token ${prev.length + index + 1}`,
-          symbol: `TKN${prev.length + index + 1}`,
-          icon: '/avatar.png',
-          address: `0x${Math.random().toString(16).slice(2, 10)}`,
-          quantity: 1000000000,
-          value: 1000000000,
-        })),
-      ])
-      setLoading(false)
-    }, 1000)
+    if (!total) return;
+    if (isLoadingTokenList) return;
+    if (isStopLoadMore) return;
+    if (tokenList.length === 0) return;
+    if (tokenList.length >= total) {
+      return
+    }
+    setPage(page + 1)
+    getTokenOwnenData('', page + 1)
   }
 
   const loadMoreRef = useInfiniteScroll({
     onLoadMore,
-    loading,
+    loading: isLoadingTokenList,
   })
 
   return (
@@ -123,7 +77,9 @@ export default function OwnedTokenList() {
         <div className="flex flex-row items-center gap-4 w-3/5 mdup:w-[22.5rem] mr-2">
           <SearchInput
             onSearch={(str) => {
-              console.log('>>search', str)
+              if (isLoadingTokenList) return;
+              setPage(1)
+              getTokenOwnenData(str, 1)
             }}
           />
         </div>
@@ -146,11 +102,11 @@ export default function OwnedTokenList() {
             Value
           </div>
         </div>
-        {tokens.map((token, index) => (
+        {tokenList.map((token, index) => (
           <OwnedTokenCard key={index} token={token} />
         ))}
       </div>
-      {loading && <LoadingMore className="mt-[3rem]" />}
+      {isLoadingTokenList && <LoadingMore className="mt-[3rem]" />}
       <div ref={loadMoreRef} className="h-4 w-full"></div>
     </div>
   )

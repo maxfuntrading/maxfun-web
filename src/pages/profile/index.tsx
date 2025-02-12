@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import SwitchButton from './components/SwitchButton'
 import CreatedTokenList from './components/CreatedTokenList'
 import Banner from '@/assets/images/profile/banner.png'
@@ -7,10 +7,25 @@ import OwnedTokenList from './components/OwnedTokenList'
 import { useAccount } from 'wagmi'
 import { formatAddress } from '@/utils/utils'
 import { Navigate } from 'react-router-dom'
+import { UserInfoResponse } from './type'
+import { fetchUserInfo } from '@/api/profile'
+import { ERR_CODE } from '@/constants/ERR_CODE'
 
 export default function Profile() {
   const [index, setIndex] = useState(0)
-  const { isConnected, address } = useAccount()
+  const { isConnected } = useAccount()
+
+  // user info
+  const [userInfo, setUserInfo] = useState<UserInfoResponse>()
+  
+  useEffect(() => {
+    fetchUserInfo().then((res) => {
+      if (res.code !== ERR_CODE.SUCCESS) {
+        return
+      }
+      setUserInfo(res.data)
+    })
+  }, [])
 
   if (!isConnected) {
     return <Navigate to="/" />
@@ -30,13 +45,13 @@ export default function Profile() {
             alt=""
             className="hidden mdup:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[3.8rem] w-[10.8125rem] h-[8.125rem]"
           />
-          <img
-            src="/avatar.png"
+          {userInfo?.avatar && <img
+            src={userInfo?.avatar}
             alt=""
             className="mdup:absolute mdup:top-1/2 mdup:left-1/2 mdup:-translate-x-1/2 mdup:-translate-y-[2.8rem] size-[4.375rem] mdup:size-[6.25rem] rounded-full"
-          />
-          <span className="mt-2 mdup:mt-0 mdup:absolute mdup:bottom-2 text-sm mdup:text-base">
-            {formatAddress(address ?? '')}
+          />}
+          <span className="mt-2 mdup:mt-0 mdup:absolute mdup:bottom-2 text-sm mdup:text-base font-semibold">
+            {formatAddress(userInfo?.address ?? '', 4, 6)}
           </span>
         </div>
         <div className="w-full mdup:w-2/5 flex flex-row items-center justify-between mt-[2.125rem] mdup:mt-12 z-10">
