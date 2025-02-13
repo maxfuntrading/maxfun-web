@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { fetchMarquee, Marquee } from '@/api/home';
 import {formatAddress, formatAmount } from '@/utils/utils';
 import { TagIcon } from '@/components/TagIcon';
+import { useNavigate } from 'react-router-dom';
 
 export default function HotTx() {
   const [marquee, setMarquee] = useState<Marquee[]>([])
@@ -63,9 +64,10 @@ export default function HotTx() {
 }
 
 const HotTxItem = ({data}: {data: Marquee}) => {
+  const navigate = useNavigate()
   const isBought = data.trade_type === 0
   return (
-    <div className="shrink-0 h-20 bg-black-10 min-w-[18.75rem] mdup:w-[22.5rem] mdup:h-[5.625rem] rounded-[0.625rem] mdup:rounded-none flex justify-between items-center px-[1.32rem] mdup:px-[0.87rem] cursor-pointer border-2 border-transparent hover:border-[#EC3E6F] mdup:hover:rounded-[0.625rem] transition-all duration-300 mr-[0.06rem]">
+    <div onClick={() => navigate(`/token/${data.token_address}`)} className="shrink-0 h-20 bg-black-10 min-w-[18.75rem] mdup:w-[22.5rem] mdup:h-[5.625rem] rounded-[0.625rem] mdup:rounded-none flex justify-between items-center px-[1.32rem] mdup:px-[0.87rem] cursor-pointer border-2 border-transparent hover:border-[#EC3E6F] mdup:hover:rounded-[0.625rem] transition-all duration-300 mr-[0.06rem]">
       <div className='flex items-center gap-[1.71rem] flex-1'>
         <img className='size-[3.375rem]' src={`${data.icon}`} alt="token" />
         

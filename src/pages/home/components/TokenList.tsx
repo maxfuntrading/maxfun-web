@@ -93,7 +93,7 @@ export default function TokenList() {
     if (tokenList.length >= total) return;
 
     setPage(prev => prev + 1)
-    getTokenList(search, selectTag.key, isOnUniswap, selectSort.key, sortOrder, page + 1);
+    getTokenList(search, selectTag.value, isOnUniswap, selectSort.key, sortOrder, page + 1);
   }
   const loadMoreRef = useInfiniteScroll({
     onLoadMore,
@@ -104,35 +104,35 @@ export default function TokenList() {
     if (loading) return;
     setPage(1)
     setTokenList([])
-    getTokenList(search, selectTag.key, isOnUniswap, selectSort.key, sortOrder, 1);
+    getTokenList(search, selectTag.value, isOnUniswap, selectSort.key, sortOrder, 1);
   }
   
   const onChangeLaunched = (val: boolean) => {
     setIsOnUniswap(val)
     setPage(1)
     setTokenList([])
-    getTokenList(search, selectTag.key, val, selectSort.key, sortOrder, page);
+    getTokenList(search, selectTag.value, val, selectSort.key, sortOrder, page);
   }
 
   const onChangeSort = (val: SelectOptionType<SortType>) => {
     setSelectSort(val)
     setPage(1)
     setTokenList([])
-    getTokenList(search, selectTag.key, isOnUniswap, val.key, sortOrder, page);
+    getTokenList(search, selectTag.value, isOnUniswap, val.key, sortOrder, page);
   }
 
   const onChangeSortOrder = (val: SortOrder) => {
     setSortOrder(val)
     setPage(1)
     setTokenList([])
-    getTokenList(search, selectTag.key, isOnUniswap, selectSort.key, val, page);
+    getTokenList(search, selectTag.value, isOnUniswap, selectSort.key, val, page);
   }
 
   const onChangeTag = (val: SelectOptionType<string>) => {
     setSelectTag(val)
     setPage(1)
     setTokenList([])
-    getTokenList(search, val.key, isOnUniswap, selectSort.key, sortOrder, page);
+    getTokenList(search, val.value, isOnUniswap, selectSort.key, sortOrder, page);
   }
 
   const onRefresh = () => {

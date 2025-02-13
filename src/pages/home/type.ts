@@ -1,6 +1,6 @@
 export enum SortType {
   LaunchedTime = "launch_ts",
-  TradingVolume = "volume_rate24h",
+  TradingVolume = "volume24h",
   MarketCap = "market_cap",
   LastTrade = "last_trade",
 }
