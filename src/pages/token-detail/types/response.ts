@@ -58,7 +58,7 @@ export interface TradeLogItemResponse {
   txn_index:     number;
   log_index:     number;
   user_address:  string;
-  trace_type:    number;
+  trade_type:    number;
   token1_amount: string;
   token2_amount: string;
   block_time:    number;

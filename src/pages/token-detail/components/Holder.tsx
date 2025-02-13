@@ -6,10 +6,8 @@ import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import { HolderDistributionItemResponse } from '../types/response'
 import { formatAddress, formatAmount } from '@/utils/utils'
-import { useAccount } from 'wagmi'
+import { VITE_BLOCK_EXPLORER_URL } from '@/utils/runtime-config'
 export default function Holder({className, tokenAddress}: {className?: string, tokenAddress: string}) {
-  const { chain } = useAccount()
-
   const [page, setPage] = useState(1)
   const [data, setData] = useState<HolderDistributionItemResponse[]>([])
   const [total, setTotal] = useState<number>()
@@ -67,7 +65,7 @@ export default function Holder({className, tokenAddress}: {className?: string, t
         {data.map((item, index) => {
           return <div key={index} className='mdup:w-[27rem] flex justify-between items-center h-[2.5rem] mdup:h-[3.75rem] border-b border-white/10 first:border-t'>
             <div className='flex items-center gap-[0.59rem]'>
-              <a href={`${chain?.blockExplorers?.default.url}/address/${item.user_address}`} target='_blank' className='flex items-center gap-[0.59rem] group'>
+              <a href={`${VITE_BLOCK_EXPLORER_URL}/address/${item.user_address}`} target='_blank' className='flex items-center gap-[0.59rem] group'>
                 <svg className='block group-hover:hidden' xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                   <path d="M11.6665 2.5H17.4998V8.33333" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   <path d="M17.5 12.2807V16.25C17.5 16.9404 16.9404 17.5 16.25 17.5H3.75C3.05965 17.5 2.5 16.9404 2.5 16.25V3.75C2.5 3.05965 3.05965 2.5 3.75 2.5H7.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>

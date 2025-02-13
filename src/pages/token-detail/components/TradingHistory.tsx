@@ -2,22 +2,21 @@ import { fetchTradeLog } from "@/api/token-detila"
 import LoadingMore from "@/components/LoadingMore"
 import { useBreakpoint } from "@/hooks/useBreakpoint"
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll"
-import { formatAddress, formatCommentDate, formatNumber } from "@/utils/utils"
+import { formatAddress, formatAmount, formatCommentDate, formatNumberLocale } from "@/utils/utils"
 import { Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
 import { TradeLogItemResponse } from "../types/response"
 import { ERR_CODE } from "@/constants/ERR_CODE"
-import { useAccount } from "wagmi"
 import clsx from "clsx"
+import { VITE_BLOCK_EXPLORER_URL } from "@/utils/runtime-config"
 
 export default function TradingHistory({ tokenAddress }: { tokenAddress: string }) {
   const { isSM } = useBreakpoint()
-  const { chain } = useAccount()
   
   // 接口参数
-  const [lastBlockNumber, setLastBlockNumber] = useState(1)
-  const [lastTxnIndex, setLastTxnIndex] = useState(1)
-  const [lastLogIndex, setLastLogIndex] = useState(2)
+  const [lastBlockNumber, setLastBlockNumber] = useState<number>()
+  const [lastTxnIndex, setLastTxnIndex] = useState<number>()
+  const [lastLogIndex, setLastLogIndex] = useState<number>()
   const PAGE_SIZE = 20
 
   // 交易数据
@@ -40,9 +39,8 @@ export default function TradingHistory({ tokenAddress }: { tokenAddress: string 
     loading: isLoadingList
   })
 
-  const getTradingHistory = async (lastBlockNumber: number, lastTxnIndex: number, lastLogIndex: number) => {
+  const getTradingHistory = async (lastBlockNumber?: number, lastTxnIndex?: number, lastLogIndex?: number) => {
     setIsLoadingList(true)
-    // fetchTradeLog('0xaa0851f2939ef2d8b51971b510383fcb5c246a11', lastBlockNumber, lastTxnIndex, lastLogIndex, PAGE_SIZE).then(res => {
     fetchTradeLog(tokenAddress, lastBlockNumber, lastTxnIndex, lastLogIndex, PAGE_SIZE).then(res => {
       if (res.code !== ERR_CODE.SUCCESS) return
       if (res.data.list.length === 0) {
@@ -76,21 +74,20 @@ export default function TradingHistory({ tokenAddress }: { tokenAddress: string 
     <div className=" px-[0.91rem] mdup:px-[1.68rem]">
       {isSM && <div className="w-full mt-[1.6rem] flex flex-col gap-[0.59rem]">
         {data.map((item, index) => {
-          const isBuy = item.trace_type === 0
-          const isSell = item.trace_type === 1
+          const isBuy = item.trade_type === 0
           const traceType = isBuy ? 'Buy' : 'Sell'
 
           return <div key={index} className=" bg-white/10 rounded-[0.625rem] relative pt-[0.78rem] pb-[1.05rem]">
             <div className="flex justify-between items-center">
-              <div className={`w-[2.5rem] h-[1.25rem] text-[0.75rem] font-semibold flex-center ${isBuy && 'bg-[#06D188]'} ${isSell && 'bg-[#FF0021]'}`} style={{borderRadius: '0rem 1.25rem 1.25rem 0rem'}}>{traceType}</div>
+              <div className={`w-[2.5rem] h-[1.25rem] text-[0.75rem] font-semibold flex-center ${isBuy ? 'bg-[#06D188]' : 'bg-[#FF0021]'}`} style={{borderRadius: '0rem 1.25rem 1.25rem 0rem'}}>{traceType}</div>
               <div className="text-[0.75rem] font-semibold pr-[0.75rem]">{formatCommentDate(item.block_time)}</div>
             </div>
             <div className="flex flex-col px-[0.75rem] mt-[0.55rem]">
               <div className="flex justify-between items-center">
-                <a href={`${chain?.blockExplorers?.default.url}/address/${item.user_address}`} target="_blank" className="flex items-center gap-[0.44rem]">
+                <a href={`${VITE_BLOCK_EXPLORER_URL}/address/${item.user_address}`} target="_blank" className="flex items-center gap-[0.44rem]">
                   <span className="text-[0.81rem] font-semibold text-white/60">{formatAddress(item.user_address, 4, 6)}</span>
                 </a>
-                <a href={`${chain?.blockExplorers?.default.url}/tx/${item.txn_hash}`} target="_blank" className="flex items-center gap-[0.44rem]">
+                <a href={`${VITE_BLOCK_EXPLORER_URL}/tx/${item.txn_hash}`} target="_blank" className="flex items-center gap-[0.44rem]">
                   <TxIcon className="text-[0.875rem]" />
                   <span className="text-[0.75rem] font-semibold">{formatAddress(item.txn_hash, 6, 4)}</span>
                 </a>
@@ -100,12 +97,12 @@ export default function TradingHistory({ tokenAddress }: { tokenAddress: string 
 
               <div className="flex justify-between items-center mt-[0.53rem]">
                 <span className="text-[0.81rem] font-semibold text-white/60">{token1Name}</span>
-                <span className="text-[0.75rem] font-semibold">{formatNumber(item.token1_amount)}</span>
+                <span className="text-[0.75rem] font-semibold">{formatNumberLocale(formatAmount(item.token1_amount))}</span>
               </div>
 
               <div className="flex justify-between items-center mt-[0.53rem]">
                 <span className="text-[0.81rem] font-semibold text-white/60">{token2Name}</span>
-                <span className="text-[0.75rem] font-semibold">{formatNumber(item.token2_amount)}</span>
+                <span className="text-[0.75rem] font-semibold">{formatNumberLocale(formatAmount(item.token2_amount))}</span>
               </div>
 
             </div>
@@ -126,22 +123,21 @@ export default function TradingHistory({ tokenAddress }: { tokenAddress: string 
         </Thead>
         <Tbody>
           {data.map((item, index) => {
-            const isBuy = item.trace_type === 0
-            const isSell = item.trace_type === 1
+            const isBuy = item.trade_type === 0
             const traceType = isBuy ? 'Buy' : 'Sell'
 
             return <Tr key={index} className="!font-semibold !h-[3.75rem]">
               <Td className="!p-0 !border-white/10 !text-[0.875rem] !text-white/60">
-                <a href={`${chain?.blockExplorers?.default.url}/address/${item.user_address}`} target="_blank" className="flex items-center gap-2 hover:text-red-10">
+                <a href={`${VITE_BLOCK_EXPLORER_URL}/address/${item.user_address}`} target="_blank" className="flex items-center gap-2 hover:text-red-10">
                   <span>{formatAddress(item.user_address, 4, 6)}</span>
                 </a>
               </Td>
-              <Td className={`!border-white/10 !text-[0.875rem] !capitalize ${isBuy && 'text-[#06D188]'} ${isSell && 'text-[#FF0021]'}`}>{traceType}</Td>
-              <Td className="!border-white/10 !text-[0.875rem] !text-white">{formatNumber(item.token1_amount)}</Td>
-              <Td className="!border-white/10 !text-[0.875rem] !text-white">{formatNumber(item.token2_amount)}</Td>
+              <Td className={`!border-white/10 !text-[0.875rem] !capitalize ${isBuy ? 'text-[#06D188]' : 'text-[#FF0021]'}`}>{traceType}</Td>
+              <Td className="!border-white/10 !text-[0.875rem] !text-white">{formatNumberLocale(formatAmount(item.token1_amount))}</Td>
+              <Td className="!border-white/10 !text-[0.875rem] !text-white">{formatNumberLocale(formatAmount(item.token2_amount))}</Td>
               <Td className="!border-white/10 !text-[0.875rem] !text-white">{formatCommentDate(item.block_time)}</Td>
               <Td className="!p-0 !border-white/10 !text-[0.875rem] !text-white">
-                <a href={`${chain?.blockExplorers?.default.url}/tx/${item.txn_hash}`} target="_blank" className="flex items-center gap-2 group hover:text-red-10">
+                <a href={`${VITE_BLOCK_EXPLORER_URL}/tx/${item.txn_hash}`} target="_blank" className="flex items-center gap-2 group hover:text-red-10">
                   <TxIcon />
                   <span>{formatAddress(item.txn_hash, 6, 4)}</span>
                 </a>
