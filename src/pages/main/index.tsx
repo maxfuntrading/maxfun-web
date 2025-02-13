@@ -8,8 +8,8 @@ import { SiweMessage } from 'siwe'
 import { useAccount, useSignMessage } from 'wagmi'
 import { useContext, useEffect } from 'react'
 import AppContext from '@/store/app'
-import { toastError } from '@/components/toast'
 import Welcome from './components/Welcome'
+import { toastError } from '@/components/toast'
 
 
 export default function Main() {
@@ -80,6 +80,11 @@ export default function Main() {
   
       const signResult = await signMessageAsync({message: prepareMessage}).catch((error) => {
         console.error('signMessageAsync error', error);
+        if (error.includes('User rejected the request')) {
+          toastError('User rejected the request')
+        } else {
+          toastError('Error')
+        }
         onDisconnectWallet();
       })
   
@@ -93,7 +98,6 @@ export default function Main() {
       })
   
       if (!verifySignRes || verifySignRes.code !== ERR_CODE.SUCCESS) {
-        toastError(verifySignRes?.msg || 'Error')
         onDisconnectWallet()
         return
       }
