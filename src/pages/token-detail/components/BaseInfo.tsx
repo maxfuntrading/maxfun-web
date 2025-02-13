@@ -1,9 +1,8 @@
 import { CopyIcon, TelegramIcon, WebsiteIcon, XIcon } from './Icon'
-import { copyText, formatAddress, formatNumber } from '@/utils/utils'
+import { copyText, formatAddress, formatAmount, formatNumber } from '@/utils/utils'
 import { toastSuccess } from '@/components/toast'
 import clsx from 'clsx'
 import { TokenBaseInfoResponse } from '../types/response'
-import Big from 'big.js'
 export default function BaseInfo({data, tokenAddress}: {data: TokenBaseInfoResponse, tokenAddress: string}) {
   const {token_basic} = data
 
@@ -29,19 +28,19 @@ export default function BaseInfo({data, tokenAddress}: {data: TokenBaseInfoRespo
     {
       name: 'Price',
       value: formatNumber(token_basic.price),
-      change: Big(token_basic.price_rate24h).times(100).toFixed(2)
+      change: formatAmount(Number(token_basic.price_rate24h) * 100)
     },
     {
       name: 'Market Cap',
-      value: formatNumber(token_basic.market_cap),
+      value: `$${formatNumber(token_basic.market_cap)}`,
     },
     {
       name: 'Virtual Liquidity',
-      value: formatNumber(token_basic.liquidity),
+      value: `$${formatNumber(token_basic.liquidity)}`,
     },
     {
       name: '24H Volume',
-      value: formatNumber(token_basic.volume24h),
+      value: `$${formatNumber(token_basic.volume24h)}`,
     },
     {
       name: 'Total Supply',
