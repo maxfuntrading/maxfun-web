@@ -4,7 +4,7 @@ import TokenButton from './components/TokenButton'
 import UploadButton, { UploadButtonRef } from './components/UploadButton'
 import Switch from './components/Switch'
 import Select, { SelectOptionType } from '@/components/Select'
-import { useAccount } from 'wagmi'
+import { useAccount, useReadContract } from 'wagmi'
 import AppContext from '@/store/app'
 import SolidButton from '@/components/button/SolidButton'
 // import TimePicker from './components/TimePicker'
@@ -16,6 +16,7 @@ import { fetchLaunchToken, LaunchTokenParams } from '@/api/launch'
 import { VITE_IMG_HOST } from '@/utils/runtime-config'
 import LoadingMore from '@/components/LoadingMore'
 import Big from 'big.js'
+import { erc20Abi, parseEther } from 'viem'
 
 function isValidUrl(url: string) {
   const urlPattern = /^https?:\/\/.+\..+/
@@ -31,7 +32,7 @@ enum LaunchButtonText {
 const MIGRATION_TAX = 0; // 发射时收取的手续费比例
 
 export default function Launcher() {
-  const { isConnected } = useAccount()
+  const { isConnected, address } = useAccount()
   const { state: { isLogin }, onConnectWallet } = useContext(AppContext)
   const uploadButtonRef = useRef<UploadButtonRef>(null)
 
@@ -43,7 +44,7 @@ export default function Launcher() {
   const [twitterUrl, setTwitterUrl] = useState('')
   const [telegramUrl, setTelegramUrl] = useState('')
   const [description, setDescription] = useState('')
-  const [totalSupply, setTotalSupply] = useState('10000000')
+  const [totalSupply, setTotalSupply] = useState('1000000')
   const [raisedAmount, setRaisedAmount] = useState('0')
   const [salesRatio, setSalesRatio] = useState('80')
   const [reservedRatio, setReservedRatio] = useState('0')
@@ -53,7 +54,7 @@ export default function Launcher() {
   const [showExtraOptions, setShowExtraOptions] = useState(false)
   // const [startTime, setStartTime] = useState<Date | null>(null)
   // const [raisedTokenBalance, setRaisedTokenBalance] = useState(0)
-  const [launchButtonText, ] = useState(LaunchButtonText.Launch)
+  const [launchButtonText, setLaunchButtonText] = useState(LaunchButtonText.Launch)
 
   // fetch data
   const [tags, setTags] = useState<SelectOptionType<string>[]>([])
@@ -66,6 +67,17 @@ export default function Launcher() {
   // write contract
   const { onLaunch, state: launchState, onReset: onResetLaunch } = useLaunch()
   const isLoadingLaunch = launchState.loading || isLoadingGetSignature || isLoadingUploadIcon
+
+  // rasied token balance
+  const { data: raisedTokenBalance } = useReadContract({
+    address: raisedToken?.address as `0x${string}`,
+    abi: erc20Abi,
+    functionName: 'balanceOf',
+    args: [address as `0x${string}`],
+    query: {
+      enabled: !!raisedToken?.address && !!address
+    }
+  })
 
   // 内盘开启时的价格
   const initialYprice = useMemo(() => {
@@ -311,8 +323,14 @@ export default function Launcher() {
       return false
     }
 
+    // 检查raised token balance
+    if (raisedTokenBalance && Big(raisedTokenBalance.toString()).lt(Big(parseEther('201').toString()))) {
+      setLaunchButtonText(LaunchButtonText.InsufficientAssets)
+      return false
+    }
+
     return true;
-  }, [isLoadingLaunch, isLogin, passAllChecks])
+  }, [isLoadingLaunch, isLogin, passAllChecks, raisedTokenBalance])
 
   const createToken = async () => {
     if (!isConnected || launchState.loading || isLoadingGetSignature || !raisedToken || !tag || !iconFile) {
