@@ -8,10 +8,11 @@ import { useEffect, useState } from "react"
 import { TradeLogItemResponse } from "../types/response"
 import { ERR_CODE } from "@/constants/ERR_CODE"
 import clsx from "clsx"
-import { VITE_BLOCK_EXPLORER_URL } from "@/utils/runtime-config"
+import { useChainInfo } from "@/hooks/useChainInfo"
 
 export default function TradingHistory({ tokenAddress }: { tokenAddress: string }) {
   const { isSM } = useBreakpoint()
+  const { blockExploreUrl } = useChainInfo()
   
   // 接口参数
   const [lastBlockNumber, setLastBlockNumber] = useState<number>()
@@ -84,10 +85,10 @@ export default function TradingHistory({ tokenAddress }: { tokenAddress: string 
             </div>
             <div className="flex flex-col px-[0.75rem] mt-[0.55rem]">
               <div className="flex justify-between items-center">
-                <a href={`${VITE_BLOCK_EXPLORER_URL}/address/${item.user_address}`} target="_blank" className="flex items-center gap-[0.44rem]">
+                <a href={`${blockExploreUrl}/address/${item.user_address}`} target="_blank" className="flex items-center gap-[0.44rem]">
                   <span className="text-[0.81rem] font-semibold text-white/60">{formatAddress(item.user_address, 4, 6)}</span>
                 </a>
-                <a href={`${VITE_BLOCK_EXPLORER_URL}/tx/${item.txn_hash}`} target="_blank" className="flex items-center gap-[0.44rem]">
+                <a href={`${blockExploreUrl}/tx/${item.txn_hash}`} target="_blank" className="flex items-center gap-[0.44rem]">
                   <TxIcon className="text-[0.875rem]" />
                   <span className="text-[0.75rem] font-semibold">{formatAddress(item.txn_hash, 6, 4)}</span>
                 </a>
@@ -128,7 +129,7 @@ export default function TradingHistory({ tokenAddress }: { tokenAddress: string 
 
             return <Tr key={index} className="!font-semibold !h-[3.75rem]">
               <Td className="!p-0 !border-white/10 !text-[0.875rem] !text-white/60">
-                <a href={`${VITE_BLOCK_EXPLORER_URL}/address/${item.user_address}`} target="_blank" className="flex items-center gap-2 hover:text-red-10">
+                <a href={`${blockExploreUrl}/address/${item.user_address}`} target="_blank" className="flex items-center gap-2 hover:text-red-10">
                   <span>{formatAddress(item.user_address, 4, 6)}</span>
                 </a>
               </Td>
@@ -137,7 +138,7 @@ export default function TradingHistory({ tokenAddress }: { tokenAddress: string 
               <Td className="!border-white/10 !text-[0.875rem] !text-white">{formatNumberLocale(formatAmount(item.token2_amount))}</Td>
               <Td className="!border-white/10 !text-[0.875rem] !text-white">{formatCommentDate(item.block_time)}</Td>
               <Td className="!p-0 !border-white/10 !text-[0.875rem] !text-white">
-                <a href={`${VITE_BLOCK_EXPLORER_URL}/tx/${item.txn_hash}`} target="_blank" className="flex items-center gap-2 group hover:text-red-10">
+                <a href={`${blockExploreUrl}/tx/${item.txn_hash}`} target="_blank" className="flex items-center gap-2 group hover:text-red-10">
                   <TxIcon />
                   <span>{formatAddress(item.txn_hash, 6, 4)}</span>
                 </a>
