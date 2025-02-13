@@ -2,7 +2,7 @@ import RocketIcon from '@/assets/images/rocket.png'
 import clsx from 'clsx'
 import { useInView } from 'framer-motion';
 import { useRef } from 'react';
-import { formatAddress, formatNumberLocale } from '@/utils/utils';
+import { formatAddress, formatAmount, formatNumberLocale } from '@/utils/utils';
 import { useNavigate } from 'react-router-dom';
 import { MaxFunToken } from '@/api/home';
 import { TagIcon } from './TagIcon';
@@ -53,7 +53,7 @@ export default function TokenCard({className, data}: TokenCardProps) {
         
         <div className=' '>
           <span className='text-white opacity-60'>Market Cap:</span>  
-          {data.market_cap && <span className='font-semibold text-[0.875rem]'> ${ formatNumberLocale(data.market_cap) }</span>}
+          {data.market_cap && <span className='font-semibold text-[0.875rem]'> ${ formatNumberLocale(formatAmount(data.market_cap)) }</span>}
         </div>
         
         {!isOnUniswap && <div className="flex items-center gap-[1.31rem] mt-[0.5rem]">
@@ -61,7 +61,7 @@ export default function TokenCard({className, data}: TokenCardProps) {
             <div className='absolute top-0 left-0 w-full h-full rounded-[0.625rem] bg-[#D9D9D9] group-hover:bg-white opacity-20'></div>
             <div className={`absolute top-0 left-0 h-full rounded-[0.625rem] bg-gradient-to-r from-red-10 to-[#FFADC4] group-hover:from-white group-hover:to-white`} style={{width: `${data.bonding_curve !== null ? Big(data.bonding_curve).times(100).toFixed(2) : 0}%`}}></div>
           </div>
-          {data.bonding_curve !== null && <div>{Big(data.bonding_curve).times(100).toFixed(2)}%</div>}
+          {data.bonding_curve !== null && <div>{formatAmount(Number(data.bonding_curve) * 100)}%</div>}
         </div>}
 
         {isOnUniswap && <div className='flex items-center'>

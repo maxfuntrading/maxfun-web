@@ -1,4 +1,4 @@
-import { formatNumberLocale } from "@/utils/utils"
+import { formatAmount, formatNumberLocale } from "@/utils/utils"
 import { TokenOwnedItem } from "../type"
 
 export interface OwnedTokenInfo {
@@ -35,14 +35,14 @@ export default function OwnedTokenCard({ token }: { token: TokenOwnedItem }) {
           Quantity
         </span>
         <div className="text-[#fff] text-sm font-semibold">
-          {formatNumberLocale(token.quantity)}
+          {formatNumberLocale(formatAmount(token.quantity))}
         </div>
       </div>
       <div className="px-4 py-2 pt-0 mdup:pt-2 flex-1 flex items-center flex-row justify-between">
         <span className="text-[#FFFFFF66] text-sm font-semibold mdup:hidden">
           Value
         </span>
-        <div className="text-[#fff] text-sm font-semibold">{formatNumberLocale(token.value)}</div>
+        <div className="text-[#fff] text-sm font-semibold">{formatNumberLocale(formatAmount(token.value))}</div>
       </div>
     </div>
   )

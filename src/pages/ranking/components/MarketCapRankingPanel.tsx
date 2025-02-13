@@ -1,4 +1,4 @@
-import { formatNumberLocale } from '@/utils/utils'
+import { formatAmount, formatNumberLocale } from '@/utils/utils'
 import { RankingItem } from '../type'
 import RankIcon from './RankIcon'
 import { useNavigate } from 'react-router-dom'
@@ -62,7 +62,7 @@ export default function MarketCapRankingPanel({
                     Market Cap
                   </span>
                   <div className="text-[#fff] text-sm font-semibold mdup:group-hover:text-red-10">
-                    ${formatNumberLocale(item.market_cap)}
+                    ${formatNumberLocale(formatAmount(item.market_cap))}
                   </div>
                 </div>
               </div>

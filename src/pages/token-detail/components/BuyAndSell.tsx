@@ -37,7 +37,7 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
   const [isBuy, setIsBuy] = useState(true)
   const isSell = !isBuy
   const [amount, setAmount] = useState<string>('')
-  const [slippage, setSlippage] = useState(10)
+  const [slippage, setSlippage] = useState(2)
   const [buttonText, setButtonText] = useState(ButtonText.Buy)
 
   const { isOpen: isOpenSlippage, onOpen: onOpenSlippage, onClose: onCloseSlippage } = useDisclosure();

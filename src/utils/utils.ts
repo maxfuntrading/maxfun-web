@@ -61,12 +61,14 @@ export function bigintToAmount(num: bigint, decimal: number) {
   return formatUnits(num, decimal)
 }
 
-export function formatAmount(amount: number | string, decimal: number = 2, round: Big.RoundingMode = Big.roundDown) {
-  if (amount === undefined || amount === null || decimal === undefined || decimal === null) {
-    return ''
-  }
-
-  return Big(amount).round(decimal, round).toFixed()
+// 页面数值处理，四舍五入保留两位小数，尾数是0则舍去
+export function formatAmount(amount: number | string, decimal: number = 2, round: Big.RoundingMode = Big.roundHalfUp) {
+  const bigValue = new Big(amount).round(decimal, round);
+  const formatted = bigValue.toFixed(decimal);
+  
+  return formatted.endsWith('.00') ? bigValue.toFixed(0)
+       : formatted.endsWith('0') ? bigValue.toFixed(1)
+       : formatted;
 }
 
 // 数字千分位处理

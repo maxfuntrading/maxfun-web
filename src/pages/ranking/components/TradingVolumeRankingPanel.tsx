@@ -1,4 +1,4 @@
-import { formatNumberLocale } from '@/utils/utils'
+import { formatAmount, formatNumberLocale } from '@/utils/utils'
 import { RankingItem } from '../type'
 import RankIcon from './RankIcon'
 import { useNavigate } from 'react-router-dom'
@@ -65,7 +65,7 @@ export default function TradingVolumeRankingPanel({
                     Market Cap
                   </span>
                   <div className="text-[#fff] text-sm font-semibold mdup:group-hover:text-red-10">
-                    ${formatNumberLocale(item.market_cap)}
+                    ${formatNumberLocale(formatAmount(item.market_cap))}
                   </div>
                 </div>
                 <div className="px-4 py-2 flex-1 flex flex-row justify-between items-center">
@@ -73,7 +73,7 @@ export default function TradingVolumeRankingPanel({
                     24H Trading Volume(TRX)
                   </span>
                   <div className="w-1/2 mdup:w-full flex flex-row items-center justify-end gap-2 mdup:group-hover:text-red-10">
-                    {formatNumberLocale(item.volume_24h)}
+                    {formatNumberLocale(formatAmount(item.volume_24h))}
                   </div>
                 </div>
               </div>
