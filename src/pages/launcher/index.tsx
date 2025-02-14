@@ -23,13 +23,13 @@ function isValidUrl(url: string) {
   return urlPattern.test(url)
 }
 
-const RaisedTokenTotalPrice = 2000; // 最低筹集要求价值$2000的Raised Token代币
+const RaisedTokenTotalPrice = 2000; // min raised amount is $2000
 enum LaunchButtonText {
   Launch = 'Launch',
   InsufficientAssets = 'Insufficient Assets',
 }
 
-const MIGRATION_TAX = 0; // 发射时收取的手续费比例
+const MIGRATION_TAX = 0; // migration tax
 
 export default function Launcher() {
   const { isConnected, address } = useAccount()
@@ -85,11 +85,11 @@ export default function Launcher() {
       return undefined
     }
 
-    const r = Number(raisedAmount)                  // 需要筹集的平台币数量
-    const l = Number(liquidityPoolRatio) / 100      // 流动性池占比  
-    const s = Number(salesRatio) / 100              // 销售占比
-    const t = Number(totalSupply)                   // meme币总量
-    const m = MIGRATION_TAX                         // 发射时收取的手续费比例
+    const r = Number(raisedAmount)                  // raised amount
+    const l = Number(liquidityPoolRatio) / 100      // liquidity pool ratio
+    const s = Number(salesRatio) / 100              // sales ratio
+    const t = Number(totalSupply)                   // meme token total supply
+    const m = MIGRATION_TAX                         // migration tax
 
     // 1 Meme=\frac{R⋅L} {(1−M)⋅S^2⋅T} raised
     const price = (r * l) / ((1 -m) * Math.pow(s, 2) * t)
@@ -103,10 +103,10 @@ export default function Launcher() {
       return undefined
     }
 
-    const r = Number(raisedAmount)                  // 需要筹集的平台币数量
-    const l = Number(liquidityPoolRatio) / 100      // 流动性池占比  
-    const t = Number(totalSupply)                   // meme币总量
-    const m = MIGRATION_TAX                         // 发射时收取的手续费比例
+    const r = Number(raisedAmount)                  // raised amount
+    const l = Number(liquidityPoolRatio) / 100      // liquidity pool ratio  
+    const t = Number(totalSupply)                   // meme token total supply
+    const m = MIGRATION_TAX                         // migration tax
 
     // \frac{X}{Y}=\frac{R⋅(1−M)}{T⋅L}
     const priceUniswap = (r * (1 - m)) / (t * l);
@@ -323,7 +323,7 @@ export default function Launcher() {
       return false
     }
 
-    // 检查raised token balance
+    // check raised token balance
     if (raisedTokenBalance && raisedToken && Big(raisedTokenBalance.toString()).lt(Big(parseUnits('201', raisedToken?.decimal).toString()))) {
       setLaunchButtonText(LaunchButtonText.InsufficientAssets)
       return false
@@ -383,7 +383,7 @@ export default function Launcher() {
     const id = launchTokenRes.data.id
     const signature = launchTokenRes.data.signature
 
-    // 调用合约lanch方法
+    // call launch contract method
     onLaunch({
       id: Number(id), 
       name, 

@@ -53,7 +53,7 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
   const isLoadingSell = sellState.loading
   const isLoadingTrade = isLoadingBuy || isLoadingSell
 
-  // 获取token基本信息
+  // get token basic info
   const { data: contractInfo} = useReadContracts({
     allowFailure: false,
     contracts: [
@@ -122,7 +122,7 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
     }
   })
 
-  // buy-预计收到的token数量
+  // buy-expected token amount
   const { data: amountOutBuy } = useReadContract({
     address: VITE_CONTRACT_MAX_FUN_CURVE as `0x${string}`,
     abi: MaxFunCurveAbi,
@@ -137,7 +137,7 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
     }
   })
   
-  // sell-预计收到的token数量
+  // sell-expected token amount
   const { data: amountOutSell } = useReadContract({
     address: VITE_CONTRACT_MAX_FUN_CURVE as `0x${string}`,
     abi: MaxFunCurveAbi,
@@ -300,12 +300,12 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
             let inputValue = e.target.value;
             inputValue = inputValue.replace(/[^0-9.]/g, "");
 
-            // 防止小数点开头，自动补 0
+            // prevent decimal point at the beginning, automatically add 0
             if (inputValue.startsWith(".")) {
               inputValue = "0" + inputValue;
             }
 
-            // 确保小数点只出现一次
+            // ensure the decimal point appears only once
             if (inputValue.split(".").length > 2) {
               inputValue = inputValue.slice(0, inputValue.lastIndexOf("."));
             }
@@ -315,7 +315,7 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
 
           <div className='self-start flex items-center gap-2 mdup:gap-[0.7rem]'>
             <span className='font-medium text-[1rem] mdup:text-[1.125rem]'>{ isBuy ? raiseTokenSymbol : maxfunTokenSymbol }</span>
-            <div className='size-[1.875rem] rounded-full'>
+            <div className='size-[1.875rem] rounded-full overflow-hidden'>
               <img src={isBuy ? raiseTokenIcon : maxfunTokenIcon} alt="raise token" />
             </div>
           </div>
