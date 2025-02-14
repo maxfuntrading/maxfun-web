@@ -18,7 +18,7 @@ export default function SolidButton({
       onClick={onClick}
       disabled={isDisabled}
       className={clsx(
-        'w-full h-[2.75rem] mdup:h-[3.5rem] rounded-[0.625rem] relative overflow-hidden',
+        'w-full h-[2.75rem] mdup:h-[3.5rem] rounded-[0.625rem] relative',
         isDisabled
           ? 'bg-[#D9D9D9] text-[#636363]'
           : 'bg-red-10 hover:bg-red-20 text-white',
@@ -34,7 +34,7 @@ export default function SolidButton({
       />
       {!isDisabled && (
         <div
-          className=" absolute top-0 left-0 w-full h-[2.75rem] mdup:h-[3.5rem] bg-red-10 hover:bg-red-20 rounded-[1.25rem] opacity-40"
+          className=" absolute top-[10%] left-0 w-full h-[2.75rem] mdup:h-[3.5rem] bg-red-10 hover:bg-red-20 rounded-[1.25rem] opacity-40"
           style={{
             filter: 'blur(10px)',
           }}
