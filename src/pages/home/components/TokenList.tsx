@@ -176,7 +176,7 @@ export default function TokenList() {
   }, [])
 
   return (
-    <div className="w-full my-container mx-auto pt-[1.1rem] px-4 mdup:px-0">
+    <div className="w-full my-container mx-auto pt-[1.1rem] mdup:px-0">
       
       <div className="w-full flex flex-col mdup:flex-row mdup:gap-[2.55rem]">
         {/* 搜索 */}

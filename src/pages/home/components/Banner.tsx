@@ -20,7 +20,7 @@ export default function Banner() {
   }
 
   return (
-    <div className="w-full my-container mx-auto px-4 mdup:px-0 mt-[1.59rem]">
+    <div className="w-full my-container mx-auto mdup:px-0 mt-[1.59rem]">
       <div className=" w-full flex flex-col mdup:flex-row-reverse mdup:justify-end mdup:gap-[3.43rem]">
 
         <div className='flex flex-col mdup:flex-1'>
