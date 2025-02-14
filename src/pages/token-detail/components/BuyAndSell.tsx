@@ -315,7 +315,7 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
 
           <div className='self-start flex items-center gap-2 mdup:gap-[0.7rem]'>
             <span className='font-medium text-[1rem] mdup:text-[1.125rem]'>{ isBuy ? raiseTokenSymbol : maxfunTokenSymbol }</span>
-            <div className='size-[1.875rem] rounded-full overflow-hidden'>
+            <div className='size-[1.875rem] rounded-full overflow-hidden flex-center'>
               <img src={isBuy ? raiseTokenIcon : maxfunTokenIcon} alt="raise token" />
             </div>
           </div>
