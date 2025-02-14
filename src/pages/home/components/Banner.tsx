@@ -23,15 +23,11 @@ export default function Banner() {
     <div className="w-full my-container mx-auto mdup:px-0 mt-[1.59rem]">
       <div className=" w-full flex flex-col mdup:flex-row-reverse mdup:justify-end mdup:gap-[3.43rem]">
 
-        <div className='flex flex-col mdup:flex-1'>
+        <div className='flex flex-col mdup:flex-1 relative'>
+          <div className='absolute right-0 top-0 w-full h-full bg-red-10/10' style={{filter: 'blur(50px)'}}></div>
           <div 
-            className='text-[1.875rem] mdup:text-[2.5rem] font-semibold mdup:mt-[1.2rem]' 
-            style={{
-              background: 'linear-gradient(90deg, #FFADC4 0%, #EC3E6F 100%)',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}>
+            className='text-[1.875rem] mdup:text-[2.5rem] font-semibold mdup:mt-[1.2rem] w-[10rem] bg-gradient-to-r from-white to-red-10 text-transparent bg-clip-text' 
+            >
               Max.Fun
           </div>
           <div className=' mdup:text-[1.625rem]'>

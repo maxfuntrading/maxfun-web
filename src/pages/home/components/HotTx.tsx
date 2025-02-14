@@ -1,5 +1,4 @@
 
-import Slider, { Settings } from 'react-slick'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useEffect, useState } from 'react';
@@ -7,26 +6,14 @@ import { fetchMarquee, Marquee } from '@/api/home';
 import {formatAddress, formatAmount } from '@/utils/utils';
 import { TagIcon } from '@/components/TagIcon';
 import { useNavigate } from 'react-router-dom';
+import './hottx.css'
+import { useBreakpoint } from "@/hooks/useBreakpoint";
+import clsx from 'clsx'
 
 export default function HotTx() {
+  const { isSM, isPC } = useBreakpoint()
   const [marquee, setMarquee] = useState<Marquee[]>([])
   const [isLoading, setIsLoading] = useState(false)
-
-  const settings: Settings = {
-    dots: false,
-    cssEase: "linear",
-    autoplay: true,
-    speed: 2000, // 降低动画时间，让滚动更流畅
-    autoplaySpeed: 10, 
-    pauseOnHover: true,
-    arrows: false,
-    prevArrow: <></>,
-    nextArrow: <></>,
-    variableWidth: true,
-    infinite: true,
-    pauseOnFocus: true,
-    rtl: false,
-  }
 
   useEffect(() => {
     setIsLoading(true)
@@ -54,11 +41,13 @@ export default function HotTx() {
 
   return (
     <div className=" w-full ">
-      <Slider {...settings} className='w-full flex flex-col mdup:flex-row h-20 mdup:h-[5.625rem] overflow-hidden'>
-        {marquee.map((item, index) => (
-          <HotTxItem key={index} data={item} />
-        ))}
-      </Slider>
+      <div className='w-full flex flex-col mdup:flex-row h-20 mdup:h-[5.625rem] overflow-hidden hot-tx-box'>
+        <div className={clsx({'hot-tx-group-mdup': isPC, 'hot-tx-group-sm': isSM})}>
+          {marquee.map((item, index) => (
+            <HotTxItem key={index} data={item} />
+          ))}
+        </div>
+      </div>
     </div>
   )
 }

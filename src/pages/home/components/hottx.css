@@ -1,0 +1,31 @@
+.hot-tx-box {
+  overflow: hidden;
+  display: flex;
+
+  &:hover .hot-tx-group-sm {
+    animation-play-state: paused;
+  }
+  &:hover .hot-tx-group-mdup {
+    animation-play-state: paused;
+  }
+}
+
+.hot-tx-group-mdup {
+  display: flex;
+  will-change: transform;
+  animation: scrolling 30s linear infinite;
+}
+.hot-tx-group-sm {
+  display: flex;
+  will-change: transform;
+  animation: scrolling 4s linear infinite;
+}
+
+@keyframes scrolling {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
