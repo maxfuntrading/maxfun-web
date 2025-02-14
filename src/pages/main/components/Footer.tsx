@@ -40,7 +40,7 @@ export default function Footer({ navData }: { navData: NavData[] }) {
         ))}
       </div>
 
-      <div className="text-[0.875rem]">
+      <div className="text-[0.875rem] text-white/60">
         © 2024 XXXXXX. All rights reserved
       </div>
     </footer>

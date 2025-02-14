@@ -14,7 +14,7 @@ export default function MaxfunModal({isOpen, onClose, title, children, className
     <Modal isOpen={isOpen} onClose={onClose} isCentered closeOnOverlayClick={true}>
         <ModalOverlay />
         <ModalContent style={{backgroundColor: 'transparent'}}>
-          <div className={clsx('w-[48.625rem] sm:w-[calc(100%-2rem)] flex flex-col rounded-[0.624rem] px-[1.29rem] mdup:px-[1.6rem] py-[0.95rem] mdup:translate-x-[-23%] sm:translate-x-[1rem]', className)} style={{background: '#1E2022'}}>
+          <div className={clsx('w-[40.625rem] sm:w-[calc(100%-2rem)] flex flex-col rounded-[0.624rem] px-[1.29rem] mdup:px-[1.6rem] py-[0.95rem] mdup:translate-x-[-23%] sm:translate-x-[1rem]', className)} style={{background: '#1E2022'}}>
             <div className=' h-full flex justify-between items-center'>
               <div className=' text-[18px] text-white font-medium'>{title}</div>
               <div onClick={onClose} className=' cursor-pointer w-[24px] h-[24px]'>
@@ -33,9 +33,9 @@ export default function MaxfunModal({isOpen, onClose, title, children, className
 
 function CloseIcon({className}: {className?: string}) {
   return <svg className={clsx(className)} xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17" fill="none">
-    <g opacity="0.6">
-      <path d="M3.55347 2.80981L14.2201 13.4765" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M3.55347 13.4765L14.2201 2.80981" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    </g>
+    <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21" fill="none">
+      <path d="M3.73145 3.47632L17.0648 16.8097" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M3.73145 16.8097L17.0648 3.47632" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
   </svg>
 }

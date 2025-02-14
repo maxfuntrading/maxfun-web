@@ -81,7 +81,7 @@ export default function BaseInfo({data, tokenAddress}: {data: TokenBaseInfoRespo
             </div>
           </div>
 
-          <div className='hidden mdup:flex flex-row justify-between gap-[1.25rem]'>
+          <div className='hidden mdup:flex flex-row justify-between gap-[0.62rem]'>
             {MetricData.map((item, index) => (
               <div key={index} className='flex flex-col items-start justify-center bg-white/10 w-1/5 rounded-[0.625rem] px-[1.75rem] md:px-[1.33rem] py-[0.8rem]'>
                 <div className='flex gap-[0.67rem]'>
