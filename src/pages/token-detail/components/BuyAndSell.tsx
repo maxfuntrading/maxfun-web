@@ -329,7 +329,7 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
       </div>
 
       <div className='flex justify-between gap-2'>
-        {isBuy && [1000, 5000, 10000, 50000].map((item, index) => (
+        {isBuy && [100, 500, 1000, 5000].map((item, index) => (
           <button disabled={isLoadingTrade} key={index} onClick={() => setAmount(item.toString())} className='flex-1 h-[1.875rem] mdup:h-[2.25rem] flex-center rounded-[0.625rem] border-[2px] border-white/20 text-[0.75rem] font-medium opacity-60'>
             {`${item} ${raiseTokenSymbol ?? ''}`}
           </button>

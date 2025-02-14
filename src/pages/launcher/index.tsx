@@ -16,7 +16,7 @@ import { fetchLaunchToken, LaunchTokenParams } from '@/api/launch'
 import { VITE_IMG_HOST } from '@/utils/runtime-config'
 import LoadingMore from '@/components/LoadingMore'
 import Big from 'big.js'
-import { erc20Abi, parseEther } from 'viem'
+import { erc20Abi, parseUnits } from 'viem'
 
 function isValidUrl(url: string) {
   const urlPattern = /^https?:\/\/.+\..+/
@@ -324,13 +324,13 @@ export default function Launcher() {
     }
 
     // 检查raised token balance
-    if (raisedTokenBalance && Big(raisedTokenBalance.toString()).lt(Big(parseEther('201').toString()))) {
+    if (raisedTokenBalance && raisedToken && Big(raisedTokenBalance.toString()).lt(Big(parseUnits('201', raisedToken?.decimal).toString()))) {
       setLaunchButtonText(LaunchButtonText.InsufficientAssets)
       return false
     }
 
     return true;
-  }, [isLoadingLaunch, isLogin, passAllChecks, raisedTokenBalance])
+  }, [isLoadingLaunch, isLogin, passAllChecks, raisedToken, raisedTokenBalance])
 
   const createToken = async () => {
     if (!isConnected || launchState.loading || isLoadingGetSignature || !raisedToken || !tag || !iconFile) {

@@ -7,15 +7,17 @@ import { useNavigate } from 'react-router-dom';
 import { MaxFunToken } from '@/api/home';
 import { TagIcon } from './TagIcon';
 import Big from 'big.js';
+import { useChainInfo } from '@/hooks/useChainInfo';
 interface TokenCardProps {
   className?: string;
   data: MaxFunToken;
 }
 
 export default function TokenCard({className, data}: TokenCardProps) {
-  const isOnUniswap = data.is_launched; // 是否为外盘
+  const isOnUniswap = data.is_launched; // is launched on uniswap
 
   const navigate = useNavigate()
+  const { blockExploreUrl } = useChainInfo()
 
   return (
     <div onClick={() => navigate(`/token/${data.token_address}`)} className={clsx('w-full mdup:px-0 rounded-[0.625rem] overflow-hidden cursor-pointer group', className)}>
@@ -36,10 +38,10 @@ export default function TokenCard({className, data}: TokenCardProps) {
       </div>
 
       <div className="relative bg-black-30 group-hover:bg-red-10 h-[13.84rem] px-[1.56rem] mdup:px-[0.875rem] pt-[1.44rem] pb-[1rem] mdup:py-[0.63rem] text-[0.875rem] flex flex-col">
-        <div className=' font-medium'>
+        <a target='_blank' onClick={e => e.stopPropagation()} href={`${blockExploreUrl}/address/${data.user_address}`} className=' font-medium'>
           <span className='text-white opacity-60'>Create By:</span> 
           {formatAddress(data.user_address, 4, 6)}
-        </div>
+        </a>
         
         <div className='text-[1rem] font-medium'>
           {data.name}($ {data.symbol})
