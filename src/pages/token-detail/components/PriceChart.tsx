@@ -158,7 +158,7 @@ export default function PriceChart({className, tab, tokenAddress}: {className?: 
 
         const dataFilter: KlineData[] = klineData.data.list
           .map((item) => ({
-            time: item.open_ts,
+            time: item.close_ts,
             open: Number(item.open),
             high: Number(item.high),
             low: Number(item.low),
