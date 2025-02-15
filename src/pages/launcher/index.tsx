@@ -240,7 +240,7 @@ export default function Launcher() {
 
     const num = Number(raisedAmount)
 
-    if (num * raisedTokenPrice < 2000) {
+    if (Math.ceil(num * raisedTokenPrice) < 2000) {
       return false
     }
 
@@ -318,13 +318,15 @@ export default function Launcher() {
     setIsLoadingGetSignature(false)
   }
 
+  console.log('raisedTokenBalance', raisedTokenBalance, raisedToken);
+  
   const isCanLaunch = useMemo(() => {
-    if (!isLogin || isLoadingLaunch || !passAllChecks) {
+    if (!isLogin || isLoadingLaunch || !passAllChecks || !raisedToken || raisedTokenBalance === undefined) {
       return false
     }
 
     // check raised token balance
-    if (raisedTokenBalance && raisedToken && Big(raisedTokenBalance.toString()).lt(Big(parseUnits('201', raisedToken?.decimal).toString()))) {
+    if (raisedTokenBalance === BigInt(0) || Big(raisedTokenBalance.toString()).lt(Big(parseUnits('201', raisedToken?.decimal).toString()))) {
       setLaunchButtonText(LaunchButtonText.InsufficientAssets)
       return false
     }
@@ -503,7 +505,7 @@ export default function Launcher() {
                   }
                   setRaisedToken(token)
                   setRaisedTokenPrice(Number(token.price))
-                  setRaisedAmount((Math.ceil(RaisedTokenTotalPrice / Number(token.price))).toString())
+                  setRaisedAmount((RaisedTokenTotalPrice / Number(token.price)).toString())
                 }}
               />
             ))}
@@ -590,7 +592,7 @@ export default function Launcher() {
                     className="size-4 mdup:size-[1.375rem] mr-1"
                   />
                   <span className="text-sm mdup:text-xl">
-                    {raisedToken?.symbol}(${raisedTokenPrice && raisedTokenPrice * Number(raisedAmount)})
+                    {raisedToken?.symbol}(${raisedTokenPrice && (Math.ceil(raisedTokenPrice * Number(raisedAmount))).toString()})
                   </span>
                 </div>
               </div>
