@@ -153,11 +153,12 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
   })
 
   const isCanBuy = useMemo(() => {
-    setButtonText(ButtonText.Buy)
     if (isSell) return false
     if (isLoadingTrade) return false
     if (!amount || Number(amount) <= 0) return false
     if (raiseTokenBalance === undefined || raiseTokenDecimal === undefined) return false
+    
+    setButtonText(ButtonText.Buy)
 
 
     if (Big(amount).times(Big(10).pow(raiseTokenDecimal)).gt(Big(raiseTokenBalance.toString()))) {
