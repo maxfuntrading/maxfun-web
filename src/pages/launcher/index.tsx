@@ -318,8 +318,6 @@ export default function Launcher() {
     setIsLoadingGetSignature(false)
   }
 
-  console.log('raisedTokenBalance', raisedTokenBalance, raisedToken);
-  
   const isCanLaunch = useMemo(() => {
     if (!isLogin || isLoadingLaunch || !passAllChecks || !raisedToken || raisedTokenBalance === undefined) {
       return false
