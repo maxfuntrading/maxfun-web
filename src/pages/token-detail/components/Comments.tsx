@@ -121,11 +121,11 @@ export default function Comments({tokenAddress}: {tokenAddress: string}) {
         <div className="text-[0.875rem] text-white">{comment.length}/250</div>
       </div>
 
-      { !isConnected && <FlatButton onClick={onConnectWallet} className="self-end !w-fit h-[2.25rem] mt-[1.16rem] px-[0.68rem]">
+      { !isLogin && <FlatButton onClick={onConnectWallet} className="self-end !w-fit h-[2.25rem] mt-[1.16rem] px-[0.68rem]">
         Connect Wallet
       </FlatButton>}
-      { isConnected && <FlatButton isDisabled={isDisabled} onClick={submitComment} className="self-end !w-[7.5rem] h-[2.25rem] mt-[1.16rem]">
-        { !isLoadingSubmit && <span className={`text-[1rem] mdup:text-[1.125rem] font-medium text-white ${!isDisabled ? 'text-white' : 'text-black-40'}`}>
+      { isLogin && <FlatButton isDisabled={isDisabled} onClick={submitComment} className="self-end !w-[7.5rem] h-[2.25rem] mt-[1.16rem]">
+        { !isLoadingSubmit && <span className={`text-[1rem] mdup:text-[1.125rem] font-medium text-[#636363] ${!isDisabled ? 'text-white' : 'text-black-40'}`}>
           Submit
         </span>}
         { isLoadingSubmit && <LoadingMore isDark={true} className="text-black-40 gap-1" />}
@@ -150,7 +150,7 @@ function CommentItem({data}: {data: CommentItemResponse}) {
   return (
     <div className="w-full flex flex-col border-b border-white/10 py-[1.1rem] mdup:py-[1.65rem] gap-[0.84rem] mdup:gap-[0.57rem]">
       <div className="flex justify-between items-center">
-        <div className="relative w-[8.09rem] h-[1.875rem] mdup:w-[10rem] mdup:h-[2.125rem] rounded-[0.375rem] border border-red-10 flex items-center gap-[0.52rem] mdup:gap-[0.78rem]">
+        <div className="relative w-[8.09rem] h-[1.875rem] mdup:w-[10rem] mdup:h-[2.125rem] rounded-[0.375rem] border border-red-10 flex items-center gap-[0.52rem] mdup:gap-[0.78rem] bg-[rgba(236,62,111,0.10)]">
           <div className=" size-[1.875rem] mdup:size-[2.125rem] bg-red-10 rounded-[0.25rem] overflow-hidden p-[0.06rem] pl-0">
             <img src={data.user_avatar} alt="avatar" className="w-full h-full object-cover rounded-[0.35rem]" />
           </div>

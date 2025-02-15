@@ -11,7 +11,7 @@ export default function Description({className}: {className?: string}) {
       </div>
       {!isShowMore && <button onClick={() => setIsShowMore(true)} className='flex items-center gap-[0.31rem] mt-[0.6rem] mdup:mt-[1rem]'>
         <span className='text-[0.875rem] text-red-10'>Shore More</span>
-        <svg xmlns="http://www.w3.org/2000/svg" width="11" height="12" viewBox="0 0 11 12" fill="none">
+        <svg className=' mt-[0.4rem] mdup:mt-2' xmlns="http://www.w3.org/2000/svg" width="11" height="12" viewBox="0 0 11 12" fill="none">
           <path d="M8.25 2.95349L5.5 5.70349L2.75 2.95349" stroke="#EC3E6F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </button>}
