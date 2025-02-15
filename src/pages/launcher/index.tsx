@@ -436,7 +436,12 @@ export default function Launcher() {
               label="Token Name"
               required
               value={name}
-              onChange={setName}
+              onChange={(value) => {
+                // number, letter, space
+                if (value.length === 0 || /^[a-zA-Z0-9\s]+$/.test(value)) {
+                  setName(value)
+                }
+              }}
               disabled={isLoadingLaunch}
               errorInfo={
                 isTokenNameValid
@@ -448,7 +453,12 @@ export default function Launcher() {
               label="Token Symbol"
               required
               value={symbol}
-              onChange={setSymbol}
+              onChange={(value) => {
+                // number, letter, !space
+                if (value.length === 0 || /^[a-zA-Z0-9]+$/.test(value)) {
+                  setSymbol(value)
+                }
+              }}
               disabled={isLoadingLaunch}
               errorInfo={
                 isTokenSymbolValid
