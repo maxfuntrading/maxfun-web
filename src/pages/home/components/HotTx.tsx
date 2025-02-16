@@ -7,11 +7,8 @@ import {formatAddress, formatAmount } from '@/utils/utils';
 import { TagIcon } from '@/components/TagIcon';
 import { useNavigate } from 'react-router-dom';
 import './hottx.css'
-import { useBreakpoint } from "@/hooks/useBreakpoint";
-import clsx from 'clsx'
 
 export default function HotTx() {
-  const { isSM, isPC } = useBreakpoint()
   const [marquee, setMarquee] = useState<Marquee[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
@@ -42,7 +39,7 @@ export default function HotTx() {
   return (
     <div className=" w-full ">
       <div className='flex flex-col mdup:flex-row h-20 mdup:h-[5.625rem] overflow-hidden hot-tx-box group'>
-        <div className={clsx({'hot-tx-group-mdup': isPC, 'hot-tx-group-sm': isSM})}>
+        <div className={`hot-tx-group`} style={{'--scroll-duration': `${marquee.length}s`} as any}>
           {marquee.map((item, index) => (
             <HotTxItem key={index} data={item} />
           ))}

@@ -3,39 +3,20 @@
   display: flex;
   position: relative;
 
-  &:hover .hot-tx-group-sm {
-    animation-play-state: paused;
-  }
-  &:hover .hot-tx-group-mdup {
+  &:hover .hot-tx-group {
     animation-play-state: paused;
   }
 }
 
-.hot-tx-group-mdup {
+.hot-tx-group {
   display: flex;
   will-change: transform;
-  animation: scrolling-mdup 60s linear infinite;
-  position: absolute;
-  left: 0;
-}
-.hot-tx-group-sm {
-  display: flex;
-  will-change: transform;
-  animation: scrolling-sm 60s linear infinite;
+  animation: scrolling var(--scroll-duration) linear infinite;
   position: absolute;
   left: 0;
 }
 
-@keyframes scrolling-mdup {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-@keyframes scrolling-sm {
+@keyframes scrolling {
   0% {
     transform: translateX(0);
   }
