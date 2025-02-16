@@ -167,11 +167,11 @@ function CommentItem({data}: {data: CommentItemResponse}) {
               <path d="M10.5259 2.72205V5.05538" stroke="white" strokeWidth="2" strokeLinecap="round"/>
             </g>
           </svg>
-          <span className="text-[0.75rem] mdup:text-[0.875rem] font-medium text-white/50">{formatCommentDate(data.create_ts)}</span>
+          <span className=" text-[0.75rem] mdup:text-[0.875rem] font-medium text-white/50">{formatCommentDate(data.create_ts)}</span>
         </div>
       </div>
 
-      <div className="text-[0.875rem] mdup:text-[1rem]">
+      <div className="text-[0.875rem] mdup:text-[1rem] break-words">
         {data.comment}
       </div>
     </div>

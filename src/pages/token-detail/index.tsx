@@ -82,7 +82,7 @@ export default function TokenDetail() {
 
           <div className="flex flex-col mdup:flex-row gap-[0.94rem] mdup:gap-[1.32rem] mt-[0.94rem] mdup:mt-[1.26rem]">
             {/* Comments / Trading History */}
-            {(!isSM || tab === TabType.Chart) && <div className="w-full mdup:flex-1 bg-black-10 py-[0.79rem] rounded-[0.625rem]">
+            {(!isSM || tab === TabType.Chart) && <div className="w-full mdup:flex-1 mdup:max-w-[calc(100%-30rem-1.32rem)] bg-black-10 py-[0.79rem] rounded-[0.625rem]">
               <SubTab subTab={subTab} setSubTab={setSubTab} className=" px-[1.08rem] mdup:px-[1.88rem]" />
               {subTab === SubTabType.Comments && <Comments tokenAddress={maxfunTokenAddress} />}
               {subTab === SubTabType.TradingHistory && <TradingHistory tokenAddress={maxfunTokenAddress} />}

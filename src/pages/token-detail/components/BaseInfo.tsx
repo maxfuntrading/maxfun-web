@@ -82,18 +82,20 @@ export default function BaseInfo({data, tokenAddress}: {data: TokenBaseInfoRespo
           </div>
 
           <div className='hidden mdup:flex flex-row justify-between gap-[0.62rem]'>
-            {MetricData.map((item, index) => (
-              <div key={index} className='flex flex-col items-start justify-center bg-white/10 w-1/5 rounded-[0.625rem] px-[1.75rem] md:px-[1.33rem] py-[0.8rem]'>
-                <div className='flex gap-[0.67rem]'>
-                  <span className='text-white/60 font-semibold'>{item.name}</span>
-                  {item.change && <span className={`${item.change.startsWith('-') ? 'text-[#FF0021]' : 'text-[#06D188]'} font-semibold`}>
-                    {item.change.replace('-', '')}% 
-                    <ArrowIcon isUp={!item.change.startsWith('-')} className='inline-block size-[0.875rem] mt-[-3px]' />
-                  </span>}
-                </div>
-                <div className='text-white text-[1.25rem] font-semibold'>{item.value}</div>
+            {MetricData.map((item, index) => {
+              const isPrice = item.name === 'Price'
+
+              return <div key={index} className='flex flex-col items-start justify-center bg-white/10 w-1/5 rounded-[0.625rem] px-[1.75rem] md:px-[1.33rem] py-[0.8rem]'>
+              <div className={`flex gap-[0.67rem]}`}>
+                <span className='text-white/60 font-semibold'>{item.name}</span>
+                {item.change && <span className={`${item.change.startsWith('-') ? 'text-[#FF0021]' : 'text-[#06D188]'} font-semibold ${isPrice && 'w-[70%] ml-[0.67rem]'}`}>
+                  {item.change.replace('-', '')}% 
+                  <ArrowIcon isUp={!item.change.startsWith('-')} className='inline-block size-[0.875rem] mt-[-3px]' />
+                </span>}
               </div>
-            ))}
+              <div className='text-white text-[1.25rem] font-semibold'>{item.value}</div>
+            </div>
+            })}
           </div>
         </div>
       </div>
