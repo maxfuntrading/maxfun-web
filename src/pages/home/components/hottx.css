@@ -13,12 +13,12 @@
 .hot-tx-group-mdup {
   display: flex;
   will-change: transform;
-  /* animation: scrolling 60s linear infinite; */
+  animation: scrolling 120s linear infinite;
 }
 .hot-tx-group-sm {
   display: flex;
   will-change: transform;
-  /* animation: scrolling 4s linear infinite; */
+  animation: scrolling 4s linear infinite;
 }
 
 @keyframes scrolling {

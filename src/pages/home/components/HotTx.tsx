@@ -41,8 +41,8 @@ export default function HotTx() {
 
   return (
     <div className=" w-full ">
-      <div className='flex flex-col mdup:flex-row h-20 mdup:h-[5.625rem] overflow-hidden hot-tx-box'>
-        <div className={clsx({'hot-tx-group-mdup': isPC, 'hot-tx-group-sm': isSM})} style={{animation: isPC ? `scrolling ${marquee.length * 2}s linear infinite` : `scrolling ${marquee.length * 0.1}s linear infinite`}}>
+      <div className='flex flex-col mdup:flex-row h-20 mdup:h-[5.625rem] overflow-hidden hot-tx-box group'>
+        <div className={clsx({'hot-tx-group-mdup': isPC, 'hot-tx-group-sm': isSM})}>
           {marquee.map((item, index) => (
             <HotTxItem key={index} data={item} />
           ))}
