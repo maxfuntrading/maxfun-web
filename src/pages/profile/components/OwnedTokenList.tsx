@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import SearchInput from './SearchInput'
-import FlatButton from '@/components/button/FlatButton'
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll'
 import LoadingMore from '@/components/LoadingMore'
 import { useNavigate } from 'react-router-dom'
@@ -8,6 +7,7 @@ import OwnedTokenCard from './OwnedTokenCard'
 import { TokenOwnedItem } from '../type'
 import { fetchTokenOwned } from '@/api/profile'
 import { ERR_CODE } from '@/constants/ERR_CODE'
+import SolidButton from '@/components/button/SolidButton'
 
 export default function OwnedTokenList() {
 
@@ -83,12 +83,12 @@ export default function OwnedTokenList() {
             }}
           />
         </div>
-        <FlatButton
-          className="!w-[7.5rem] mdup:!w-[10rem] h-[2.5rem] mdup:h-[3.125rem]"
+        <SolidButton
+          className="!w-[7.5rem] mdup:!w-[10rem] !h-[2.5rem] mdup:!h-[3.125rem]"
           onClick={() => navigate('/launcher')}
         >
           Create Token
-        </FlatButton>
+        </SolidButton>
       </div>
       <div className="mdup:mt-4 flex w-full flex-col gap-[0.94rem] mdup:gap-x-[1.67rem] mdup:gap-y-[0.625rem] mdup:flex-col mdup:bg-[#1e2022] rounded-[0.625rem] mdup:p-[1.25rem]">
         <div className="text-base font-semibold hidden mdup:flex flex-row mb-2 items-center opacity-60">

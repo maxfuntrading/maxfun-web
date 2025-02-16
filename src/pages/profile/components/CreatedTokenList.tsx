@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import SearchInput from './SearchInput'
-import FlatButton from '@/components/button/FlatButton'
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll'
 // import TokenCard from '@/components/TokenCard'
 import LoadingMore from '@/components/LoadingMore'
@@ -9,6 +8,7 @@ import { fetchTokenCreated } from '@/api/profile'
 import { ERR_CODE } from '@/constants/ERR_CODE'
 import { MaxFunToken } from '@/api/home'
 import TokenCard from '@/components/TokenCard'
+import SolidButton from '@/components/button/SolidButton'
 export default function CreatedTokenList() {
   const navigate = useNavigate()
 
@@ -82,12 +82,12 @@ export default function CreatedTokenList() {
             }}
           />
         </div>
-        <FlatButton
-          className="!w-[7.5rem] mdup:!w-[10rem] h-[2.5rem] mdup:h-[3.125rem]"
+        <SolidButton
+          className="!w-[7.5rem] mdup:!w-[10rem] !h-[2.5rem] mdup:!h-[3.125rem]"
           onClick={() => navigate('/launcher')}
         >
           Create Token
-        </FlatButton>
+        </SolidButton>
       </div>
       <div className=" w-full mt-4 flex flex-col gap-[0.94rem] mdup:gap-x-[1.67rem] mdup:gap-y-[1.25rem] mdup:flex-row mdup:flex-wrap">
         {tokenList.map((token, index) => (
