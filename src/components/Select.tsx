@@ -15,7 +15,8 @@ interface SelectProps<T> {
   className?: string
   optionClassName?: string
   optionPanelClassName?: string
-  isDisabled?: boolean
+  selectClassName?: string
+  isDisabled?: boolean,
 }
 
 export default function Select<T>({
@@ -25,6 +26,7 @@ export default function Select<T>({
   className,
   optionClassName,
   optionPanelClassName,
+  selectClassName,
   isDisabled,
 }: SelectProps<T>) {
   const [isOpenOption, setIsOpenOption] = useState(false)
@@ -44,7 +46,7 @@ export default function Select<T>({
       )}
     >
       <div
-        className={clsx('w-full h-full flex items-center justify-between')}
+        className={clsx('w-full h-full flex items-center justify-between', selectClassName)}
         onClick={() => {
           if (isDisabled) {
             return
@@ -55,9 +57,9 @@ export default function Select<T>({
         <div>{defaultOption.value}</div>
 
         {isOpenOption ? (
-          <UpArrowIcon className="size-[1.25rem]" />
+          <UpArrowIcon className="size-[1.25rem] sm:ml-[0.47rem]" />
         ) : (
-          <DownArrowIcon className="size-[1.25rem]" />
+          <DownArrowIcon className="size-[1.25rem] sm:ml-[0.47rem]" />
         )}
       </div>
       {isOpenOption && (

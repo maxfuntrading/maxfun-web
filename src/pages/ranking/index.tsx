@@ -151,7 +151,7 @@ export default function Ranking() {
   const tradingVolumeRankingPanel = <TradingVolumeRankingPanel items={volumeData} />
 
   return (
-    <div className="w-full min-h-screen bg-[#141516] flex flex-col items-center py-4 px-4">
+    <div className="w-full min-h-screen flex flex-col items-center py-4 px-4">
       <div className="w-full h-full flex flex-col max-w-[87.5rem] items-center">
         <h1 className="text-[1.5rem] w-[12.5rem] mdup:w-auto mdup:text-[2.5rem] font-['Otomanopee One'] bg-gradient-to-r from-white to-red-10 text-transparent bg-clip-text text-center font-semibold">
           XX Ranking
@@ -164,6 +164,7 @@ export default function Ranking() {
             <div className="w-[0.1875rem] h-[0.875rem] bg-red-10" />
             <Select
               className="sm:w-[14rem] border-none text-bold"
+              selectClassName="!justify-start"
               defaultOption={rankingType}
               options={rankingTypeList}
               onSelect={(val) => setRankingType(val)}

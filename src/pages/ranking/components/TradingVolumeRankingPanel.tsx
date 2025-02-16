@@ -20,7 +20,7 @@ export default function TradingVolumeRankingPanel({
             <div className="px-4 py-2 text-left w-20 text-white/60">Rank</div>
             <div className="px-4 py-2 text-left flex-1 text-white/60">Token Name</div>
             <div className="px-4 py-2 text-left flex-1 text-white/60">Market Cap</div>
-            <div className="px-4 py-2 text-right flex-1 text-white/60">
+            <div className="px-4 py-2 text-right flex-1 lg:w-[190px] lg:translate-x-[-26px] lg:whitespace-nowrap text-white/60">
               24H Trading Volume(TRX)
             </div>
           </div>
@@ -57,7 +57,7 @@ export default function TradingVolumeRankingPanel({
                       alt={item.name}
                       className="w-[2.125rem] h-[2.125rem] rounded-full mr-2"
                     />
-                    <span className="text-sm font-semibold mdup:group-hover:text-red-10">{item.name}</span>
+                    <span className="text-sm font-semibold mdup:group-hover:text-red-10 mdup:w-[8.18rem] mdup:truncate">{item.name}</span>
                   </div>
                 </div>
                 <div className="px-4 py-2 pt-0 mdup:pt-2 flex-1 flex items-center flex-row justify-between">
