@@ -1,6 +1,7 @@
 .hot-tx-box {
   overflow: hidden;
   display: flex;
+  position: relative;
 
   &:hover .hot-tx-group-sm {
     animation-play-state: paused;
@@ -13,19 +14,32 @@
 .hot-tx-group-mdup {
   display: flex;
   will-change: transform;
-  animation: scrolling 120s linear infinite;
+  animation: scrolling-mdup 60s linear infinite;
+  position: absolute;
+  left: 0;
 }
 .hot-tx-group-sm {
   display: flex;
   will-change: transform;
-  animation: scrolling 4s linear infinite;
+  animation: scrolling-sm 8s linear infinite;
+  position: absolute;
+  left: 0;
 }
 
-@keyframes scrolling {
+@keyframes scrolling-mdup {
   0% {
     transform: translateX(0);
   }
   100% {
-    transform: translateX(-100%);
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes scrolling-sm {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
   }
 }
