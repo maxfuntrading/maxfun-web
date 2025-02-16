@@ -413,14 +413,14 @@ export default function Launcher() {
   }, [launchState.success, launchState.error, onResetLaunch])
 
   return (
-    <div className="w-full bg-[#141516] flex flex-col items-center py-8 px-4 relative">
+    <div className="w-full flex flex-col items-center py-8 px-4 relative">
       <h1 className="font-semibold text-[1.5rem] w-[12.5rem] mdup:w-auto mdup:text-[2.5rem] font-['Otomanopee One'] mb-12 bg-gradient-to-r from-white to-red-10 text-transparent bg-clip-text text-center">
         Launch your token on XX
       </h1>
       <div className="w-full mdup:w-[56.25rem] m-2 bg-[#2b2c2d]/50 rounded-[1.25rem] p-4 mdup:p-10 flex flex-col gap-8">
         <div className="flex w-full flex-col mdup:flex-row gap-8">
           <div className="space-y-2 ">
-            <label className="text-sm mdup:text-xl font-['Outfit']">
+            <label className="text-sm mdup:text-xl font-['Outfit'] text-[#AAABAB]">
               Token Icon <span className="text-red-10">*</span>
             </label>
             <div className="flex flex-row w-full justify-center mdup:justify-start">
@@ -471,7 +471,7 @@ export default function Launcher() {
 
         <div className="flex flex-col gap-2">
           <div className="flex flex-row justify-between">
-            <label className="mdup:text-xl font-['Outfit']">
+            <label className="mdup:text-xl font-['Outfit'] text-[#AAABAB]">
               Description <span className="text-red-10">*</span>
             </label>
             <span className="text-[#aaabab] mdup:text-xl font-['Outfit']">
@@ -481,9 +481,10 @@ export default function Launcher() {
           <textarea
             rows={6}
             onChange={(e) => {
-              if (e.target.value.length <= 256) {
-                setDescription(e.target.value)
-              }
+              // if (e.target.value.length <= 256) {
+              //   setDescription(e.target.value)
+              // }
+              setDescription(e.target.value)
             }}
             value={description}
             disabled={isLoadingLaunch}
@@ -494,10 +495,13 @@ export default function Launcher() {
             }}
             className="w-full bg-white/5 rounded-[0.625rem] border-2 border-[#FFFFFF1A] focus:border-red-10 text-white text-sm mdup:text-xl px-4 outline-none p-3"
           />
+          {!isDescriptionValid && <span className="text-white/40 text-xs mdup:text-sm bottom-[-1.45rem] left-0">
+            {'String must contain at most 256 character(s)'}
+          </span>}
         </div>
         <div className="flex flex-col gap-2">
           <div className="flex flex-row justify-between">
-            <label className="text-sm mdup:text-xl font-['Outfit']">
+            <label className="text-sm mdup:text-xl font-['Outfit'] text-[#AAABAB]">
               Raised Token
             </label>
           </div>
@@ -521,7 +525,7 @@ export default function Launcher() {
         </div>
         {tag && <div className="flex flex-col gap-2">
           <div className="flex flex-row">
-            <label className="text-sm mdup:text-xl font-['Outfit']">Tag</label>
+            <label className="text-sm mdup:text-xl font-['Outfit'] text-[#AAABAB]">Tag</label>
           </div>
           <div className="flex flex-row w-full">
             <Select
@@ -663,14 +667,14 @@ export default function Launcher() {
             </div>
 
             <div className="flex flex-col gap-2 items-start  border-[#FFFFFF1A] bg-white/5 rounded-[0.625rem] border-2 p-4">
-              <div className="text-white/40">
+              <div className="text-[#AAABAB]">
                 Intial Price:
                 {raisedToken && initialYprice && <span className="text-white ml-2">
                   {Big(initialYprice.toFixed(raisedToken.decimal)).toFixed()}
                   {raisedToken.symbol}
                 </span>}
               </div>
-              <div className="text-white/40">
+              <div className="text-[#AAABAB]">
                 The biggest increase before list on PancakeSwap :
                 {initialYUniswapPrice && initialYprice && <span className="text-white ml-2">
                   {Big(initialYUniswapPrice / initialYprice * 100).toFixed(0)}%
@@ -714,6 +718,8 @@ export default function Launcher() {
           </SolidButton>}
         </div>
       </div>
+
+      <div className="h-[3rem] mdup:h-[5rem]"></div>
     </div>
   )
 }

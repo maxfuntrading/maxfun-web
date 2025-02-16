@@ -27,7 +27,7 @@ export default function InputField({
 }) {
   return (
     <div className={clsx('space-y-2 flex flex-col w-full relative', className)}>
-      <label className="text-sm mdup:text-xl font-['Outfit']">
+      <label className="text-sm mdup:text-xl font-['Outfit'] text-[#AAABAB]">
         {label} {required && <span className="text-red-10">*</span>}
       </label>
       <input
@@ -44,7 +44,7 @@ export default function InputField({
         onBlur={onBlur}
       />
       {errorInfo && (
-        <span className="text-red-600 text-xs mdup:text-sm absolute bottom-[-1.45rem] left-0">
+        <span className="text-white/40 text-xs mdup:text-sm absolute bottom-[-1.45rem] left-0">
           {errorInfo}
         </span>
       )}
