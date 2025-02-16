@@ -21,7 +21,7 @@
 .hot-tx-group-sm {
   display: flex;
   will-change: transform;
-  animation: scrolling-sm 8s linear infinite;
+  animation: scrolling-sm 60s linear infinite;
   position: absolute;
   left: 0;
 }
