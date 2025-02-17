@@ -224,6 +224,8 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
       onResetBuy()
       if (buyState.error.includes('User rejected the request')) {
         toastError('Cancel Approve')
+      } else if (buyState.error.includes('amountOut out of pool balance')) {
+        toastError('amountOut out of pool balance')
       } else {
         toastError('Transaction Failure')
       }
