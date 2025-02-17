@@ -1,7 +1,6 @@
 import clsx from 'clsx'
 import { useState } from 'react'
 export default function Description({className, description}: {className?: string, description: string}) {
-  console.log('description', description.length);
   
   const [isShowMoreButton, setIsShowMoreButton] = useState(() => {
     if (description.length > 100) {
