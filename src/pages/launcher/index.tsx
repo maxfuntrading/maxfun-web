@@ -85,6 +85,10 @@ export default function Launcher() {
       return undefined
     }
 
+    if (Number(raisedAmount) === 0 || Number(liquidityPoolRatio) === 0 || Number(salesRatio) === 0 || Number(totalSupply) === 0) {
+      return undefined
+    }
+
     const r = Number(raisedAmount)                  // raised amount
     const l = Number(liquidityPoolRatio) / 100      // liquidity pool ratio
     const s = Number(salesRatio) / 100              // sales ratio
@@ -96,10 +100,14 @@ export default function Launcher() {
 
     return price
   }, [raisedAmount, liquidityPoolRatio, salesRatio, totalSupply])
-  
+
   // 外盘开启时的价格
   const initialYUniswapPrice = useMemo(() => {
     if (!raisedAmount || !liquidityPoolRatio || !totalSupply) {
+      return undefined
+    }
+
+    if (Number(raisedAmount) === 0 || Number(liquidityPoolRatio) === 0 || Number(totalSupply) === 0) {
       return undefined
     }
 
@@ -650,7 +658,7 @@ export default function Launcher() {
                       setReservedRatio('40')
                     }
 
-                    if (num < 0) {
+                    if (num <= 0) {
                       setReservedRatio('0')
                     }
                   }}
