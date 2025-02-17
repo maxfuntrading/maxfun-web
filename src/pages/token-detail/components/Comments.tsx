@@ -58,6 +58,7 @@ export default function Comments({tokenAddress}: {tokenAddress: string}) {
 
       setComment('')
       setData(prev => [res.data,...prev])
+      setTotal(prev => prev ? prev + 1 : prev)
       toastSuccess('Comment successful ')
     }).catch(() => {
       // toastError('Comment failed, please try again')
@@ -171,7 +172,7 @@ function CommentItem({data}: {data: CommentItemResponse}) {
         </div>
       </div>
 
-      <div className="text-[0.875rem] mdup:text-[1rem] break-words">
+      <div className="text-[0.875rem] mdup:text-[1rem] break-words whitespace-pre-wrap">
         {data.comment}
       </div>
     </div>
