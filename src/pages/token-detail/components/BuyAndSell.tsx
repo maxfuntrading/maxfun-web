@@ -136,6 +136,20 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
       enabled: !!raiseTokenAddress && !!maxfunTokenAddress && !!amount
     }
   })
+  // const {data: amountInBuy} = useReadContract({
+  //   address: VITE_CONTRACT_MAX_FUN_CURVE as `0x${string}`,
+  //   abi: MaxFunCurveAbi,
+  //   functionName: 'getAmountsIn',
+  //   args: [ 
+  //     maxfunTokenAddress as `0x${string}`, 
+  //     raiseTokenAddress as `0x${string}`,
+  //     BigInt(139445217095180480)
+  //   ],
+  //   query: {
+  //     enabled: !!raiseTokenAddress && !!maxfunTokenAddress
+  //   }
+  // })
+  // console.log('amountInBuy', amountInBuy);
   
   // sell-expected token amount
   const { data: amountOutSell } = useReadContract({
