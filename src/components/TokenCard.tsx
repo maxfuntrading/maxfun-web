@@ -47,7 +47,7 @@ export default function TokenCard({className, data}: TokenCardProps) {
           {data.name}($ {data.symbol})
         </div>
         
-        <div className='text-white opacity-60 group-hover:opacity-70 mt-[0.56rem] line-clamp-4'>
+        <div className='text-white opacity-60 group-hover:opacity-70 mt-[0.56rem] line-clamp-3'>
           {data.description}
         </div>
 

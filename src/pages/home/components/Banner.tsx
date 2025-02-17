@@ -25,16 +25,18 @@ export default function Banner() {
 
         <div className='flex flex-col mdup:flex-1 relative'>
           <div className='absolute right-0 top-0 w-full h-full bg-red-10/10' style={{filter: 'blur(50px)'}}></div>
-          <div 
-            className='text-[1.875rem] mdup:text-[2.5rem] font-semibold mdup:mt-[1.2rem] w-[10rem] bg-gradient-to-r from-white to-red-10 text-transparent bg-clip-text' 
-            >
-              Max.Fun
+          <div className='relative z-10'>
+            <div 
+              className='text-[1.875rem] mdup:text-[2.5rem] font-semibold mdup:mt-[1.2rem] w-[10rem] bg-gradient-to-r from-white to-red-10 text-transparent bg-clip-text' 
+              >
+                Max.Fun
+            </div>
+            <div className=' mdup:text-[1.625rem]'>
+              A meme-launch platform operating on the Base chain.
+              <a href='https://max.fun/' target='_blank' className='underline text-red-10'> How it works ?</a>
+            </div>
+            <SolidButton onClick={() => navigate('/launcher')} className='mt-[0.77rem] mdup:w-[13.125rem] mdup:mt-[1.2rem]'>Create Token</SolidButton>
           </div>
-          <div className=' mdup:text-[1.625rem]'>
-            A meme-launch platform operating on the Base chain.
-            <a href='#' target='_blank' className='underline text-red-10'> How it works ?</a>
-          </div>
-          <SolidButton onClick={() => navigate('/launcher')} className='mt-[0.77rem] mdup:w-[13.125rem] mdup:mt-[1.2rem]'>Create Token</SolidButton>
         </div>
 
         <div className=" w-full relative mt-[1.36rem] mdup:mt-0 md:w-[38.75rem] lg:w-[42.5rem] mdup:h-[20rem]">
