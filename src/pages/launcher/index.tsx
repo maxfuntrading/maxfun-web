@@ -283,7 +283,7 @@ export default function Launcher() {
       isRaisedTokenSufficient
     )
   }, [iconFile, name, symbol, description, isTokenNameValid, isTokenSymbolValid, isDescriptionValid, isWebsiteUrlValid, isTwitterUrlValid, isTelegramUrlValid, isTotalSupplyValid, isRaisedAmountValid, isRaisedTokenSufficient])
-
+  
   const onUploadIcon = async (file: File) => {
     const formData = new FormData()
     formData.append('file', file)
@@ -329,6 +329,7 @@ export default function Launcher() {
       return false
     }
 
+    setLaunchButtonText(LaunchButtonText.Launch)
     return true;
   }, [isLoadingLaunch, isLogin, passAllChecks, raisedToken, raisedTokenBalance])
 
@@ -356,7 +357,7 @@ export default function Launcher() {
       twitter: twitterUrl,
       telegram: telegramUrl,
       total_supply: Number(totalSupply),
-      raised_amount: Number(raisedAmount),
+      raised_amount: Number(parseUnits(raisedAmount, raisedToken.decimal).toString()),
       sale_ratio: Number(salesRatio),
       reserved_ratio: Number(reservedRatio),
       pool_ratio: Number(liquidityPoolRatio),
@@ -382,14 +383,17 @@ export default function Launcher() {
     
     const id = launchTokenRes.data.id
     const signature = launchTokenRes.data.signature
-
-    // call launch contract method
+    
     onLaunch({
       id: Number(id), 
       name, 
       symbol, 
-      amount: BigInt(raisedAmount), 
-      asset: raisedToken.address, 
+      totalSupply: totalSupply,
+      raisedTokenAmount: raisedAmount, 
+      salesRatio: salesRatio, 
+      reservedRatio: reservedRatio, 
+      liquidityPoolRatio: liquidityPoolRatio, 
+      assetToken: raisedToken, 
       signature
     })
   }

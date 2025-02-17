@@ -188,6 +188,11 @@ export const MaxFunCurveAbi = [
         "internalType": "uint256",
         "name": "amountAsset_",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "salesAmount_",
+        "type": "uint256"
       }
     ],
     "name": "addInitialLiquidity",

@@ -132,6 +132,12 @@ export const MAX_FUN_FACTORY_ABI = [
       {
         "indexed": true,
         "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
         "name": "token",
         "type": "address"
       },
@@ -220,6 +226,12 @@ export const MAX_FUN_FACTORY_ABI = [
       {
         "indexed": true,
         "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
         "name": "token",
         "type": "address"
       },
@@ -288,6 +300,12 @@ export const MAX_FUN_FACTORY_ABI = [
     "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
+        "internalType": "address",
+        "name": "asset",
+        "type": "address"
+      },
+      {
         "indexed": false,
         "internalType": "uint256",
         "name": "newLaunchFee",
@@ -322,13 +340,25 @@ export const MAX_FUN_FACTORY_ABI = [
       {
         "indexed": true,
         "internalType": "address",
+        "name": "asset",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
         "name": "pair",
         "type": "address"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "n",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "tokenInfosLength",
         "type": "uint256"
       }
     ],
@@ -397,6 +427,49 @@ export const MAX_FUN_FACTORY_ABI = [
       }
     ],
     "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "asset",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amountInWithFee",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amountOut",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      }
+    ],
+    "name": "PurchaseToGrad",
     "type": "event"
   },
   {
@@ -493,6 +566,12 @@ export const MAX_FUN_FACTORY_ABI = [
       {
         "indexed": true,
         "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
         "name": "token",
         "type": "address"
       },
@@ -517,6 +596,19 @@ export const MAX_FUN_FACTORY_ABI = [
     ],
     "name": "Sold",
     "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "ADDR_MANAGER_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [],
@@ -546,12 +638,25 @@ export const MAX_FUN_FACTORY_ABI = [
   },
   {
     "inputs": [],
-    "name": "PERCENTAGE_DECIMALS",
+    "name": "FEE_MANAGER_ROLE",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "bytes32",
         "name": "",
-        "type": "uint256"
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "WHITELIST_MANAGER_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
       }
     ],
     "stateMutability": "view",
@@ -638,45 +743,6 @@ export const MAX_FUN_FACTORY_ABI = [
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getGradFee",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getLaunchPointPercentage",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getPercentageDecimals",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "bytes32",
@@ -729,7 +795,355 @@ export const MAX_FUN_FACTORY_ABI = [
         "type": "address"
       }
     ],
+    "name": "getTokenFinalX",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "tokenAddress",
+        "type": "address"
+      }
+    ],
+    "name": "getTokenFinalY",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "tokenAddress",
+        "type": "address"
+      }
+    ],
+    "name": "getTokenFullInfo",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "bool",
+            "name": "trading",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "price",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "prevPrice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "soldTokenAmount",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "token",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "creator",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "maxfunPair",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "uniswapV2Pair",
+                "type": "address"
+              },
+              {
+                "internalType": "string",
+                "name": "funName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "ticker",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct MaxFunFactoryStorage.Metadata",
+            "name": "metadata",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "initialX",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "initialY",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "finalX",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "finalY",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "totalSupply",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "raisedAssetAmount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint64",
+                "name": "salesRatio",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint64",
+                "name": "reservedRatio",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint64",
+                "name": "liquidityPoolRatio",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint64",
+                "name": "migrationTax",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint256",
+                "name": "totalSalesAmount",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct MaxFunFactoryStorage.CurveParameter",
+            "name": "curveParameter",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct MaxFunFactoryStorage.Token",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getTokenInfosLength",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "tokenAddress",
+        "type": "address"
+      }
+    ],
     "name": "getTokenInitialSupply",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "tokenAddress",
+        "type": "address"
+      }
+    ],
+    "name": "getTokenInitialX",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "tokenAddress",
+        "type": "address"
+      }
+    ],
+    "name": "getTokenInitialY",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "tokenAddress",
+        "type": "address"
+      }
+    ],
+    "name": "getTokenLiquidityPoolRatio",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "tokenAddress",
+        "type": "address"
+      }
+    ],
+    "name": "getTokenMigrationTax",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "tokenAddress",
+        "type": "address"
+      }
+    ],
+    "name": "getTokenRaisedAssetAmount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "tokenAddress",
+        "type": "address"
+      }
+    ],
+    "name": "getTokenReservedRatio",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "tokenAddress",
+        "type": "address"
+      }
+    ],
+    "name": "getTokenSalesRatio",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "tokenAddress",
+        "type": "address"
+      }
+    ],
+    "name": "getTokenTotalSalesAmount",
     "outputs": [
       {
         "internalType": "uint256",
@@ -815,53 +1229,7 @@ export const MAX_FUN_FACTORY_ABI = [
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "initialSupply",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "initialY",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "launchFee_",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "initialSupply_",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "launchPointPercentage_",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "initialY_",
-        "type": "uint256"
-      },
       {
         "internalType": "address",
         "name": "manager_",
@@ -916,8 +1284,28 @@ export const MAX_FUN_FACTORY_ABI = [
       },
       {
         "internalType": "uint256",
-        "name": "purchaseAmount",
+        "name": "initialSupply",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "raisedAssetAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint64",
+        "name": "salesRatio",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "reservedRatio",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "migrationTax",
+        "type": "uint64"
       },
       {
         "internalType": "address",
@@ -952,32 +1340,6 @@ export const MAX_FUN_FACTORY_ABI = [
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "launchFee",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "launchPointPercentage",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
@@ -985,7 +1347,7 @@ export const MAX_FUN_FACTORY_ABI = [
         "type": "address"
       }
     ],
-    "name": "launchPointShare",
+    "name": "launchFee",
     "outputs": [
       {
         "internalType": "uint256",
@@ -1252,31 +1614,10 @@ export const MAX_FUN_FACTORY_ABI = [
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "newSupply",
-        "type": "uint256"
-      }
-    ],
-    "name": "setInitialSupply",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "newInitialY",
-        "type": "uint256"
-      }
-    ],
-    "name": "setInitialY",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
+        "internalType": "address",
+        "name": "asset",
+        "type": "address"
+      },
       {
         "internalType": "uint256",
         "name": "newLaunchFee",
@@ -1284,19 +1625,6 @@ export const MAX_FUN_FACTORY_ABI = [
       }
     ],
     "name": "setLaunchFee",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "newLaunchPointPercentage",
-        "type": "uint256"
-      }
-    ],
-    "name": "setLaunchPointPercentage",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1338,6 +1666,25 @@ export const MAX_FUN_FACTORY_ABI = [
     "name": "setSigner",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "name": "signatureUsed",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -1396,24 +1743,24 @@ export const MAX_FUN_FACTORY_ABI = [
     "name": "tokenInfo",
     "outputs": [
       {
-        "internalType": "address",
-        "name": "creator",
-        "type": "address"
+        "internalType": "bool",
+        "name": "trading",
+        "type": "bool"
       },
       {
-        "internalType": "address",
-        "name": "token",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
       },
       {
-        "internalType": "address",
-        "name": "pair",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "prevPrice",
+        "type": "uint256"
       },
       {
-        "internalType": "address",
-        "name": "uniswapV2Pair",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "soldTokenAmount",
+        "type": "uint256"
       },
       {
         "components": [
@@ -1423,49 +1770,101 @@ export const MAX_FUN_FACTORY_ABI = [
             "type": "address"
           },
           {
+            "internalType": "address",
+            "name": "creator",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "maxfunPair",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "uniswapV2Pair",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "funName",
+            "type": "string"
+          },
+          {
             "internalType": "string",
             "name": "name",
             "type": "string"
           },
           {
             "internalType": "string",
-            "name": "_name",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
             "name": "ticker",
             "type": "string"
-          },
-          {
-            "internalType": "uint256",
-            "name": "supply",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "totalShare",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "price",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "prevPrice",
-            "type": "uint256"
           }
         ],
-        "internalType": "struct MaxFunFactoryStorage.Data",
-        "name": "data",
+        "internalType": "struct MaxFunFactoryStorage.Metadata",
+        "name": "metadata",
         "type": "tuple"
       },
       {
-        "internalType": "bool",
-        "name": "trading",
-        "type": "bool"
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "initialX",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "initialY",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "finalX",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "finalY",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalSupply",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "raisedAssetAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint64",
+            "name": "salesRatio",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "reservedRatio",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "liquidityPoolRatio",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "migrationTax",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalSalesAmount",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct MaxFunFactoryStorage.CurveParameter",
+        "name": "curveParameter",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -1501,25 +1900,6 @@ export const MAX_FUN_FACTORY_ABI = [
     "name": "transferOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      }
-    ],
-    "name": "whitelist",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   }
 ] as const;

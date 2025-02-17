@@ -1,3 +1,4 @@
+import { RaisedToken } from "@/api/common"
 import { MAX_FUN_FACTORY_ABI } from "@/constants/abi/MaxFunFactory"
 import { WriteContractState } from "@/types/contract"
 import { VITE_CONTRACT_FEE_VAULT, VITE_CONTRACT_MAX_FUN_FACTORY } from "@/utils/runtime-config"
@@ -16,13 +17,39 @@ export default function useLaunch() {
     success: false,
   })
 
-  const onLaunch = async ({id, name, symbol, amount, asset, signature}: {id: number, name: string, symbol: string, amount: bigint, asset: string, signature: string}) => {
+  const onLaunch = async ({
+    id, 
+    name, 
+    symbol, 
+    totalSupply, 
+    raisedTokenAmount, 
+    salesRatio, 
+    reservedRatio, 
+    liquidityPoolRatio, 
+    assetToken, 
+    signature
+  }: {
+    id: number, 
+    name: string, 
+    symbol: string, 
+    totalSupply: string,
+    raisedTokenAmount: string,
+    salesRatio: string,
+    reservedRatio: string,
+    liquidityPoolRatio: string,
+    assetToken: RaisedToken, 
+    signature: string
+  }) => {
     console.log('launch params', [
       id,
       name,
       symbol,
-      amount,
-      asset,
+      totalSupply,
+      raisedTokenAmount,
+      salesRatio,
+      reservedRatio,
+      liquidityPoolRatio,
+      assetToken,
       signature,
     ]);
     const amountIn = parseEther('201')
@@ -42,11 +69,12 @@ export default function useLaunch() {
       success: false,
     })
 
+    const assetAddress = assetToken.address as `0x${string}`
     try {
       // 分别对Factory和TaxVault合约Approve 201e18
       // 对Factory合约Approve
       const allowanceFactory = await publicClient.readContract({
-        address: asset as `0x${string}`,
+        address: assetAddress,
         abi: erc20Abi,
         functionName: 'allowance',
         args: [address as `0x${string}`, VITE_CONTRACT_MAX_FUN_FACTORY as `0x${string}`],
@@ -54,7 +82,7 @@ export default function useLaunch() {
 
       if (allowanceFactory < parseUnits('201', 18)) {
         const hashApprove = await writeContractAsync({
-          address: asset as `0x${string}`,
+          address: assetAddress,
           abi: erc20Abi,
           functionName: 'approve',
           args: [VITE_CONTRACT_MAX_FUN_FACTORY as `0x${string}`, amountIn],
@@ -75,7 +103,7 @@ export default function useLaunch() {
 
       // 对TaxVault合约Approve
       const allowanceTaxVault = await publicClient.readContract({
-        address: asset as `0x${string}`,
+        address: assetAddress,
         abi: erc20Abi,
         functionName: 'allowance',
         args: [address as `0x${string}`, VITE_CONTRACT_FEE_VAULT as `0x${string}`],
@@ -83,7 +111,7 @@ export default function useLaunch() {
 
       if (allowanceTaxVault < parseUnits('201', 18)) {
         const hashApprove = await writeContractAsync({
-          address: asset as `0x${string}`,
+          address: assetAddress,
           abi: erc20Abi,
           functionName: 'approve',
           args: [VITE_CONTRACT_FEE_VAULT as `0x${string}`, amountIn],
@@ -102,12 +130,29 @@ export default function useLaunch() {
         }
       }
 
-      // uint8 id,                    // 用于签名验证的ID
-      // string memory _name,         // Max.Fun Asset Token的名称
-      // string memory _ticker,       // Max.Fun Asset Token的代币符号
-      // uint256 purchaseAmount,      // 创建者购买的资产代币数量
-      // address asset,               // 资产代币的地址（如USDT、USDC等）
-      // bytes memory signature       // 签名数据，用于白名单验证
+      //   uint256 id,
+      //   string memory _name,       // token name
+      //   string memory _ticker,     // token symbol
+      //   uint256 initialSupply,     // total supply
+      //   uint256 raisedAssetAmount, // raised asset amount
+      //   uint64 salesRatio,
+      //   uint64 reservedRatio,
+      //   uint64 migrationTax,
+      //   address asset,             // asset address
+      //   bytes memory signature     // signature
+      console.log('contract launch params', [
+        BigInt(id),
+        name,
+        symbol,
+        BigInt(totalSupply),
+        parseUnits(raisedTokenAmount, assetToken.decimal),
+        BigInt((Number(salesRatio) * 100).toFixed(0)),
+        BigInt((Number(reservedRatio) * 100).toFixed(0)),
+        BigInt((Number(liquidityPoolRatio) * 100).toFixed(0)),
+        assetAddress,
+        signature as `0x${string}`,
+      ]);
+      
       const hash = await writeContractAsync({
         address: VITE_CONTRACT_MAX_FUN_FACTORY,
         abi: MAX_FUN_FACTORY_ABI,
@@ -116,10 +161,12 @@ export default function useLaunch() {
           BigInt(id),
           name,
           symbol,
-          // amount,
-          // BigInt(201e18),
-          amountIn,
-          asset as `0x${string}`,
+          BigInt(totalSupply),
+          parseUnits(raisedTokenAmount, assetToken.decimal),
+          BigInt((Number(salesRatio) * 100).toFixed(0)),
+          BigInt((Number(reservedRatio) * 100).toFixed(0)),
+          BigInt((Number(liquidityPoolRatio) * 100).toFixed(0)),
+          assetAddress,
           signature as `0x${string}`,
         ],
       })

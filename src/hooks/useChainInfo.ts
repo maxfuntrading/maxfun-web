@@ -3,7 +3,7 @@ import { useState } from "react"
 
 export function useChainInfo() {
   const [blockExploreUrl,] = useState<string>(() => {
-    if (IS_DEV) return 'https://sepolia.basescan.org'
+    if (IS_DEV) return 'https://sepolia.etherscan.io'
     return 'https://basescan.org'
   })
   
