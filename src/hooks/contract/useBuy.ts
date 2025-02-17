@@ -80,10 +80,17 @@ export default function useBuy() {
         }
       }
 
-      // uint256 amountIn,      // 用户想要支付的资产代币数量
-      // address tokenAddress,   // MaxFun代币的地址
-      // uint256 amountMinOut,  // 期望获得的最小MaxFun代币数量（滑点保护）
-      // address asset          // 支付用的资产代币地址（如USDT）
+      // uint256 amountIn,      // pay amount
+      // address tokenAddress,   // MaxFun token address
+      // uint256 amountMinOut,  // min receive amount
+      // address asset          // pay asset address
+      console.log('buy params',[
+        amountIn,
+        tokenAddress as `0x${string}`,
+        amountMinOut,
+        asset as `0x${string}`,
+      ]);
+      
       const hash = await writeContractAsync({
         address: maxFunFactoryAddress,
         abi: MAX_FUN_FACTORY_ABI,
