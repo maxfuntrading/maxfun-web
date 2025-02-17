@@ -428,7 +428,6 @@ export default function Launcher() {
       raisedTokenAmount: raisedAmount, 
       salesRatio: salesRatio, 
       reservedRatio: reservedRatio, 
-      liquidityPoolRatio: liquidityPoolRatio, 
       assetToken: raisedToken, 
       signature,
       launchFee

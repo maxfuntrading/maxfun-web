@@ -25,7 +25,6 @@ export default function useLaunch() {
     raisedTokenAmount, 
     salesRatio, 
     reservedRatio, 
-    liquidityPoolRatio, 
     assetToken, 
     signature,
     launchFee
@@ -37,7 +36,6 @@ export default function useLaunch() {
     raisedTokenAmount: string,
     salesRatio: string,
     reservedRatio: string,
-    liquidityPoolRatio: string,
     assetToken: RaisedToken, 
     signature: string,
     launchFee: bigint
@@ -50,7 +48,6 @@ export default function useLaunch() {
       raisedTokenAmount,
       salesRatio,
       reservedRatio,
-      liquidityPoolRatio,
       assetToken,
       signature,
     ]);
@@ -151,7 +148,7 @@ export default function useLaunch() {
         parseUnits(raisedTokenAmount, assetToken.decimal),
         BigInt((Number(salesRatio) * 100).toFixed(0)),
         BigInt((Number(reservedRatio) * 100).toFixed(0)),
-        BigInt((Number(liquidityPoolRatio) * 100).toFixed(0)),
+        BigInt((Number(1) * 100).toFixed(0)),
         assetAddress,
         signature as `0x${string}`,
       ]);
@@ -168,7 +165,7 @@ export default function useLaunch() {
           parseUnits(raisedTokenAmount, assetToken.decimal),
           BigInt((Number(salesRatio) * 100).toFixed(0)),
           BigInt((Number(reservedRatio) * 100).toFixed(0)),
-          BigInt((Number(liquidityPoolRatio) * 100).toFixed(0)),
+          BigInt((Number(1) * 100).toFixed(0)),
           assetAddress,
           signature as `0x${string}`,
         ],
