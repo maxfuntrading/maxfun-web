@@ -13,11 +13,12 @@ import { toastError, toastSuccess } from '@/components/toast'
 import { fetchRaisedToken, fetchTag, fetchUploadTokenIcon, RaisedToken } from '@/api/common'
 import { ERR_CODE } from '@/constants/ERR_CODE'
 import { fetchLaunchToken, LaunchTokenParams } from '@/api/launch'
-import { VITE_IMG_HOST } from '@/utils/runtime-config'
+import { VITE_CONTRACT_MAX_FUN_FACTORY, VITE_IMG_HOST } from '@/utils/runtime-config'
 import LoadingMore from '@/components/LoadingMore'
 import Big from 'big.js'
 import { erc20Abi, parseUnits } from 'viem'
 import { useChainInfo } from '@/hooks/useChainInfo'
+import { MAX_FUN_FACTORY_ABI } from '@/constants/abi/MaxFunFactory'
 
 function isValidUrl(url: string) {
   const urlPattern = /^https?:\/\/.+\..+/
@@ -80,6 +81,16 @@ export default function Launcher() {
     args: [address as `0x${string}`],
     query: {
       enabled: !!raisedToken?.address && !!address
+    }
+  })
+  // launch fee
+  const {data: launchFee} = useReadContract({
+    address: VITE_CONTRACT_MAX_FUN_FACTORY as `0x${string}`,
+    abi: MAX_FUN_FACTORY_ABI,
+    functionName: 'launchFee',
+    args: [raisedToken?.address as `0x${string}`],
+    query: {
+      enabled: !!raisedToken?.address
     }
   })
 
@@ -331,23 +342,23 @@ export default function Launcher() {
   }
 
   const isCanLaunch = useMemo(() => {
-    if (!isLogin || isLoadingLaunch || !passAllChecks || !raisedToken || raisedTokenBalance === undefined) {
+    if (!isLogin || isLoadingLaunch || !passAllChecks || !raisedToken || raisedTokenBalance === undefined || launchFee === undefined) {
       return false
     }
 
     // check raised token balance
-    if (raisedTokenBalance === BigInt(0) || Big(raisedTokenBalance.toString()).lt(Big(parseUnits('201', raisedToken?.decimal).toString()))) {
+    if (Big(raisedTokenBalance.toString()).lt(Big(launchFee.toString()))) {
       setLaunchButtonText(LaunchButtonText.InsufficientAssets)
       return false
     }
 
     setLaunchButtonText(LaunchButtonText.Launch)
     return true;
-  }, [isLoadingLaunch, isLogin, passAllChecks, raisedToken, raisedTokenBalance])
+  }, [isLoadingLaunch, isLogin, passAllChecks, raisedToken, raisedTokenBalance, launchFee])
 
   
   const createToken = async () => {
-    if (!isConnected || launchState.loading || isLoadingGetSignature || !raisedToken || !tag || !iconFile || !chainId) {
+    if (!isConnected || launchState.loading || isLoadingGetSignature || !raisedToken || !tag || !iconFile || !chainId || launchFee === undefined) {
       return
     }
 
@@ -419,7 +430,8 @@ export default function Launcher() {
       reservedRatio: reservedRatio, 
       liquidityPoolRatio: liquidityPoolRatio, 
       assetToken: raisedToken, 
-      signature
+      signature,
+      launchFee
     })
   }
 

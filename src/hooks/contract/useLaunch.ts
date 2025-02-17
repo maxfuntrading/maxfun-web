@@ -1,9 +1,9 @@
 import { RaisedToken } from "@/api/common"
 import { MAX_FUN_FACTORY_ABI } from "@/constants/abi/MaxFunFactory"
 import { WriteContractState } from "@/types/contract"
-import { VITE_CONTRACT_FEE_VAULT, VITE_CONTRACT_MAX_FUN_FACTORY } from "@/utils/runtime-config"
+import { VITE_CONTRACT_MAX_FUN_FACTORY } from "@/utils/runtime-config"
 import { useState } from "react"
-import { erc20Abi, parseEther, parseUnits } from "viem"
+import { erc20Abi, parseUnits } from "viem"
 import { useAccount, usePublicClient, useWriteContract } from "wagmi"
 
 export default function useLaunch() {
@@ -27,7 +27,8 @@ export default function useLaunch() {
     reservedRatio, 
     liquidityPoolRatio, 
     assetToken, 
-    signature
+    signature,
+    launchFee
   }: {
     id: number, 
     name: string, 
@@ -38,7 +39,8 @@ export default function useLaunch() {
     reservedRatio: string,
     liquidityPoolRatio: string,
     assetToken: RaisedToken, 
-    signature: string
+    signature: string,
+    launchFee: bigint
   }) => {
     console.log('launch params', [
       id,
@@ -52,7 +54,6 @@ export default function useLaunch() {
       assetToken,
       signature,
     ]);
-    const amountIn = parseEther('201')
     
     if (!address || !publicClient) {
       setState({
@@ -71,8 +72,7 @@ export default function useLaunch() {
 
     const assetAddress = assetToken.address as `0x${string}`
     try {
-      // 分别对Factory和TaxVault合约Approve 201e18
-      // 对Factory合约Approve
+      // AssetToken.approve(factory, launchFee)
       const allowanceFactory = await publicClient.readContract({
         address: assetAddress,
         abi: erc20Abi,
@@ -80,12 +80,15 @@ export default function useLaunch() {
         args: [address as `0x${string}`, VITE_CONTRACT_MAX_FUN_FACTORY as `0x${string}`],
       })
 
-      if (allowanceFactory < parseUnits('201', 18)) {
+      console.log('allowanceFactory', allowanceFactory);
+      console.log('launchFee', launchFee);
+      
+      if (allowanceFactory < launchFee) {
         const hashApprove = await writeContractAsync({
           address: assetAddress,
           abi: erc20Abi,
           functionName: 'approve',
-          args: [VITE_CONTRACT_MAX_FUN_FACTORY as `0x${string}`, amountIn],
+          args: [VITE_CONTRACT_MAX_FUN_FACTORY as `0x${string}`, launchFee],
         })
         const receiptApproveFactory = await publicClient.waitForTransactionReceipt({
           hash: hashApprove,
@@ -101,34 +104,34 @@ export default function useLaunch() {
         }
       }
 
-      // 对TaxVault合约Approve
-      const allowanceTaxVault = await publicClient.readContract({
-        address: assetAddress,
-        abi: erc20Abi,
-        functionName: 'allowance',
-        args: [address as `0x${string}`, VITE_CONTRACT_FEE_VAULT as `0x${string}`],
-      })
+      // assetToken.approve(taxVault, launchFee)
+      // const allowanceTaxVault = await publicClient.readContract({
+      //   address: assetAddress,
+      //   abi: erc20Abi,
+      //   functionName: 'allowance',
+      //   args: [address as `0x${string}`, VITE_CONTRACT_FEE_VAULT as `0x${string}`],
+      // })
 
-      if (allowanceTaxVault < parseUnits('201', 18)) {
-        const hashApprove = await writeContractAsync({
-          address: assetAddress,
-          abi: erc20Abi,
-          functionName: 'approve',
-          args: [VITE_CONTRACT_FEE_VAULT as `0x${string}`, amountIn],
-        })
-        const receiptApproveTaxVault = await publicClient.waitForTransactionReceipt({
-          hash: hashApprove,
-        })
-        if (!receiptApproveTaxVault || receiptApproveTaxVault.status !== 'success') {
-          setState({
-            loading: false,
-            success: false,
-            error: 'Approve failed',
-          })
-          console.error('Approve failed')
-          return
-        }
-      }
+      // if (allowanceTaxVault < parseUnits('201', 18)) {
+      //   const hashApprove = await writeContractAsync({
+      //     address: assetAddress,
+      //     abi: erc20Abi,
+      //     functionName: 'approve',
+      //     args: [VITE_CONTRACT_FEE_VAULT as `0x${string}`, amountIn],
+      //   })
+      //   const receiptApproveTaxVault = await publicClient.waitForTransactionReceipt({
+      //     hash: hashApprove,
+      //   })
+      //   if (!receiptApproveTaxVault || receiptApproveTaxVault.status !== 'success') {
+      //     setState({
+      //       loading: false,
+      //       success: false,
+      //       error: 'Approve failed',
+      //     })
+      //     console.error('Approve failed')
+      //     return
+      //   }
+      // }
 
       //   uint256 id,
       //   string memory _name,       // token name
@@ -144,7 +147,7 @@ export default function useLaunch() {
         BigInt(id),
         name,
         symbol,
-        BigInt(totalSupply),
+        parseUnits(totalSupply, 18),
         parseUnits(raisedTokenAmount, assetToken.decimal),
         BigInt((Number(salesRatio) * 100).toFixed(0)),
         BigInt((Number(reservedRatio) * 100).toFixed(0)),
@@ -161,7 +164,7 @@ export default function useLaunch() {
           BigInt(id),
           name,
           symbol,
-          BigInt(totalSupply),
+          parseUnits(totalSupply, 18),
           parseUnits(raisedTokenAmount, assetToken.decimal),
           BigInt((Number(salesRatio) * 100).toFixed(0)),
           BigInt((Number(reservedRatio) * 100).toFixed(0)),
