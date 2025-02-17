@@ -52,12 +52,14 @@ export default function TradingVolumeRankingPanel({
                         className="w-[1.25rem] h-[1.5rem] mdup:hidden mr-2"
                       />
                     )}
-                    <img
-                      src={item.icon}
-                      alt={item.name}
-                      className="w-[2.125rem] h-[2.125rem] rounded-full mr-2"
-                    />
-                    <span className="text-sm font-semibold mdup:group-hover:text-red-10 mdup:w-[8.18rem] mdup:truncate">{item.name}</span>
+                    <div className="w-[2.125rem] h-[2.125rem] rounded-full mr-2 border-2 border-white">
+                      <img
+                        src={item.icon}
+                        alt={item.name}
+                        className="size-full rounded-full"
+                      />
+                    </div>
+                    <span className="text-sm font-semibold mdup:group-hover:text-red-10 mdup:w-[7rem] mdup:truncate">{item.name}</span>
                   </div>
                 </div>
                 <div className="px-4 py-2 pt-0 mdup:pt-2 flex-1 flex items-center flex-row justify-between">

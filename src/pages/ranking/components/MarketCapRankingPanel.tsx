@@ -49,11 +49,13 @@ export default function MarketCapRankingPanel({
                         className="w-[1.25rem] h-[1.5rem] mdup:hidden mr-2"
                       />
                     )}
-                    <img
-                      src={item.icon}
-                      alt={item.name}
-                      className="w-[2.125rem] h-[2.125rem] rounded-full mr-2"
-                    />
+                    <div className="w-[2.125rem] h-[2.125rem] rounded-full mr-2 border-2 border-white">
+                      <img
+                        src={item.icon}
+                        alt={item.name}
+                          className="size-full rounded-full"
+                        />
+                    </div>
                     <span className="text-sm font-semibold mdup:group-hover:text-red-10">{item.name}</span>
                   </div>
                 </div>

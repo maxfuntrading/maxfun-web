@@ -20,11 +20,13 @@ export default function OwnedTokenCard({ token }: { token: TokenOwnedItem }) {
           Token
         </span>
         <div className="flex flex-row items-center justify-end">
-          <img
-            src={token.token_icon}
-            alt={''}
-            className="w-[2.125rem] h-[2.125rem] rounded-full mr-2"
-          />
+          <div className="w-[2.125rem] h-[2.125rem] rounded-full mr-2 border-2 border-white">
+            <img
+              src={token.token_icon}
+              alt={''}
+              className="size-full rounded-full"
+            />
+          </div>
           <span className="text-sm font-semibold mdup:w-auto">
             {token.token_symbol}
           </span>
