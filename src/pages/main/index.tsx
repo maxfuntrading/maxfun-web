@@ -61,7 +61,7 @@ export default function Main() {
         return
       }
   
-      // 构建签名数据
+      // create sign message
       const domain = window.location.host;
       const origin = window.location.origin;
       const nonce = nonceRes.data.nonce;
