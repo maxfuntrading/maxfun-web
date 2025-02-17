@@ -4,7 +4,7 @@ import TokenButton from './components/TokenButton'
 import UploadButton, { UploadButtonRef } from './components/UploadButton'
 import Switch from './components/Switch'
 import Select, { SelectOptionType } from '@/components/Select'
-import { useAccount, useReadContract } from 'wagmi'
+import { useAccount, useReadContract, useSwitchChain } from 'wagmi'
 import AppContext from '@/store/app'
 import SolidButton from '@/components/button/SolidButton'
 // import TimePicker from './components/TimePicker'
@@ -17,6 +17,7 @@ import { VITE_IMG_HOST } from '@/utils/runtime-config'
 import LoadingMore from '@/components/LoadingMore'
 import Big from 'big.js'
 import { erc20Abi, parseUnits } from 'viem'
+import { useChainInfo } from '@/hooks/useChainInfo'
 
 function isValidUrl(url: string) {
   const urlPattern = /^https?:\/\/.+\..+/
@@ -32,7 +33,9 @@ enum LaunchButtonText {
 const MIGRATION_TAX = 0; // migration tax
 
 export default function Launcher() {
-  const { isConnected, address } = useAccount()
+  const { isConnected, address, chainId } = useAccount()
+  const { switchChainAsync } = useSwitchChain();
+  const { chainIdSupported } = useChainInfo()
   const { state: { isLogin }, onConnectWallet } = useContext(AppContext)
   const uploadButtonRef = useRef<UploadButtonRef>(null)
 
@@ -66,7 +69,8 @@ export default function Launcher() {
 
   // write contract
   const { onLaunch, state: launchState, onReset: onResetLaunch } = useLaunch()
-  const isLoadingLaunch = launchState.loading || isLoadingGetSignature || isLoadingUploadIcon
+  const [isLoadingSwitchChain, setIsLoadingSwitchChain] = useState(false)
+  const isLoadingLaunch = launchState.loading || isLoadingGetSignature || isLoadingUploadIcon || isLoadingSwitchChain
 
   // rasied token balance
   const { data: raisedTokenBalance } = useReadContract({
@@ -341,10 +345,23 @@ export default function Launcher() {
     return true;
   }, [isLoadingLaunch, isLogin, passAllChecks, raisedToken, raisedTokenBalance])
 
+  
   const createToken = async () => {
-    if (!isConnected || launchState.loading || isLoadingGetSignature || !raisedToken || !tag || !iconFile) {
+    if (!isConnected || launchState.loading || isLoadingGetSignature || !raisedToken || !tag || !iconFile || !chainId) {
       return
     }
+
+    // check current chain id
+    if (!chainIdSupported.includes(chainId)) {
+      console.log('switch chain');
+      const firstChainId = chainIdSupported[0]
+      setIsLoadingSwitchChain(true)
+      const result = await switchChainAsync({chainId: firstChainId}).finally(() => {
+        setIsLoadingSwitchChain(false)
+      })
+      if (!result) return;
+    }
+    
 
     setIsLoadingUploadIcon(true)
     const tokenAvatarUrl = await onUploadIcon(iconFile).finally(() => {
