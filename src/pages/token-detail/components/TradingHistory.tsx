@@ -164,7 +164,7 @@ function TxIcon({ className }: { className?: string }) {
     </svg>
 
     <svg className={clsx(className, 'hidden group-hover:block')} xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21" fill="none">
-      <path d="M13.0396 9.57265L14.7062 8.32265L18.4562 10.8227V14.9893L14.2896 17.4893L10.1229 14.9893V6.23932L5.53955 3.73932L1.78955 6.23932V10.8227L5.53955 13.3227L7.20622 12.0727" stroke="#EC3E6F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M13.0396 9.57265L14.7062 8.32265L18.4562 10.8227V14.9893L14.2896 17.4893L10.1229 14.9893V6.23932L5.53955 3.73932L1.78955 6.23932V10.8227L5.53955 13.3227L7.20622 12.0727" stroke="#EC3E6F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
 
   </div>
