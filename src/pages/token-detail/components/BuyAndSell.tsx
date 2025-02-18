@@ -53,15 +53,22 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
   const isLoadingSell = sellState.loading
   const isLoadingTrade = isLoadingBuy || isLoadingSell
 
+  // is on uniswap
+  const { data: isOnUniswap, refetch: refetchIsOnUniswap } = useReadContract({
+    address: maxfunTokenAddress as `0x${string}`,
+    abi: MaxFunTokenAbi,
+    functionName: 'transferEnabled',
+    query: {
+      enabled: !!maxfunTokenAddress
+    }
+  })
+  console.log('isOnUniswap', isOnUniswap);
+  
+
   // get token basic info
   const { data: contractInfo} = useReadContracts({
     allowFailure: false,
     contracts: [
-      {
-        address: maxfunTokenAddress as `0x${string}`,
-        abi: MaxFunTokenAbi,
-        functionName: 'transferEnabled',
-      },
       {
         address: maxfunTokenAddress as `0x${string}`,
         abi: MaxFunTokenAbi,
@@ -93,12 +100,11 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
       enabled: !!maxfunTokenAddress && !!raiseTokenAddress
     }
   })
-  const isOnUniswap = contractInfo?.[0]
-  const maxfunTokenDecimal = contractInfo?.[1]
-  const maxfunTokenSymbol = contractInfo?.[2]
-  const raiseTokenDecimal = contractInfo?.[3]
-  const raiseTokenSymbol = contractInfo?.[4]
-  const pairAddress = contractInfo?.[5]
+  const maxfunTokenDecimal = contractInfo?.[0]
+  const maxfunTokenSymbol = contractInfo?.[1]
+  const raiseTokenDecimal = contractInfo?.[2]
+  const raiseTokenSymbol = contractInfo?.[3]
+  const pairAddress = contractInfo?.[4]
 
   // raise token balance
   const { data: raiseTokenBalance, refetch: refetchRaiseTokenBalance } = useReadContract({
@@ -121,6 +127,9 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
       enabled: !!address && !!maxfunTokenAddress
     }
   })
+
+  // get available for purchase agent token amount 
+  // maxfun_factory.getTokenTotalSalesAmount(agentToken) - maxfun_factory.tokenInfo(agentToken).soldTokenAmount
 
   // buy-expected token amount
   const { data: amountOutBuy } = useReadContract({
@@ -171,6 +180,7 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
     if (isLoadingTrade) return false
     if (!amount || Number(amount) <= 0) return false
     if (raiseTokenBalance === undefined || raiseTokenDecimal === undefined) return false
+    if (isOnUniswap === undefined || isOnUniswap === true) return false
     
     setButtonText(ButtonText.Buy)
 
@@ -181,13 +191,14 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
     }
 
     return true
-  }, [amount, isLoadingTrade, isSell, raiseTokenBalance, raiseTokenDecimal]) 
+  }, [amount, isLoadingTrade, isOnUniswap, isSell, raiseTokenBalance, raiseTokenDecimal]) 
 
   const isCanSell = useMemo(() => {
     if (isBuy) return false
     if (isLoadingTrade) return false
     if (!amount || Number(amount) <= 0) return false
     if (maxfunTokenBalance === undefined || maxfunTokenDecimal === undefined) return false
+    if (isOnUniswap === undefined || isOnUniswap === true) return false
 
     setButtonText(ButtonText.Sell)
 
@@ -197,7 +208,7 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
     }
 
     return true
-  }, [amount, isBuy, isLoadingTrade, maxfunTokenBalance, maxfunTokenDecimal])
+  }, [amount, isBuy, isLoadingTrade, isOnUniswap, maxfunTokenBalance, maxfunTokenDecimal])
 
   const onBuyHandle = async () => {
     if (!amount) return
@@ -230,6 +241,7 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
       setAmount('')
       refetchRaiseTokenBalance()
       refetchMaxfunTokenBalance()
+      refetchIsOnUniswap()
       setButtonText(ButtonText.Buy)
     }
 
@@ -244,7 +256,7 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
         toastError('Transaction Failure')
       }
     }
-  }, [buyState.success, buyState.error, onResetBuy, refetchRaiseTokenBalance, refetchMaxfunTokenBalance])
+  }, [buyState.success, buyState.error, onResetBuy, refetchRaiseTokenBalance, refetchMaxfunTokenBalance, refetchIsOnUniswap])
 
   // check sell
   useEffect(() => {
