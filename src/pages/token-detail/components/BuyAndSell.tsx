@@ -6,7 +6,7 @@ import { useDisclosure } from '@chakra-ui/react'
 import SlippageModal from './SlippageModal'
 import { useAccount, useReadContract, useReadContracts } from 'wagmi'
 import { MaxFunTokenAbi } from '@/constants/abi/MaxFunToken'
-import { VITE_CONTRACT_MAX_FUN_CURVE, VITE_CONTRACT_MAX_FUN_FACTORY } from '@/utils/runtime-config'
+import { VITE_CONTRACT_MAX_FUN_CURVE, VITE_CONTRACT_MAX_FUN_FACTORY, VITE_CONTRACT_UNISWAP_V2_FACTORY } from '@/utils/runtime-config'
 import { MaxFunCurveAbi } from '@/constants/abi/MaxFunCurve'
 import Big from 'big.js'
 import useBuy from '@/hooks/contract/useBuy'
@@ -16,6 +16,7 @@ import AppContext from '@/store/app'
 import LoadingMore from '@/components/LoadingMore'
 import { toastError } from '@/components/toast'
 import { MAX_FUN_FACTORY_ABI } from '@/constants/abi/MaxFunFactory'
+import { UniswapV2Factory } from '@/constants/abi/UniswapV2Factory'
 
 interface BuyAndSellProps {
   className?: string
@@ -89,8 +90,8 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
         functionName: 'symbol',
       },
       {
-        address: VITE_CONTRACT_MAX_FUN_CURVE as `0x${string}`,
-        abi: MaxFunCurveAbi,
+        address: VITE_CONTRACT_UNISWAP_V2_FACTORY as `0x${string}`,
+        abi: UniswapV2Factory,
         functionName: 'getPair',
         args: [maxfunTokenAddress as `0x${string}`, raiseTokenAddress as `0x${string}`]
       }
