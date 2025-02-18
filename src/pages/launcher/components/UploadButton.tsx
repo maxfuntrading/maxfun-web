@@ -54,7 +54,7 @@ const UploadButton = forwardRef<UploadButtonRef, UploadButtonProps>(({ onUpload,
         accept="image/jpeg,image/png,image/webp,image/gif"
         onChange={handleFileChange}
       />
-      <div className="bg-white/5 rounded-[0.625rem] border-2 mdup:border-none size-[7.5rem] mdup:h-[13.125rem] mdup:w-[12.5rem] text-center text-white flex flex-col items-center gap-2 justify-center">
+      <div className="bg-white/5 rounded-[0.625rem] border-2 mdup:border-none border-white/10 size-[7.5rem] mdup:h-[13.125rem] mdup:w-[12.5rem] text-center text-white flex flex-col items-center gap-2 justify-center">
         <img
           src={uploadedUrl || uploadIcon}
           alt=""

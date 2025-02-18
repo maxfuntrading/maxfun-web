@@ -88,7 +88,7 @@ export default function BaseInfo({data, tokenAddress}: {data: TokenBaseInfoRespo
               return <div key={index} className='flex flex-col items-start justify-center bg-white/10 w-1/5 rounded-[0.625rem] px-[1.75rem] md:px-[1.33rem] py-[0.8rem]'>
               <div className={`flex gap-[0.67rem]}`}>
                 <span className='text-white/60 font-semibold'>{item.name}</span>
-                {item.change && <span className={`${item.change.startsWith('-') ? 'text-[#FF0021]' : 'text-[#06D188]'} font-semibold ${isPrice && 'w-[70%] ml-[0.67rem] leading-[100%]'}`}>
+                {item.change && <span className={`${item.change.startsWith('-') ? 'text-[#FF0021]' : 'text-[#06D188]'} font-semibold ${isPrice && 'w-[66%] ml-[0.67rem] leading-[100%]'}`}>
                   {item.change.replace('-', '')}% 
                   <ArrowIcon isUp={!item.change.startsWith('-')} className='inline-block size-[0.875rem] mt-[-3px]' />
                 </span>}

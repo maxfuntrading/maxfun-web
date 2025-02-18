@@ -15,7 +15,7 @@ export default function TokenButton({
   return (
     <button
       className={clsx(
-        `flex flex-col items-center border-2 w-[6rem] h-[2.75rem] mdup:w-[11.875rem] mdup:h-[4.375rem] rounded-[0.625rem] ${
+        `flex flex-col items-center border-2 h-[2.75rem] sm:px-[1rem] mdup:w-[11.875rem] mdup:h-[4.375rem] rounded-[0.625rem] ${
           selected ? 'border-red-10' : 'border-white/10'
         }`,
         className
