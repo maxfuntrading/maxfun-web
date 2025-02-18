@@ -72,7 +72,7 @@ export default function TradingHistory({ tokenAddress }: { tokenAddress: string 
   }, [])
 
   return (
-    <div className=" px-[0.91rem] mdup:px-[1.68rem]">
+    <div className=" px-[0.91rem] mdup:px-[1.68rem] overflow-hidden">
       {isSM && <div className="w-full mt-[1.6rem] flex flex-col gap-[0.59rem]">
         {data.map((item, index) => {
           const isBuy = item.trade_type === 0
