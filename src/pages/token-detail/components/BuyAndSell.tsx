@@ -141,14 +141,15 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
       {
         address: VITE_CONTRACT_MAX_FUN_FACTORY as `0x${string}`,
         abi: MAX_FUN_FACTORY_ABI,
-        functionName: 'tokenInfo',
+        functionName: 'getTokenSoldAmount',
         args: [maxfunTokenAddress as `0x${string}`]
       }
     ]
   })
+  
   const agentTokenTotalSalesAmount = agentTokenInfo?.[0]
-  const agentTokenSoldAmount = agentTokenInfo?.[1] ? agentTokenInfo[1][3] : undefined
-  const agentTokenForSale = (agentTokenTotalSalesAmount && agentTokenSoldAmount) ? agentTokenTotalSalesAmount - agentTokenSoldAmount : undefined
+  const agentTokenSoldAmount = agentTokenInfo?.[1]
+  const agentTokenForSale = (agentTokenTotalSalesAmount !== undefined && agentTokenSoldAmount !== undefined) ? agentTokenTotalSalesAmount - agentTokenSoldAmount : undefined
 
   // buy-expected token amount
   const { data: amountOutBuy } = useReadContract({
