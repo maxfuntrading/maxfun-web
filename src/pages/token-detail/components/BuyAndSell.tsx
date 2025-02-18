@@ -6,7 +6,7 @@ import { useDisclosure } from '@chakra-ui/react'
 import SlippageModal from './SlippageModal'
 import { useAccount, useReadContract, useReadContracts } from 'wagmi'
 import { MaxFunTokenAbi } from '@/constants/abi/MaxFunToken'
-import { VITE_CONTRACT_MAX_FUN_CURVE } from '@/utils/runtime-config'
+import { VITE_CONTRACT_MAX_FUN_CURVE, VITE_CONTRACT_MAX_FUN_FACTORY } from '@/utils/runtime-config'
 import { MaxFunCurveAbi } from '@/constants/abi/MaxFunCurve'
 import Big from 'big.js'
 import useBuy from '@/hooks/contract/useBuy'
@@ -15,6 +15,7 @@ import { erc20Abi, formatUnits } from 'viem'
 import AppContext from '@/store/app'
 import LoadingMore from '@/components/LoadingMore'
 import { toastError } from '@/components/toast'
+import { MAX_FUN_FACTORY_ABI } from '@/constants/abi/MaxFunFactory'
 
 interface BuyAndSellProps {
   className?: string
@@ -130,6 +131,26 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
 
   // get available for purchase agent token amount 
   // maxfun_factory.getTokenTotalSalesAmount(agentToken) - maxfun_factory.tokenInfo(agentToken).soldTokenAmount
+  const { data: agentTokenInfo, refetch: refetchAgentTokenInfo } = useReadContracts({
+    allowFailure: false,
+    contracts: [
+      {
+        address: VITE_CONTRACT_MAX_FUN_FACTORY as `0x${string}`,
+        abi: MAX_FUN_FACTORY_ABI,
+        functionName: 'getTokenTotalSalesAmount',
+        args: [maxfunTokenAddress as `0x${string}`]
+      },
+      {
+        address: VITE_CONTRACT_MAX_FUN_FACTORY as `0x${string}`,
+        abi: MAX_FUN_FACTORY_ABI,
+        functionName: 'tokenInfo',
+        args: [maxfunTokenAddress as `0x${string}`]
+      }
+    ]
+  })
+  const agentTokenTotalSalesAmount = agentTokenInfo?.[0]
+  const agentTokenSoldAmount = agentTokenInfo?.[1] ? agentTokenInfo[1][3] : undefined
+  const agentTokenForSale = (agentTokenTotalSalesAmount && agentTokenSoldAmount) ? agentTokenTotalSalesAmount - agentTokenSoldAmount : undefined
 
   // buy-expected token amount
   const { data: amountOutBuy } = useReadContract({
@@ -214,11 +235,16 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
     if (!amount) return
     if (!amountOutBuy) return
     if (!raiseTokenDecimal) return
+    if (agentTokenForSale === undefined) return;
+    
+    const isPurchaseToGrad = amountOutBuy >= agentTokenForSale
+
     onBuy({
-        amountIn: BigInt(Big(amount).times(Big(10).pow(raiseTokenDecimal)).toFixed(0)),
-        tokenAddress: maxfunTokenAddress,
-        amountMinOut: amountOutBuy,
-        asset: raiseTokenAddress
+      amountIn: BigInt(Big(amount).times(Big(10).pow(raiseTokenDecimal)).toFixed(0)),
+      tokenAddress: maxfunTokenAddress,
+      amountMinOut: amountOutBuy,
+      asset: raiseTokenAddress,
+      isPurchaseToGrad,
     })
   }
 
@@ -242,6 +268,7 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
       refetchRaiseTokenBalance()
       refetchMaxfunTokenBalance()
       refetchIsOnUniswap()
+      refetchAgentTokenInfo()
       setButtonText(ButtonText.Buy)
     }
 
@@ -256,7 +283,7 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
         toastError('Transaction Failure')
       }
     }
-  }, [buyState.success, buyState.error, onResetBuy, refetchRaiseTokenBalance, refetchMaxfunTokenBalance, refetchIsOnUniswap])
+  }, [buyState.success, buyState.error, onResetBuy, refetchRaiseTokenBalance, refetchMaxfunTokenBalance, refetchIsOnUniswap, refetchAgentTokenInfo])
 
   // check sell
   useEffect(() => {
@@ -265,6 +292,7 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
       setAmount('') 
       refetchRaiseTokenBalance()
       refetchMaxfunTokenBalance()
+      refetchAgentTokenInfo()
       setButtonText(ButtonText.Sell)
     }
 
@@ -276,7 +304,7 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
         toastError('Transaction Failure')
       }
     }
-  }, [sellState.success, sellState.error, onResetSell, refetchRaiseTokenBalance, refetchMaxfunTokenBalance])
+  }, [sellState.success, sellState.error, onResetSell, refetchRaiseTokenBalance, refetchMaxfunTokenBalance, refetchAgentTokenInfo])
   
   return (
     <div className={clsx(" flex-shrink-0 w-full mdup:w-[30rem] flex flex-col gap-[0.62rem] mdup:gap-[0.8rem] bg-black-10 rounded-[0.625rem] px-4 mdup:px-[1.49rem] py-[0.94rem] mdup:py-[1.3rem]", className)}>

@@ -22,11 +22,13 @@ export default function useBuy() {
       tokenAddress, 
       amountMinOut, 
       asset,
+      isPurchaseToGrad,
     }: {
       amountIn: bigint, 
       tokenAddress: string, 
       amountMinOut: bigint, 
       asset: string,
+      isPurchaseToGrad: boolean,
     }
   ) => {
 
@@ -78,6 +80,35 @@ export default function useBuy() {
           console.error('Approve failed')
           return
         }
+      }
+
+      // PurchaseToGrad
+      if (isPurchaseToGrad) {
+        const hashPurchaseToGrad = await writeContractAsync({
+          address: maxFunFactoryAddress,
+          abi: MAX_FUN_FACTORY_ABI,
+          functionName: 'purchaseToGrad',
+          args: [tokenAddress as `0x${string}` , asset as `0x${string}`]
+        })
+
+        const receiptPurchaseToGrad = await publicClient.waitForTransactionReceipt({hash: hashPurchaseToGrad})
+        if (!receiptPurchaseToGrad || receiptPurchaseToGrad.status !== 'success') {
+          setState({
+            loading: false,
+            success: false,
+            error: 'Deposit reverted',
+          })
+          console.error('Deposit reverted')
+          return
+        }
+
+        setState({
+          loading: false,
+          success: true,
+          tx_hash: hashPurchaseToGrad,
+        })
+
+        return;
       }
 
       // uint256 amountIn,      // pay amount
