@@ -4,7 +4,7 @@ import SettingIcon from '@/assets/icons/setting.png'
 import SolidButton from '@/components/button/SolidButton'
 import { useDisclosure } from '@chakra-ui/react'
 import SlippageModal from './SlippageModal'
-import { useAccount, useReadContract, useReadContracts } from 'wagmi'
+import { useAccount, useReadContract, useReadContracts, useSwitchChain } from 'wagmi'
 import { MaxFunTokenAbi } from '@/constants/abi/MaxFunToken'
 import { VITE_CONTRACT_MAX_FUN_CURVE, VITE_CONTRACT_MAX_FUN_FACTORY, VITE_CONTRACT_UNISWAP_V2_FACTORY } from '@/utils/runtime-config'
 import { MaxFunCurveAbi } from '@/constants/abi/MaxFunCurve'
@@ -17,6 +17,7 @@ import LoadingMore from '@/components/LoadingMore'
 import { toastError } from '@/components/toast'
 import { MAX_FUN_FACTORY_ABI } from '@/constants/abi/MaxFunFactory'
 import { UniswapV2Factory } from '@/constants/abi/UniswapV2Factory'
+import { useChainInfo } from '@/hooks/useChainInfo'
 
 interface BuyAndSellProps {
   className?: string
@@ -33,7 +34,9 @@ enum ButtonText {
 }
 
 export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, maxfunTokenIcon, raiseTokenIcon}: BuyAndSellProps) {
-  const { address, isConnected } = useAccount()
+  const { address, isConnected, chainId } = useAccount()
+  const { switchChainAsync } = useSwitchChain();
+  const { chainIdSupported } = useChainInfo()
   const { onConnectWallet} = useContext(AppContext)
   
   const [isBuy, setIsBuy] = useState(true)
@@ -49,10 +52,11 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
   // const raiseTokenAddress = '0xF58F5BFee6B2580a983aC25bEc2781E05475341C'
 
   // write contract
+  const [isLoadingSwitchChain, setIsLoadingSwitchChain] = useState(false)
   const { onBuy, state: buyState, onReset: onResetBuy } = useBuy()
-  const isLoadingBuy = buyState.loading
+  const isLoadingBuy = buyState.loading || isLoadingSwitchChain
   const { onSell, state: sellState, onReset: onResetSell } = useSell()
-  const isLoadingSell = sellState.loading
+  const isLoadingSell = sellState.loading || isLoadingSwitchChain
   const isLoadingTrade = isLoadingBuy || isLoadingSell
 
   // is on uniswap
@@ -235,7 +239,17 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
     if (!amount) return
     if (!amountOutBuy) return
     if (!raiseTokenDecimal) return
+    if (!chainId) return;
     if (agentTokenForSale === undefined) return;
+
+    if (!chainIdSupported.includes(chainId)) {
+      const firstChainId = chainIdSupported[0]
+      setIsLoadingSwitchChain(true)
+      const result = await switchChainAsync({chainId: firstChainId}).finally(() => {
+        setIsLoadingSwitchChain(false)
+      })
+      if (!result) return;
+    }
     
     const isPurchaseToGrad = amountOutBuy >= agentTokenForSale
 
@@ -252,6 +266,16 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
     if (!amount) return
     if (!amountOutSell) return
     if (!maxfunTokenDecimal) return
+    if (!chainId) return;
+    if (!chainIdSupported.includes(chainId)) {
+      const firstChainId = chainIdSupported[0]
+      setIsLoadingSwitchChain(true)
+      const result = await switchChainAsync({chainId: firstChainId}).finally(() => {
+        setIsLoadingSwitchChain(false)
+      })
+      if (!result) return;
+    }
+
     onSell({
       amountIn: BigInt(Big(amount).times(Big(10).pow(maxfunTokenDecimal)).toFixed(0)),
       tokenAddress: maxfunTokenAddress,

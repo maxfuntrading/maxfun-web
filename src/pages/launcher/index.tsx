@@ -364,7 +364,6 @@ export default function Launcher() {
 
     // check current chain id
     if (!chainIdSupported.includes(chainId)) {
-      console.log('switch chain');
       const firstChainId = chainIdSupported[0]
       setIsLoadingSwitchChain(true)
       const result = await switchChainAsync({chainId: firstChainId}).finally(() => {
