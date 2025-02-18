@@ -24,7 +24,7 @@ export default function Banner() {
       <div className=" w-full flex flex-col mdup:flex-row-reverse mdup:justify-end mdup:gap-[3.43rem]">
 
         <div className='flex flex-col mdup:flex-1 relative'>
-          <div className='absolute right-0 bottom-0 w-1/2 h-full bg-red-10/10' style={{filter: 'blur(50px)'}}></div>
+          <div className='absolute right-0 bottom-[-2rem] w-[30rem] h-[10rem] bg-red-10/10' style={{filter: 'blur(50px)'}}></div>
           <div className='relative z-10'>
             <div 
               className='text-[1.875rem] mdup:text-[2.5rem] font-semibold mdup:mt-[1.2rem] w-[10rem] bg-gradient-to-r from-[#FFADC4] to-red-10 text-transparent bg-clip-text' 
