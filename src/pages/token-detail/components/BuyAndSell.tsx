@@ -63,8 +63,6 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
       enabled: !!maxfunTokenAddress
     }
   })
-  console.log('isOnUniswap', isOnUniswap);
-  
 
   // get token basic info
   const { data: contractInfo} = useReadContracts({
@@ -256,7 +254,6 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
       amountIn: BigInt(Big(amount).times(Big(10).pow(maxfunTokenDecimal)).toFixed(0)),
       tokenAddress: maxfunTokenAddress,
       amountMinOut: amountOutSell,
-      asset: raiseTokenAddress
     })
   }
 

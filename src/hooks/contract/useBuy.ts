@@ -130,7 +130,6 @@ export default function useBuy() {
           amountIn,
           tokenAddress as `0x${string}`,
           amountMinOut,
-          asset as `0x${string}`,
         ],
       })
 

@@ -21,12 +21,10 @@ export default function useSell() {
       amountIn, 
       tokenAddress, 
       amountMinOut, 
-      asset
     }: {
       amountIn: bigint, 
       tokenAddress: string, 
       amountMinOut: bigint, 
-      asset: string
     }
   ) => {
 
@@ -92,7 +90,6 @@ export default function useSell() {
           amountIn,
           tokenAddress as `0x${string}`,
           amountMinOut,
-          asset as `0x${string}`,
         ],
       })
 

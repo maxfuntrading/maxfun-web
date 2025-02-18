@@ -41,7 +41,6 @@ const UploadButton = forwardRef<UploadButtonRef, UploadButtonProps>(({ onUpload,
 
     //TODO: upload file to server, get url and display it
     const url = URL.createObjectURL(file)
-    console.log('>>url', url)
     setUploadedUrl(url)
     onUpload(file)
   }

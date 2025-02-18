@@ -137,7 +137,6 @@ export default function useLaunch() {
       //   uint256 raisedAssetAmount, // raised asset amount
       //   uint64 salesRatio,
       //   uint64 reservedRatio,
-      //   uint64 migrationTax,
       //   address asset,             // asset address
       //   bytes memory signature     // signature
       console.log('contract launch params', [
@@ -165,7 +164,6 @@ export default function useLaunch() {
           parseUnits(raisedTokenAmount, assetToken.decimal),
           BigInt((Number(salesRatio) * 100).toFixed(0)),
           BigInt((Number(reservedRatio) * 100).toFixed(0)),
-          BigInt((Number(1) * 100).toFixed(0)),
           assetAddress,
           signature as `0x${string}`,
         ],
