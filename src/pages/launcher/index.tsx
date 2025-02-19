@@ -157,6 +157,8 @@ export default function Launcher() {
 
     if (salesRatioNum + reservedRatioNum <= 100) {
       setLiquidityPoolRatio((100 - salesRatioNum - reservedRatioNum).toString())
+    } else {
+      setLiquidityPoolRatio('0')
     }
   }, [salesRatio, reservedRatio])
 
@@ -658,14 +660,19 @@ export default function Launcher() {
                   onChange={setSalesRatio}
                   disabled={isLoadingLaunch}
                   onBlur={() => {
-                    const num = Number(salesRatio)
+                    const salesRatioNum = Number(salesRatio)
 
-                    if (num > 100) {
+                    if (salesRatioNum > 100) {
                       setSalesRatio('100')
                     }
 
-                    if (num < 60) {
+                    if (salesRatioNum < 60) {
                       setSalesRatio('60')
+                    }
+
+                    const reservedRatioNum = Number(reservedRatio)
+                    if (salesRatioNum + reservedRatioNum > 100) {
+                      setSalesRatio((100 - reservedRatioNum).toString())
                     }
                   }}
                 />
@@ -679,15 +686,21 @@ export default function Launcher() {
                   onChange={setReservedRatio}
                   disabled={isLoadingLaunch}
                   onBlur={() => {
-                    const num = Number(reservedRatio)
+                    const reservedRatioNum = Number(reservedRatio)
 
-                    if (num > 40) {
+                    if (reservedRatioNum > 40) {
                       setReservedRatio('40')
                     }
 
-                    if (num <= 0) {
+                    if (reservedRatioNum <= 0) {
                       setReservedRatio('0')
                     }
+
+                    const salesRatioNum = Number(salesRatio)
+                    if (salesRatioNum + reservedRatioNum > 100) {
+                      setReservedRatio((100 - salesRatioNum).toString())
+                    }
+                 
                   }}
                 />
                 <span className="text-sm mdup:text-xl mb-3 mdup:mb-6">%</span>
@@ -697,7 +710,7 @@ export default function Launcher() {
                   label="Liquidity Pool Ratio"
                   type="number"
                   value={liquidityPoolRatio}
-                  onChange={setLiquidityPoolRatio}
+                  onChange={() => {}}
                   disabled={true}
                   inputClassName="!text-[#FFFFFF4C]"
                 />
