@@ -1,5 +1,6 @@
 import { RaisedToken } from "@/api/common"
 import { MAX_FUN_FACTORY_ABI } from "@/constants/abi/MaxFunFactory"
+import { AGENT_TOKEN_DECIMALS } from "@/constants/constants"
 import { WriteContractState } from "@/types/contract"
 import { VITE_CONTRACT_MAX_FUN_FACTORY } from "@/utils/runtime-config"
 import { useState } from "react"
@@ -101,35 +102,6 @@ export default function useLaunch() {
         }
       }
 
-      // assetToken.approve(taxVault, launchFee)
-      // const allowanceTaxVault = await publicClient.readContract({
-      //   address: assetAddress,
-      //   abi: erc20Abi,
-      //   functionName: 'allowance',
-      //   args: [address as `0x${string}`, VITE_CONTRACT_FEE_VAULT as `0x${string}`],
-      // })
-
-      // if (allowanceTaxVault < parseUnits('201', 18)) {
-      //   const hashApprove = await writeContractAsync({
-      //     address: assetAddress,
-      //     abi: erc20Abi,
-      //     functionName: 'approve',
-      //     args: [VITE_CONTRACT_FEE_VAULT as `0x${string}`, amountIn],
-      //   })
-      //   const receiptApproveTaxVault = await publicClient.waitForTransactionReceipt({
-      //     hash: hashApprove,
-      //   })
-      //   if (!receiptApproveTaxVault || receiptApproveTaxVault.status !== 'success') {
-      //     setState({
-      //       loading: false,
-      //       success: false,
-      //       error: 'Approve failed',
-      //     })
-      //     console.error('Approve failed')
-      //     return
-      //   }
-      // }
-
       //   uint256 id,
       //   string memory _name,       // token name
       //   string memory _ticker,     // token symbol
@@ -143,7 +115,7 @@ export default function useLaunch() {
         BigInt(id),
         name,
         symbol,
-        parseUnits(totalSupply, 18),
+        parseUnits(totalSupply, AGENT_TOKEN_DECIMALS),
         parseUnits(raisedTokenAmount, assetToken.decimal),
         BigInt((Number(salesRatio) * 100).toFixed(0)),
         BigInt((Number(reservedRatio) * 100).toFixed(0)),
@@ -160,7 +132,7 @@ export default function useLaunch() {
           BigInt(id),
           name,
           symbol,
-          parseUnits(totalSupply, 18),
+          parseUnits(totalSupply, AGENT_TOKEN_DECIMALS),
           parseUnits(raisedTokenAmount, assetToken.decimal),
           BigInt((Number(salesRatio) * 100).toFixed(0)),
           BigInt((Number(reservedRatio) * 100).toFixed(0)),
