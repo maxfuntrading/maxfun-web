@@ -5,8 +5,8 @@ import { NavData } from './type'
 import { fetchLogin, fetchNonce } from '@/api/auth'
 import { ERR_CODE } from '@/constants/ERR_CODE'
 import { SiweMessage } from 'siwe'
-import { useAccount, useSignMessage } from 'wagmi'
-import { useContext, useEffect } from 'react'
+import { useAccount, useDisconnect, useSignMessage } from 'wagmi'
+import { useContext, useEffect, useState } from 'react'
 import AppContext from '@/store/app'
 import Welcome from './components/Welcome'
 import { toastError } from '@/components/toast'
@@ -17,7 +17,9 @@ export default function Main() {
   const pathname = useLocation().pathname
   const { address, isConnected, chainId } = useAccount()
   const { signMessageAsync } = useSignMessage();
-  
+  const [isLoadingSign, setIsLoadingSign] = useState(false)
+  const { disconnect } = useDisconnect()
+
 
   const navData: NavData[] = [
     {
@@ -45,7 +47,7 @@ export default function Main() {
   // login
   useEffect(() => {
     const handleLogin = async () => {
-      if (!isConnected || !address || isLogin) {
+      if (!isConnected || !address || isLogin || isLoadingSign) {
         return
       }
 
@@ -78,14 +80,17 @@ export default function Main() {
   
       const prepareMessage = message.prepareMessage()
   
+      setIsLoadingSign(true)
       const signResult = await signMessageAsync({message: prepareMessage}).catch((error) => {
-        console.error('signMessageAsync error', error);
+        console.error('signMessageAsync error:', error);
+        onDisconnectWallet();
         if (error.includes('User rejected the request')) {
           toastError('User rejected the request')
         } else {
           toastError('Error')
         }
-        onDisconnectWallet();
+      }).finally(() => {
+        setIsLoadingSign(false)
       })
   
       if (!signResult) {
@@ -109,7 +114,7 @@ export default function Main() {
       
     }
     handleLogin()
-  }, [address, chainId, dispatch, isConnected, isLogin, onDisconnectWallet, signMessageAsync])
+  }, [address, chainId, disconnect, dispatch, isConnected, isLoadingSign, isLogin, onDisconnectWallet, signMessageAsync])
 
   // 监听 auth_token
   useEffect(() => {

@@ -21,13 +21,14 @@ export default function Profile() {
   const [userInfo, setUserInfo] = useState<UserInfoResponse>()
   
   useEffect(() => {
+    if (!isLogin) return;
     fetchUserInfo().then((res) => {
       if (res.code !== ERR_CODE.SUCCESS) {
         return
       }
       setUserInfo(res.data)
     })
-  }, [])
+  }, [isLogin])
 
   if (!isConnected || !isLogin) {
     return <Navigate to="/" />
