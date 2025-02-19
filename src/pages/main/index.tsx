@@ -6,7 +6,7 @@ import { fetchLogin, fetchNonce } from '@/api/auth'
 import { ERR_CODE } from '@/constants/ERR_CODE'
 import { SiweMessage } from 'siwe'
 import { useAccount, useDisconnect, useSignMessage } from 'wagmi'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useRef } from 'react'
 import AppContext from '@/store/app'
 import Welcome from './components/Welcome'
 import { toastError } from '@/components/toast'
@@ -17,9 +17,8 @@ export default function Main() {
   const pathname = useLocation().pathname
   const { address, isConnected, chainId } = useAccount()
   const { signMessageAsync } = useSignMessage();
-  const [isLoadingSign, setIsLoadingSign] = useState(false)
   const { disconnect } = useDisconnect()
-
+  const hasAttemptedLogin = useRef(false)
 
   const navData: NavData[] = [
     {
@@ -47,7 +46,11 @@ export default function Main() {
   // login
   useEffect(() => {
     const handleLogin = async () => {
-      if (!isConnected || !address || isLogin || isLoadingSign) {
+      if (hasAttemptedLogin.current) {
+        return
+      }
+
+      if (!isConnected || !address || isLogin) {
         return
       }
 
@@ -57,66 +60,77 @@ export default function Main() {
         return
       }
   
-      const nonceRes = await fetchNonce()
-  
-      if (nonceRes.code !== ERR_CODE.SUCCESS) {
-        return
-      }
-  
-      // create sign message
-      const domain = window.location.host;
-      const origin = window.location.origin;
-      const nonce = nonceRes.data.nonce;
-  
-      const message = new SiweMessage({
-        domain,
-        uri: origin,
-        address,
-        statement: 'Login to the app',
-        nonce: nonce,
-        version: "1",
-        chainId: chainId,
-      })
-  
-      const prepareMessage = message.prepareMessage()
-  
-      setIsLoadingSign(true)
-      const signResult = await signMessageAsync({message: prepareMessage}).catch((error) => {
-        console.error('signMessageAsync error:', error);
-        onDisconnectWallet();
-        if (error.includes('User rejected the request')) {
-          toastError('User rejected the request')
-        } else {
-          toastError('Error')
-        }
-      }).finally(() => {
-        setIsLoadingSign(false)
-      })
-  
-      if (!signResult) {
-        return
-      }
-  
-      const verifySignRes = await fetchLogin(prepareMessage, signResult).catch((error) => {
-        console.error('fetchLogin error', error);
-        onDisconnectWallet();
-      })
-  
-      if (!verifySignRes || verifySignRes.code !== ERR_CODE.SUCCESS) {
-        onDisconnectWallet()
-        return
-      }
-  
-      if (verifySignRes.data.auth_token) {
-        localStorage.setItem('auth_token', verifySignRes.data.auth_token)
-        dispatch({field: 'isLogin', value: true})
-      }
+      hasAttemptedLogin.current = true
       
+      try {
+        const nonceRes = await fetchNonce()
+  
+        if (nonceRes.code !== ERR_CODE.SUCCESS) {
+          return
+        }
+  
+        // create sign message
+        const domain = window.location.host;
+        const origin = window.location.origin;
+        const nonce = nonceRes.data.nonce;
+  
+        const message = new SiweMessage({
+          domain,
+          uri: origin,
+          address,
+          statement: 'Login to the app',
+          nonce: nonce,
+          version: "1",
+          chainId: chainId,
+        })
+  
+        const prepareMessage = message.prepareMessage()
+  
+        const signResult = await signMessageAsync({message: prepareMessage}).catch((error) => {
+          console.error('signMessageAsync error:', error);
+          onDisconnectWallet();
+          if (error.includes('User rejected the request')) {
+            toastError('User rejected the request')
+          } else {
+            toastError('Error')
+          }
+        })
+  
+        if (!signResult) {
+          return
+        }
+  
+        const verifySignRes = await fetchLogin(prepareMessage, signResult).catch((error) => {
+          console.error('fetchLogin error', error);
+          onDisconnectWallet();
+        })
+  
+        if (!verifySignRes || verifySignRes.code !== ERR_CODE.SUCCESS) {
+          onDisconnectWallet()
+          return
+        }
+  
+        if (verifySignRes.data.auth_token) {
+          localStorage.setItem('auth_token', verifySignRes.data.auth_token)
+          dispatch({field: 'isLogin', value: true})
+        }
+        
+      } catch (error) {
+        console.error('Login process error:', error)
+        onDisconnectWallet()
+      }
     }
     handleLogin()
-  }, [address, chainId, disconnect, dispatch, isConnected, isLoadingSign, isLogin, onDisconnectWallet, signMessageAsync])
+  }, [address, chainId, disconnect, dispatch, isConnected, isLogin, onDisconnectWallet, signMessageAsync])
 
-  // 监听 auth_token
+  // reset login attempt
+  useEffect(() => {
+    if (!isConnected) {
+      hasAttemptedLogin.current = false
+    }
+  }, [isConnected])
+
+  // listen auth_token
   useEffect(() => {
     const authToken = localStorage.getItem('auth_token');
     handleStorage(authToken)
