@@ -13,6 +13,7 @@ export interface TokenOwnedResponse {
 }
 export interface TokenOwnedItem {
   token_icon: string
+  token_address: string
   token_symbol: string
   quantity: string
   value: string

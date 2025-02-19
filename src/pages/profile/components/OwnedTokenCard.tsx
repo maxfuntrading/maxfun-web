@@ -1,5 +1,6 @@
 import { formatAmount, formatNumberLocale } from "@/utils/utils"
 import { TokenOwnedItem } from "../type"
+import { useNavigate } from "react-router-dom"
 
 export interface OwnedTokenInfo {
   name: string
@@ -11,9 +12,14 @@ export interface OwnedTokenInfo {
 }
 
 export default function OwnedTokenCard({ token }: { token: TokenOwnedItem }) {
+  const navigate = useNavigate()
+
   return (
     <div
-      className="mdup:h-[4.375rem] flex flex-col mdup:flex-row mdup:border-2 mdup:border-white/10 bg-[#FFFFFF22] mdup:bg-transparent rounded-[0.625rem] hover:bg-[rgba(236,62,111,0.10)] hover:border-red-10"
+      className="mdup:h-[4.375rem] flex flex-col mdup:flex-row mdup:border-2 mdup:border-white/10 bg-[#FFFFFF22] mdup:bg-transparent rounded-[0.625rem] hover:bg-[rgba(236,62,111,0.10)] hover:border-red-10 cursor-pointer"
+      onClick={() => {
+        navigate(`/token/${token.token_address}`)
+      }}
     >
       <div className="px-4 mdup:px-10 py-2 flex-1 flex flex-row justify-between items-center">
         <span className="text-[#FFFFFF66] text-sm font-semibold mdup:hidden">
