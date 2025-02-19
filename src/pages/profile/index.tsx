@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import SwitchButton from './components/SwitchButton'
 import CreatedTokenList from './components/CreatedTokenList'
 import Banner from '@/assets/images/profile/banner.png'
@@ -10,10 +10,12 @@ import { Navigate } from 'react-router-dom'
 import { UserInfoResponse } from './type'
 import { fetchUserInfo } from '@/api/profile'
 import { ERR_CODE } from '@/constants/ERR_CODE'
+import AppContext from '@/store/app'
 
 export default function Profile() {
   const [index, setIndex] = useState(0)
   const { isConnected } = useAccount()
+  const { state: {isLogin}} = useContext(AppContext)
 
   // user info
   const [userInfo, setUserInfo] = useState<UserInfoResponse>()
@@ -27,7 +29,7 @@ export default function Profile() {
     })
   }, [])
 
-  if (!isConnected) {
+  if (!isConnected || !isLogin) {
     return <Navigate to="/" />
   }
 
