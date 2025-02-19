@@ -31,9 +31,9 @@ export default function TokenCard({className, data}: TokenCardProps) {
         <div className=' block group-hover:hidden absolute bottom-0 left-0 w-full h-[5.875rem] translate-y-[1.2rem]' style={{borderRadius: '0.625rem 0.625rem 0rem 0rem', background: 'linear-gradient(180deg, rgba(0, 0, 0, 0.00) 0%, #000 100%)'}}></div>
         <div className=" hidden group-hover:block absolute bottom-0 left-0 w-full h-[5.875rem] rounded-t-[0.625rem]" style={{background: 'linear-gradient(180deg, rgba(236, 62, 111, 0.00) 0%, #EC3E6F 100%)'}}></div>
         
-        <div className='absolute bottom-[1.06rem] left-[1.5rem] size-[2.5rem] bg-red-10 rounded-full border-2 border-white flex-center'>
-          {TagIcon[data.tag] && <img className='size-[1.25rem]' src={TagIcon[data.tag]} alt={data.symbol} />}
-        </div>
+        {TagIcon[data.tag] && <div className='absolute bottom-[1.06rem] left-[1.5rem] size-[2.5rem] bg-red-10 rounded-full border-2 border-white flex-center'>
+          <img className='size-[1.25rem]' src={TagIcon[data.tag]} alt={data.symbol} />
+        </div>}
 
       </div>
 
