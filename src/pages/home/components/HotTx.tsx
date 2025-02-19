@@ -19,13 +19,13 @@ export default function HotTx() {
         return
       }
 
-      if (res.data.list.length < 10) {
+      if (res.data.list.length < 15) {
         // 如果列表长度小于10，则重复列表
         const repeatedList = []
-        for (let i = 0; i < Math.ceil(10 / res.data.list.length); i++) {
+        for (let i = 0; i < Math.ceil(15 / res.data.list.length); i++) {
           repeatedList.push(...res.data.list)
         }
-        setMarquee(repeatedList.slice(0, 10))
+        setMarquee(repeatedList)
       } else {
         setMarquee(res.data.list)
       }
