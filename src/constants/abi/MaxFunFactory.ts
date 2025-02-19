@@ -1476,11 +1476,6 @@ export const MAX_FUN_FACTORY_ABI = [
         "internalType": "address",
         "name": "tokenAddress",
         "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "asset",
-        "type": "address"
       }
     ],
     "name": "purchaseToGrad",

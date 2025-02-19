@@ -88,7 +88,7 @@ export default function useBuy() {
           address: maxFunFactoryAddress,
           abi: MAX_FUN_FACTORY_ABI,
           functionName: 'purchaseToGrad',
-          args: [tokenAddress as `0x${string}` , asset as `0x${string}`]
+          args: [tokenAddress as `0x${string}`]
         })
 
         const receiptPurchaseToGrad = await publicClient.waitForTransactionReceipt({hash: hashPurchaseToGrad})
