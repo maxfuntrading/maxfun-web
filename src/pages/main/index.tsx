@@ -9,8 +9,6 @@ import { useAccount, useDisconnect, useSignMessage } from 'wagmi'
 import { useContext, useEffect, useRef } from 'react'
 import AppContext from '@/store/app'
 import Welcome from './components/Welcome'
-import { toastError } from '@/components/toast'
-
 
 export default function Main() {
   const { state: {isLogin}, onDisconnectWallet, dispatch } = useContext(AppContext)
@@ -86,14 +84,8 @@ export default function Main() {
   
         const prepareMessage = message.prepareMessage()
   
-        const signResult = await signMessageAsync({message: prepareMessage}).catch((error) => {
-          console.error('signMessageAsync error:', error);
+        const signResult = await signMessageAsync({message: prepareMessage}).catch(() => {
           onDisconnectWallet();
-          if (error.includes('User rejected the request')) {
-            toastError('User rejected the request')
-          } else {
-            toastError('Error')
-          }
         })
   
         if (!signResult) {
