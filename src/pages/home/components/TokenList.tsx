@@ -179,7 +179,7 @@ export default function TokenList() {
     <div className="w-full my-container mx-auto pt-[1.1rem] mdup:px-0">
       
       <div className="w-full flex flex-col mdup:flex-row mdup:gap-[2.55rem]">
-        {/* 搜索 */}
+        {/* search */}
         <div className="relative w-full mdup:flex-1 h-[3rem] flex gap-4">
           <input 
             className=" flex-1 h-full bg-transparent outline-none"
@@ -243,7 +243,7 @@ export default function TokenList() {
           </button>
         </div>
 
-        {/* 筛选-手机端 */}
+        {/* filter-mobile */}
         <div className='flex mdup:hidden flex-col gap-[0.81rem] mt-[0.78rem]'>
           <div className='flex justify-between gap-[0.56rem]'>
             <button onClick={() => onChangeLaunched(!isOnUniswap)} className='flex w-1/2 h-[2.5rem] mdup:h-[3.125rem] rounded-[0.625rem] outline-none bg-black-20 border-[2px] border-red-10  px-[0.56rem] md:px-[1.09rem] lg:px-[1.22rem] cursor-pointer items-center justify-start gap-[0.67rem]'>

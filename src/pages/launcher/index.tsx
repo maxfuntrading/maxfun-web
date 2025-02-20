@@ -94,7 +94,7 @@ export default function Launcher() {
     }
   })
 
-  // 内盘开启时的价格
+  // initial price
   const initialYprice = useMemo(() => {
     if (!raisedAmount || !liquidityPoolRatio || !salesRatio || !totalSupply) {
       return undefined
@@ -116,7 +116,7 @@ export default function Launcher() {
     return price
   }, [raisedAmount, liquidityPoolRatio, salesRatio, totalSupply])
 
-  // 外盘开启时的价格
+  // initial price of uniswap
   const initialYUniswapPrice = useMemo(() => {
     if (!raisedAmount || !liquidityPoolRatio || !totalSupply) {
       return undefined

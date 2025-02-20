@@ -98,55 +98,7 @@ export default function PriceChart({className, tab, tokenAddress}: {className?: 
     }
   }, [tab])
 
-  // // 获取实时数据的示例
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const currentTs = Date.now()
-  //       const klineData = await fetchKline(tokenAddress, currentTs, 20)
-  //       if (!klineData || klineData.code !== ERR_CODE.SUCCESS) {
-  //         return
-  //       }
-
-  //       if (!chartRef.current) return
-
-  //       // Sort data by timestamp and remove duplicates
-  //       // const data = [{
-  //       //   time: Date.now(),
-  //       //   open: Math.random() * 100,
-  //       //   high: Math.random() * 100,
-  //       //   low: Math.random() * 100,
-  //       //   close: Math.random() * 100,
-  //       //   volume: Math.random() * 1000
-  //       // }]
-
-  //       const dataFilter: KlineData[] = klineData.data.list
-  //         .map((item) => ({
-  //           time: item.open_ts,
-  //           open: Number(item.open),
-  //           high: Number(item.high),
-  //           low: Number(item.low),
-  //           close: Number(item.close),
-  //           volume: Number(item.volume),
-  //         }))
-  //         .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime())
-  //         .filter((item, index, self) => 
-  //           index === self.findIndex((t) => t.time === item.time)
-  //         );
-
-  //       const candlestickSeries = chartRef.current.addCandlestickSeries()
-  //       candlestickSeries.setData(dataFilter as any)
-  //     } catch (error) {
-  //       console.error('Failed to fetch data:', error)
-  //     }
-  //   }
-
-  //   // 定期更新数据
-  //   const interval = setInterval(fetchData, 5000)
-  //   return () => clearInterval(interval)
-  // }, [tokenAddress])
-
-  // 获取历史数据
+  // get history data
   useEffect(() => {
     if (!chartRef.current) return
     if (!tokenAddress) return

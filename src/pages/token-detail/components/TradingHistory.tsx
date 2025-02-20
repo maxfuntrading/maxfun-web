@@ -14,13 +14,13 @@ export default function TradingHistory({ tokenAddress }: { tokenAddress: string 
   const { isSM } = useBreakpoint()
   const { blockExploreUrl } = useChainInfo()
   
-  // 接口参数
+  // interface parameters
   const [lastBlockNumber, setLastBlockNumber] = useState<number>()
   const [lastTxnIndex, setLastTxnIndex] = useState<number>()
   const [lastLogIndex, setLastLogIndex] = useState<number>()
   const PAGE_SIZE = 20
 
-  // 交易数据
+  // trading data
   const [token1Name, setToken1Name] = useState('')
   const [token2Name, setToken2Name] = useState('')
   const [data, setData] = useState<TradeLogItemResponse[]>([])

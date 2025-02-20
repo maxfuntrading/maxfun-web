@@ -61,7 +61,7 @@ export function bigintToAmount(num: bigint, decimal: number) {
   return formatUnits(num, decimal)
 }
 
-// 页面数值处理，四舍五入保留两位小数，尾数是0则舍去
+// page number processing, round to two decimal places, remove trailing zeros
 export function formatAmount(amount: number | string, decimal: number = 2, round: Big.RoundingMode = Big.roundHalfUp) {
   const bigValue = new Big(amount).round(decimal, round);
   const formatted = bigValue.toFixed(decimal);
@@ -71,7 +71,7 @@ export function formatAmount(amount: number | string, decimal: number = 2, round
        : formatted;
 }
 
-// 数字千分位处理
+// number thousandth processing
 export function formatNumberLocale(num: number | string) {
   if (num === undefined || num === null) {
     return ''
@@ -85,7 +85,6 @@ export function formatNumberLocale(num: number | string) {
     return ''
   }
   
-  // 将数字转换为字符串，以便计算小数位
   const numStr = num.toString();
   let fractionDigits = 0;
   if (numStr.includes('.')) {

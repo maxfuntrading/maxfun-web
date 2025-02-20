@@ -1,22 +1,22 @@
 # React + TypeScript + Vite
 
-## 开始使用
+## Getting Started
 
-### 环境
-- node.js v20.12.2 或更高版本
-- yarn 1.22.22 或更高版本
+### Environment
+- node.js v20.12.2 or higher
+- yarn 1.22.22 or higher
 
-### 下载依赖
+### Install Dependencies
 ```
 yarn
 ```
 
-### 运行
+### Run
 ```
 yarn dev
 ```
 
-### 测试环境合约
+### Test Env Contract
 [MaxFunFactory](https://sepolia.basescan.org/address/0x1196285B248ba9b7760308bb991094F33de337Da#readProxyContract)
 
 [MaxFunManager](https://sepolia.basescan.org/address/0x3e24Cbe70FA7d22821147f81c8bA73741Cb509f8#readProxyContract)

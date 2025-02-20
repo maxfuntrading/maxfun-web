@@ -20,7 +20,7 @@ export default function HotTx() {
       }
 
       if (res.data.list.length < 15) {
-        // 如果列表长度小于10，则重复列表
+        // if the list length is less than 10, repeat the list
         const repeatedList = []
         for (let i = 0; i < Math.ceil(15 / res.data.list.length); i++) {
           repeatedList.push(...res.data.list)

@@ -6,6 +6,6 @@ export enum SortType {
 }
 
 export enum SortOrder {
-  Ascending = "asc", // 升序: 小到大
-  Descending = "desc", // 降序: 大到小
+  Ascending = "asc", // ascending: small to large
+  Descending = "desc", // descending: large to small
 }
