@@ -9,8 +9,11 @@ import { TradeLogItemResponse } from "../types/response"
 import { ERR_CODE } from "@/constants/ERR_CODE"
 import clsx from "clsx"
 import { useChainInfo } from "@/hooks/useChainInfo"
+import { useReadContracts } from "wagmi"
+import { MaxFunTokenAbi } from "@/constants/abi/MaxFunToken"
+import { erc20Abi } from "viem"
 
-export default function TradingHistory({ tokenAddress }: { tokenAddress: string }) {
+export default function TradingHistory({ tokenAddress, raiseTokenAddress  }: { tokenAddress: string, raiseTokenAddress: string }) {
   const { isSM } = useBreakpoint()
   const { blockExploreUrl } = useChainInfo()
   
@@ -21,11 +24,31 @@ export default function TradingHistory({ tokenAddress }: { tokenAddress: string 
   const PAGE_SIZE = 20
 
   // trading data
-  const [token1Name, setToken1Name] = useState('')
-  const [token2Name, setToken2Name] = useState('')
   const [data, setData] = useState<TradeLogItemResponse[]>([])
   const [isLoadingList, setIsLoadingList] = useState(false)
   const [isFinishedLoadMore, setIsFinishedLoadMore] = useState(false)
+
+  const {data: tokenNames} = useReadContracts({
+    allowFailure: false,
+    contracts: [
+      {
+        address: tokenAddress as `0x${string}`,
+        abi: MaxFunTokenAbi,
+        functionName: 'symbol'
+      },
+      {
+        address: raiseTokenAddress as `0x${string}`,
+        abi: erc20Abi,
+        functionName: 'symbol'
+      },
+    ],
+    query: {
+      enabled: !!tokenAddress && !!raiseTokenAddress
+    }
+  })
+  const token1Name = tokenNames ? tokenNames[0] : undefined
+  const token2Name = tokenNames ? tokenNames[1] : undefined
+  
 
   const onLoadMore = () => {
     if (isLoadingList) return
@@ -49,8 +72,6 @@ export default function TradingHistory({ tokenAddress }: { tokenAddress: string 
         return
       }
 
-      setToken1Name(res.data.token1_name)
-      setToken2Name(res.data.token2_name)
       setData([...data, ...res.data.list])
 
       const lastRes = res.data.list[res.data.list.length - 1]
