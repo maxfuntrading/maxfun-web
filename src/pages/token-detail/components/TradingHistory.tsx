@@ -118,12 +118,12 @@ export default function TradingHistory({ tokenAddress, raiseTokenAddress  }: { t
               <div className="w-full h-[1px] bg-white/10 mt-[0.67rem]"></div>
 
               <div className="flex justify-between items-center mt-[0.53rem]">
-                <span className="text-[0.81rem] font-semibold text-white/60">{token1Name}</span>
+                <span className="text-[0.81rem] font-semibold text-white/60">{token1Name ?? ''}</span>
                 <span className="text-[0.75rem] font-semibold">{formatNumberLocale(formatAmount(item.token1_amount))}</span>
               </div>
 
               <div className="flex justify-between items-center mt-[0.53rem]">
-                <span className="text-[0.81rem] font-semibold text-white/60">{token2Name}</span>
+                <span className="text-[0.81rem] font-semibold text-white/60">{token2Name ?? ''}</span>
                 <span className="text-[0.75rem] font-semibold">{formatNumberLocale(formatAmount(item.token2_amount))}</span>
               </div>
 
@@ -137,8 +137,8 @@ export default function TradingHistory({ tokenAddress, raiseTokenAddress  }: { t
           <Tr className="!h-[3.75rem]">
             <Th className="!p-0 !text-white  !border-white/10 !capitalize !text-[1rem] !font-semibold">Account</Th>
             <Th className="!text-white !border-white/10 !capitalize !text-[1rem] !font-semibold">Type</Th>
-            <Th className="!text-white !border-white/10 !capitalize !text-[1rem] !font-semibold">{token1Name}</Th>
-            <Th className="!text-white !border-white/10 !capitalize !text-[1rem] !font-semibold">{token2Name}</Th>
+            <Th className="!text-white !border-white/10 !capitalize !text-[1rem] !font-semibold">{token1Name ?? ''}</Th>
+            <Th className="!text-white !border-white/10 !capitalize !text-[1rem] !font-semibold">{token2Name ?? ''}</Th>
             <Th className="!text-white !border-white/10 !capitalize !text-[1rem] !font-semibold">Date</Th>
             <Th className="!p-0 !text-white !border-white/10 !capitalize !text-[1rem] !font-semibold">Transation</Th>
           </Tr>
