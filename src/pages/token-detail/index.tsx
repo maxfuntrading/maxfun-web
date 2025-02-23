@@ -85,7 +85,7 @@ export default function TokenDetail() {
             {(!isSM || tab === TabType.Chart) && <div className="w-full mdup:flex-1 mdup:max-w-[calc(100%-30rem-1.32rem)] bg-black-10 py-[0.79rem] rounded-[0.625rem]">
               <SubTab subTab={subTab} setSubTab={setSubTab} className=" px-[1.08rem] mdup:px-[1.88rem]" />
               {subTab === SubTabType.Comments && <Comments tokenAddress={maxfunTokenAddress} />}
-              {subTab === SubTabType.TradingHistory && <TradingHistory tokenAddress={maxfunTokenAddress} raiseTokenAddress={tokenBaseInfo.raised_token.address} />}
+              {subTab === SubTabType.TradingHistory && <TradingHistory tokenAddress={maxfunTokenAddress} />}
             </div>}
 
             {/* Description / Holder */}

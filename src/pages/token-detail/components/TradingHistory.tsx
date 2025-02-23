@@ -9,11 +9,8 @@ import { TradeLogItemResponse } from "../types/response"
 import { ERR_CODE } from "@/constants/ERR_CODE"
 import clsx from "clsx"
 import { useChainInfo } from "@/hooks/useChainInfo"
-import { useReadContracts } from "wagmi"
-import { MaxFunTokenAbi } from "@/constants/abi/MaxFunToken"
-import { erc20Abi } from "viem"
 
-export default function TradingHistory({ tokenAddress, raiseTokenAddress  }: { tokenAddress: string, raiseTokenAddress: string }) {
+export default function TradingHistory({ tokenAddress  }: { tokenAddress: string}) {
   const { isSM } = useBreakpoint()
   const { blockExploreUrl } = useChainInfo()
   
@@ -25,30 +22,10 @@ export default function TradingHistory({ tokenAddress, raiseTokenAddress  }: { t
 
   // trading data
   const [data, setData] = useState<TradeLogItemResponse[]>([])
+  const [token1Name, setToken1Name] = useState('')
+  const [token2Name, setToken2Name] = useState('')
   const [isLoadingList, setIsLoadingList] = useState(false)
   const [isFinishedLoadMore, setIsFinishedLoadMore] = useState(false)
-
-  const {data: tokenNames} = useReadContracts({
-    allowFailure: false,
-    contracts: [
-      {
-        address: tokenAddress as `0x${string}`,
-        abi: MaxFunTokenAbi,
-        functionName: 'symbol'
-      },
-      {
-        address: raiseTokenAddress as `0x${string}`,
-        abi: erc20Abi,
-        functionName: 'symbol'
-      },
-    ],
-    query: {
-      enabled: !!tokenAddress && !!raiseTokenAddress
-    }
-  })
-  const token1Name = tokenNames ? tokenNames[0] : undefined
-  const token2Name = tokenNames ? tokenNames[1] : undefined
-  
 
   const onLoadMore = () => {
     if (isLoadingList) return
@@ -67,11 +44,15 @@ export default function TradingHistory({ tokenAddress, raiseTokenAddress  }: { t
     setIsLoadingList(true)
     fetchTradeLog(tokenAddress, lastBlockNumber, lastTxnIndex, lastLogIndex, PAGE_SIZE).then(res => {
       if (res.code !== ERR_CODE.SUCCESS) return
+      setToken1Name(res.data.token1_name)
+      setToken2Name(res.data.token2_name)
+
+      
       if (res.data.list.length === 0) {
         setIsFinishedLoadMore(true)
         return
       }
-
+      
       setData([...data, ...res.data.list])
 
       const lastRes = res.data.list[res.data.list.length - 1]
@@ -118,12 +99,12 @@ export default function TradingHistory({ tokenAddress, raiseTokenAddress  }: { t
               <div className="w-full h-[1px] bg-white/10 mt-[0.67rem]"></div>
 
               <div className="flex justify-between items-center mt-[0.53rem]">
-                <span className="text-[0.81rem] font-semibold text-white/60">{token1Name ?? ''}</span>
+                <span className="text-[0.81rem] font-semibold text-white/60">{token1Name}</span>
                 <span className="text-[0.75rem] font-semibold">{formatNumberLocale(formatAmount(item.token1_amount))}</span>
               </div>
 
               <div className="flex justify-between items-center mt-[0.53rem]">
-                <span className="text-[0.81rem] font-semibold text-white/60">{token2Name ?? ''}</span>
+                <span className="text-[0.81rem] font-semibold text-white/60">{token2Name}</span>
                 <span className="text-[0.75rem] font-semibold">{formatNumberLocale(formatAmount(item.token2_amount))}</span>
               </div>
 
@@ -137,8 +118,8 @@ export default function TradingHistory({ tokenAddress, raiseTokenAddress  }: { t
           <Tr className="!h-[3.75rem]">
             <Th className="!p-0 !text-white  !border-white/10 !capitalize !text-[1rem] !font-semibold">Account</Th>
             <Th className="!text-white !border-white/10 !capitalize !text-[1rem] !font-semibold">Type</Th>
-            <Th className="!text-white !border-white/10 !capitalize !text-[1rem] !font-semibold">{token1Name ?? ''}</Th>
-            <Th className="!text-white !border-white/10 !capitalize !text-[1rem] !font-semibold">{token2Name ?? ''}</Th>
+            <Th className="!text-white !border-white/10 !capitalize !text-[1rem] !font-semibold">{token1Name}</Th>
+            <Th className="!text-white !border-white/10 !capitalize !text-[1rem] !font-semibold">{token2Name}</Th>
             <Th className="!text-white !border-white/10 !capitalize !text-[1rem] !font-semibold">Date</Th>
             <Th className="!p-0 !text-white !border-white/10 !capitalize !text-[1rem] !font-semibold">Transation</Th>
           </Tr>
