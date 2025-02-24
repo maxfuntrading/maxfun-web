@@ -80,12 +80,12 @@ export default function TokenDetail() {
     setCurrentPrice(res.data.token_basic.price)
 
     const currentTs = Date.now()
-    fetchKline(maxfunTokenAddress, currentTs, 100).then((res) => {
-      if (!res || res.code !== ERR_CODE.SUCCESS) {
-        return
-      }
-      setKlineData(res.data.list)
-    })
+    const klineRes = await fetchKline(maxfunTokenAddress, currentTs, 100)
+    if (!klineRes || klineRes.code !== ERR_CODE.SUCCESS) {
+      return
+    }
+    setKlineData(klineRes.data.list)
+    timer && clearTimeout(timer)
   }
 
 
