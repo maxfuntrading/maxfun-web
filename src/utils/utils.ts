@@ -105,6 +105,7 @@ export function priceFormat(price: string) {
   }
 
   // 0.100 -> 0.1
+  price = Big(price).toFixed(10, Big.roundDown)
   price = price.replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, '')
 
   const priceArr = price.split('.')
@@ -117,6 +118,11 @@ export function priceFormat(price: string) {
 
   if (leadingZeros <= 1) {
     return formatNumber(price)
+  }
+
+  if (leadingZeros === 2) {
+    const remainingDecimals = decimal.slice(firstNonZeroIndex)
+    return `${integer}.00${remainingDecimals}`
   }
 
   const remainingDecimals = decimal.slice(firstNonZeroIndex)

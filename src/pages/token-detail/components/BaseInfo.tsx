@@ -27,8 +27,7 @@ export default function BaseInfo({data, tokenAddress}: {data: TokenBaseInfoRespo
   const MetricData = [
     {
       name: 'Price',
-      // value: formatNumber(token_basic.price),
-      value: priceFormat(token_basic.price),
+      value: `${priceFormat(token_basic.price)}`,
       change: formatAmount(Number(token_basic.price_rate24h) * 100)
     },
     {
@@ -94,7 +93,7 @@ export default function BaseInfo({data, tokenAddress}: {data: TokenBaseInfoRespo
                     <ArrowIcon isUp={!item.change.startsWith('-')} className='inline-block size-[0.875rem] mt-[-3px]' />
                   </span>}
                 </div>
-                <div className='text-white text-[1.25rem] font-semibold'>{item.value}</div>
+                <div className={`text-white text-[1.25rem] font-semibold ${isPrice && "text-nowrap"}`}>{item.value}</div>
             </div>
             })}
           </div>
