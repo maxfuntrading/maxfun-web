@@ -1,5 +1,5 @@
 import { CopyIcon, TelegramIcon, WebsiteIcon, XIcon } from './Icon'
-import { copyText, formatAddress, formatAmount, formatNumber } from '@/utils/utils'
+import { copyText, formatAddress, formatAmount, formatNumber, priceFormat } from '@/utils/utils'
 import { toastSuccess } from '@/components/toast'
 import clsx from 'clsx'
 import { TokenBaseInfoResponse } from '../types/response'
@@ -27,7 +27,8 @@ export default function BaseInfo({data, tokenAddress}: {data: TokenBaseInfoRespo
   const MetricData = [
     {
       name: 'Price',
-      value: formatNumber(token_basic.price),
+      // value: formatNumber(token_basic.price),
+      value: priceFormat(token_basic.price),
       change: formatAmount(Number(token_basic.price_rate24h) * 100)
     },
     {

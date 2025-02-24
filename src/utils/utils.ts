@@ -96,3 +96,30 @@ export function formatNumberLocale(num: number | string) {
     maximumFractionDigits: fractionDigits,
   })
 }
+
+// 0.0000012312140000 -> 0.0(3)1231214
+export function priceFormat(price: string) {
+  if (!price) return ''
+  if (!price.includes('.')) {
+    return price
+  }
+
+  // 0.100 -> 0.1
+  price = price.replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, '')
+
+  const priceArr = price.split('.')
+  const integer = priceArr[0]
+  const decimal = priceArr[1]
+
+  const decimalArr = decimal.split('')
+  const firstNonZeroIndex = decimalArr.findIndex(char => char !== '0')
+  const leadingZeros = firstNonZeroIndex
+
+  if (leadingZeros <= 1) {
+    return formatNumber(price)
+  }
+
+  const remainingDecimals = decimal.slice(firstNonZeroIndex)
+  return `${integer}.0(${leadingZeros-1})${remainingDecimals}`
+  
+}
