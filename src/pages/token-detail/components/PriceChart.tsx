@@ -48,15 +48,43 @@ export default function PriceChart({className, tab, tokenAddress}: {className?: 
         },
       },
       width: chartContainerRef.current.clientWidth,
+      timeScale: {
+        timeVisible: true,
+        secondsVisible: false,
+        tickMarkFormatter: (time: number) => {
+          const date = new Date(time * 1000);
+          return date.toLocaleString('en-US', {
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+          });
+        }
+      },
+      rightPriceScale: {
+        autoScale: true,
+        scaleMargins: {
+          top: 0.1,
+          bottom: 0.1,
+        },
+      },
     })
 
     // 创建K线图系列
+    const data: KlineData[] = []
+
     const candlestickSeries = chart.addCandlestickSeries({
       upColor: '#26a69a',
       downColor: '#ef5350',
       borderVisible: false,
       wickUpColor: '#26a69a',
       wickDownColor: '#ef5350',
+      priceFormat: {
+        type: 'price',
+        precision: 10,
+        minMove: 0.0000000001,
+      },
     })
 
     // 添加成交量图
@@ -67,9 +95,6 @@ export default function PriceChart({className, tab, tokenAddress}: {className?: 
       },
       priceScaleId: '', // 在单独的面板中显示
     })
-
-    // 示例数据
-    const data: KlineData[] = []
 
     // 设置数据
     candlestickSeries.setData(data as any)
@@ -113,14 +138,14 @@ export default function PriceChart({className, tab, tokenAddress}: {className?: 
 
         const dataFilter: KlineData[] = klineData.data.list
           .map((item) => ({
-            time: item.close_ts,
+            time: Number(item.close_ts),
             open: Number(item.open),
             high: Number(item.high),
             low: Number(item.low),
             close: Number(item.close),
             volume: Number(item.volume),
           }))
-          .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime())
+          .sort((a, b) => a.time - b.time)
           .filter((item, index, self) => 
             index === self.findIndex((t) => t.time === item.time)
           );
