@@ -66,7 +66,7 @@ export default function PriceChart({className, tab, tokenAddress}: {className?: 
         autoScale: true,
         scaleMargins: {
           top: 0.1,
-          bottom: 0.1,
+          bottom: 0.01,
         },
       },
     })
