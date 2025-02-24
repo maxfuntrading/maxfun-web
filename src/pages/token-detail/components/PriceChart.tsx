@@ -7,6 +7,7 @@ import { ERR_CODE } from '@/constants/ERR_CODE'
 import { useReadContract } from 'wagmi'
 import { VITE_CONTRACT_UNISWAP_V2_FACTORY } from '@/utils/runtime-config'
 import { UniswapV2Factory } from '@/constants/abi/UniswapV2Factory'
+import { TokenKlineItemResponse } from '../types/response'
 
 interface KlineData {
   time: number
@@ -17,7 +18,7 @@ interface KlineData {
   volume: number
 }
 
-export default function PriceChart({className, tab, tokenAddress}: {className?: string, tab: TabType, tokenAddress: string}) {
+export default function PriceChart({className, tab, tokenAddress, data}: {className?: string, tab: TabType, tokenAddress: string, data: TokenKlineItemResponse[]}) {
   const chartContainerRef = useRef<HTMLDivElement>(null)
   const chartRef = useRef<IChartApi | null>(null)
 
@@ -130,13 +131,20 @@ export default function PriceChart({className, tab, tokenAddress}: {className?: 
 
     const fetchData = async () => {
       try {
-        const currentTs = Date.now()
-        const klineData = await fetchKline(tokenAddress, currentTs, 100)
-        if (!klineData || klineData.code !== ERR_CODE.SUCCESS) {
-          return
+        let apiData: TokenKlineItemResponse[] = []
+
+        if (data.length > 0) {
+          apiData = data
+        } else {
+          const currentTs = Date.now()
+          const klineData = await fetchKline(tokenAddress, currentTs, 100)
+          if (!klineData || klineData.code !== ERR_CODE.SUCCESS) {
+            return
+          }
+          apiData = klineData.data.list
         }
 
-        const dataFilter: KlineData[] = klineData.data.list
+        const dataFilter: KlineData[] = apiData
           .map((item) => ({
             time: Number(item.close_ts),
             open: Number(item.open),
@@ -160,7 +168,7 @@ export default function PriceChart({className, tab, tokenAddress}: {className?: 
     }
 
     fetchData()
-  }, [tokenAddress, tab])
+  }, [tokenAddress, tab, data])
 
   return (
     <div className={clsx("w-full sm:h-[24rem] mdup:flex-1 rounded-[0.625rem] bg-black-10 overflow-hidden p-4 mdup:px-[1.57rem] mdup:py-[1.4rem]", className)}>

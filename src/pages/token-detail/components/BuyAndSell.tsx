@@ -25,6 +25,7 @@ interface BuyAndSellProps {
   maxfunTokenIcon: string
   raiseTokenAddress: string
   raiseTokenIcon: string
+  onGetNewData: () => void
 }
 
 enum ButtonText {
@@ -33,7 +34,7 @@ enum ButtonText {
   Sell = 'Sell',
 }
 
-export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, maxfunTokenIcon, raiseTokenIcon}: BuyAndSellProps) {
+export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, maxfunTokenIcon, raiseTokenIcon, onGetNewData}: BuyAndSellProps) {
   const { address, isConnected, chainId } = useAccount()
   const { switchChainAsync } = useSwitchChain();
   const { chainIdSupported } = useChainInfo()
@@ -292,6 +293,7 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
       refetchMaxfunTokenBalance()
       refetchIsOnUniswap()
       refetchAgentTokenInfo()
+      onGetNewData()
       setButtonText(ButtonText.Buy)
     }
 
@@ -306,7 +308,7 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
         toastError('Transaction Failure')
       }
     }
-  }, [buyState.success, buyState.error, onResetBuy, refetchRaiseTokenBalance, refetchMaxfunTokenBalance, refetchIsOnUniswap, refetchAgentTokenInfo])
+  }, [buyState.success, buyState.error, onResetBuy, refetchRaiseTokenBalance, refetchMaxfunTokenBalance, refetchIsOnUniswap, refetchAgentTokenInfo, onGetNewData])
 
   // check sell
   useEffect(() => {
@@ -316,6 +318,7 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
       refetchRaiseTokenBalance()
       refetchMaxfunTokenBalance()
       refetchAgentTokenInfo()
+      onGetNewData()
       setButtonText(ButtonText.Sell)
     }
 
@@ -327,7 +330,7 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
         toastError('Transaction Failure')
       }
     }
-  }, [sellState.success, sellState.error, onResetSell, refetchRaiseTokenBalance, refetchMaxfunTokenBalance, refetchAgentTokenInfo])
+  }, [sellState.success, sellState.error, onResetSell, refetchRaiseTokenBalance, refetchMaxfunTokenBalance, refetchAgentTokenInfo, onGetNewData])
   
   return (
     <div className={clsx(" flex-shrink-0 w-full mdup:w-[30rem] flex flex-col gap-[0.62rem] mdup:gap-[0.8rem] bg-black-10 rounded-[0.625rem] px-4 mdup:px-[1.49rem] py-[0.94rem] mdup:py-[1.3rem]", className)}>

@@ -9,9 +9,9 @@ import Description from "./components/Description";
 import Holder from "./components/Holder";
 import Comments from "./components/Comments";
 import TradingHistory from "./components/TradingHistory";
-import { TokenBaseInfoResponse } from "./types/response";
+import { TokenBaseInfoResponse, TokenKlineItemResponse } from "./types/response";
 import { useParams } from "react-router-dom";
-import { fetchBaseInfo } from "@/api/token-detila";
+import { fetchBaseInfo, fetchKline } from "@/api/token-detila";
 import { ERR_CODE } from "@/constants/ERR_CODE";
 import LoadingMore from "@/components/LoadingMore";
 import { useReadContract } from "wagmi";
@@ -25,7 +25,10 @@ export default function TokenDetail() {
   // API data
   const [tokenBaseInfo, setTokenBaseInfo] = useState<TokenBaseInfoResponse>()
   const [isLoadingBaseInfo, setIsLoadingBaseInfo] = useState(false)
+  const [currentPrice, setCurrentPrice] = useState<string>()
+  const [klineData, setKlineData] = useState<TokenKlineItemResponse[]>([])
 
+  let timer: NodeJS.Timeout | null = null
   const maxfunTokenAddress = useParams().tokenId;
 
   const { data: isOnUniswap } = useReadContract({
@@ -46,6 +49,7 @@ export default function TokenDetail() {
           return
         }
         setTokenBaseInfo(res.data)
+        setCurrentPrice(res.data.token_basic.price)
       }).finally(() => {
         setIsLoadingBaseInfo(false)
       })
@@ -53,6 +57,36 @@ export default function TokenDetail() {
 
     getBaseInfo()
   }, [maxfunTokenAddress])
+
+  const getNewData = async () => {
+    if (!maxfunTokenAddress) return;
+
+    const res = await fetchBaseInfo(maxfunTokenAddress)
+    if (!res || res.code !== ERR_CODE.SUCCESS) {
+      return
+    }
+
+    if (res.data.token_basic.price === currentPrice) {
+      if (timer) {
+        clearTimeout(timer)
+      }
+      timer = setTimeout(() => {
+        getNewData()
+      }, 1000)
+      return
+    }
+
+    setTokenBaseInfo(res.data)
+    setCurrentPrice(res.data.token_basic.price)
+
+    const currentTs = Date.now()
+    fetchKline(maxfunTokenAddress, currentTs, 100).then((res) => {
+      if (!res || res.code !== ERR_CODE.SUCCESS) {
+        return
+      }
+      setKlineData(res.data.list)
+    })
+  }
 
 
   return (
@@ -69,7 +103,7 @@ export default function TokenDetail() {
           <Tab tab={tab} setTab={setTab} className="flex mdup:hidden" />
 
           <div className="flex justify-between gap-[1.32rem] h-fit mdup:mt-[1.26rem]">
-            {!isOnUniswap &&<PriceChart tab={tab} tokenAddress={maxfunTokenAddress} className={`${isSM && tab === TabType.Chart ? 'flex' : 'hidden mdup:flex'}`} />}
+            {!isOnUniswap &&<PriceChart tab={tab} tokenAddress={maxfunTokenAddress} data={klineData} className={`${isSM && tab === TabType.Chart ? 'flex' : 'hidden mdup:flex'}`} />}
             {isOnUniswap && <PriceChartIframe agentToken={maxfunTokenAddress} raiseTokenAddress={tokenBaseInfo.raised_token.address} className={`${isSM && tab === TabType.Chart ? 'flex' : 'hidden mdup:flex'}`} />}
             <BuyAndSell 
               tokenAddress={maxfunTokenAddress} 
@@ -77,6 +111,7 @@ export default function TokenDetail() {
               maxfunTokenIcon={tokenBaseInfo.token_basic.icon}
               raiseTokenIcon={tokenBaseInfo.raised_token.icon} 
               className={`${isSM && tab === TabType.BuyOreSell ? 'flex' : 'hidden mdup:flex'}`} 
+              onGetNewData={getNewData}
             />
           </div>
 
