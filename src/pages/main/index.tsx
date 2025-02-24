@@ -41,79 +41,90 @@ export default function Main() {
     },
   ]
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleLogin = async () => {
+    if (hasAttemptedLogin.current) {
+      return
+    }
+
+    if (!isConnected || !address || isLogin) {
+      return
+    }
+
+    const authToken = localStorage.getItem('auth_token')
+    if (authToken) {
+      dispatch({field: 'isLogin', value: true})
+      return
+    }
+
+    hasAttemptedLogin.current = true
+    
+    try {
+      const nonceRes = await fetchNonce()
+
+      if (nonceRes.code !== ERR_CODE.SUCCESS) {
+        return
+      }
+
+      // create sign message
+      const domain = window.location.host;
+      const origin = window.location.origin;
+      const nonce = nonceRes.data.nonce;
+
+      const message = new SiweMessage({
+        domain,
+        uri: origin,
+        address,
+        statement: 'Login to the app',
+        nonce: nonce,
+        version: "1",
+        chainId: chainId,
+      })
+
+      const prepareMessage = message.prepareMessage()
+
+      const signResult = await signMessageAsync({message: prepareMessage}).catch(() => {
+        onDisconnectWallet();
+      })
+
+      if (!signResult) {
+        return
+      }
+
+      const verifySignRes = await fetchLogin(prepareMessage, signResult).catch((error) => {
+        console.error('fetchLogin error', error);
+        onDisconnectWallet();
+      })
+
+      if (!verifySignRes || verifySignRes.code !== ERR_CODE.SUCCESS) {
+        onDisconnectWallet()
+        return
+      }
+
+      if (verifySignRes.data.auth_token) {
+        localStorage.setItem('auth_token', verifySignRes.data.auth_token)
+        dispatch({field: 'isLogin', value: true})
+      }
+      
+    } catch (error) {
+      console.error('Login process error:', error)
+      onDisconnectWallet()
+    }
+  }
+
   // login
   useEffect(() => {
-    const handleLogin = async () => {
-      if (hasAttemptedLogin.current) {
-        return
-      }
-
-      if (!isConnected || !address || isLogin) {
-        return
-      }
-
-      const authToken = localStorage.getItem('auth_token')
-      if (authToken) {
-        dispatch({field: 'isLogin', value: true})
-        return
-      }
-  
-      hasAttemptedLogin.current = true
-      
-      try {
-        const nonceRes = await fetchNonce()
-  
-        if (nonceRes.code !== ERR_CODE.SUCCESS) {
-          return
-        }
-  
-        // create sign message
-        const domain = window.location.host;
-        const origin = window.location.origin;
-        const nonce = nonceRes.data.nonce;
-  
-        const message = new SiweMessage({
-          domain,
-          uri: origin,
-          address,
-          statement: 'Login to the app',
-          nonce: nonce,
-          version: "1",
-          chainId: chainId,
-        })
-  
-        const prepareMessage = message.prepareMessage()
-  
-        const signResult = await signMessageAsync({message: prepareMessage}).catch(() => {
-          onDisconnectWallet();
-        })
-  
-        if (!signResult) {
-          return
-        }
-  
-        const verifySignRes = await fetchLogin(prepareMessage, signResult).catch((error) => {
-          console.error('fetchLogin error', error);
-          onDisconnectWallet();
-        })
-  
-        if (!verifySignRes || verifySignRes.code !== ERR_CODE.SUCCESS) {
-          onDisconnectWallet()
-          return
-        }
-  
-        if (verifySignRes.data.auth_token) {
-          localStorage.setItem('auth_token', verifySignRes.data.auth_token)
-          dispatch({field: 'isLogin', value: true})
-        }
-        
-      } catch (error) {
-        console.error('Login process error:', error)
-        onDisconnectWallet()
-      }
-    }
     handleLogin()
-  }, [address, chainId, disconnect, dispatch, isConnected, isLogin, onDisconnectWallet, signMessageAsync])
+  }, [address, chainId, disconnect, dispatch, handleLogin, isConnected, isLogin, onDisconnectWallet, signMessageAsync])
+
+  // profile not login, re-sign
+  useEffect(() => {
+    if (!isConnected) return;
+    if (isLogin) return;
+    if (pathname.includes('/profile')) {
+      handleLogin()
+    }
+  }, [handleLogin, isConnected, isLogin, pathname])
 
   // reset login attempt
   useEffect(() => {
