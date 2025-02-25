@@ -15,6 +15,7 @@ interface TokenCardProps {
 
 export default function TokenCard({className, data}: TokenCardProps) {
   const isOnUniswap = data.is_launched; // is launched on uniswap
+  const isDown = data.price_rate24h && data.price_rate24h.startsWith('-')
 
   const navigate = useNavigate()
   const { blockExploreUrl } = useChainInfo()
@@ -23,10 +24,10 @@ export default function TokenCard({className, data}: TokenCardProps) {
     <div onClick={() => navigate(`/token/${data.token_address}`)} className={clsx('w-full mdup:px-0 rounded-[0.625rem] overflow-hidden cursor-pointer group', className)}>
       <div className=" relative h-[18.75rem] bg-black-30">
         <ImageControl src={`${data.icon}`} />
-        {/* {!isZero && <div className={`absolute top-[1.81rem] right-[1.31rem] w-[5.81rem] h-[2rem] rounded-[6.25rem] flex-center gap-[0.25rem] ${isUp ? 'bg-[#2FBD85]' : 'bg-[#FF0021]'}`}>
-           <span className='text-[0.875rem]'>+100.1%</span>
+        {data.price_rate24h && data.price_rate24h !== '0' && <div className={`absolute top-[1.77rem] right-[1.28rem] h-[2rem] rounded-[6.25rem] px-[0.62rem] flex-center gap-[0.25rem] text-[0.875rem] ${isDown ? 'bg-[#FF0021]' : 'bg-[#2FBD85]'}`}>
+           <span className='text-[0.875rem]'>{formatAmount(Number(data.price_rate24h) * 100).replace('-', '')}%</span>
            <UpArrowIcon className={`${isDown ? 'rotate-180' : ''}`} />
-        </div>} */}
+        </div>}
 
         <div className=' block group-hover:hidden absolute bottom-0 left-0 w-full h-[5.875rem] translate-y-[1.2rem]' style={{borderRadius: '0.625rem 0.625rem 0rem 0rem', background: 'linear-gradient(180deg, rgba(0, 0, 0, 0.00) 0%, #000 100%)'}}></div>
         <div className=" hidden group-hover:block absolute bottom-0 left-0 w-full h-[5.875rem] rounded-t-[0.625rem]" style={{background: 'linear-gradient(180deg, rgba(236, 62, 111, 0.00) 0%, #EC3E6F 100%)'}}></div>

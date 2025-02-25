@@ -31,6 +31,7 @@ export interface MaxFunToken {
   market_cap:    string | null;
   bonding_curve: string | null;
   is_launched:   boolean;
+  price_rate24h: string;
 }
 export interface FetchTokenListParams {
   keyword?: string,
