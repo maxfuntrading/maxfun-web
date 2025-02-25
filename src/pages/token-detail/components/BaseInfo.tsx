@@ -45,6 +45,7 @@ export default function BaseInfo({data, tokenAddress}: {data: TokenBaseInfoRespo
     {
       name: 'Total Supply',
       value: formatNumber(token_basic.total_supply),
+      
     }
   ]
 

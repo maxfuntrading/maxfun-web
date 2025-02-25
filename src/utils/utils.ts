@@ -14,9 +14,37 @@ export function formatNumber(number: number | string, decimalPlaces: number = 2)
   const num = new Big(number);
   const truncatedValue = num.round(decimalPlaces, Big.roundDown); // 截断（不四舍五入）
 
-  const formatted = numeral(truncatedValue.toString()).format(`0.[${'0'.repeat(decimalPlaces)}]a`).toUpperCase();
+  
+  const numeralStr = numeral(Number(truncatedValue)).format('0.00a').toUpperCase()
 
-  return formatted.replace(/\.?0*([KMBT])$/, '$1'); // 去掉无意义的 .0
+  // 1.00M -> 1M
+  // 1.90M -> 1.9M
+  const hasUnit = /[KMBT]$/.test(numeralStr)
+  
+  if (hasUnit) {
+    const unit = numeralStr.slice(-1)  // Get the unit
+    const numberPart = numeralStr.slice(0, -1)  // Get the number part
+    
+    if (numberPart.endsWith('.00')) {
+      return numberPart.replace('.00', '') + unit
+    }
+    
+    if (numberPart.endsWith('0')) {
+      return numberPart.replace(/0$/, '') + unit
+    }
+  } else {
+    // Handle numbers without units (< 1000)
+    if (numeralStr.endsWith('.00')) {
+      return numeralStr.replace('.00', '')
+    }
+    
+    if (numeralStr.endsWith('0')) {
+      return numeralStr.replace(/0$/, '')
+    }
+  }
+
+
+  return numeralStr
 }
 
 export function copyText(text: string) {
