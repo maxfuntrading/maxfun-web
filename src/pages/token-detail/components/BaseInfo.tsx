@@ -4,7 +4,7 @@ import { toastSuccess } from '@/components/toast'
 import clsx from 'clsx'
 import { TokenBaseInfoResponse } from '../types/response'
 export default function BaseInfo({data, tokenAddress}: {data: TokenBaseInfoResponse, tokenAddress: string}) {
-  const {token_basic} = data
+  const {token_basic, raised_token} = data
 
   const LinkData = [
     {
@@ -27,7 +27,7 @@ export default function BaseInfo({data, tokenAddress}: {data: TokenBaseInfoRespo
   const MetricData = [
     {
       name: 'Price',
-      value: `${priceFormat(token_basic.price)} USD`,
+      value: `${priceFormat(token_basic.price_token)} ${raised_token.symbol}`,
       change: formatAmount(Number(token_basic.price_rate24h) * 100)
     },
     {
@@ -40,7 +40,7 @@ export default function BaseInfo({data, tokenAddress}: {data: TokenBaseInfoRespo
     },
     {
       name: '24H Volume',
-      value: `$${formatNumber(token_basic.volume24h)}`,
+      value: `${formatNumber(token_basic.volume24h)} ${raised_token.symbol}`,
     },
     {
       name: 'Total Supply',

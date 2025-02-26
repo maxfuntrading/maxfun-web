@@ -41,6 +41,7 @@ export interface TokenBasic {
   telegram:      string;
   total_supply:  string;
   price:         string;
+  price_token:   string;
   price_rate24h: string;
   market_cap:    string;
   liquidity:     string;
