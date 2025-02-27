@@ -54,7 +54,7 @@ export default function Select<T>({
           setIsOpenOption((prev) => !prev)
         }}
       >
-        <div>{defaultOption.value}</div>
+        <div className=' text-nowrap'>{defaultOption.value}</div>
 
         {isOpenOption ? (
           <UpArrowIcon className="size-[1.25rem] sm:ml-[0.47rem]" />
