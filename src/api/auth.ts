@@ -8,7 +8,7 @@ export const fetchNonce = async () => {
 }
 
 
-export const fetchLogin = async (message: string, signature: string) => {
+export const fetchLogin = async (message: string, signature: string, nonce: string) => {
   return request<{
     user_exists: boolean;
     auth_type:   string;
@@ -19,6 +19,7 @@ export const fetchLogin = async (message: string, signature: string) => {
     data: {
       message,
       signature,
+      nonce,
     }
   })
 }
