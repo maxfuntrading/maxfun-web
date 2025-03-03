@@ -91,7 +91,7 @@ export default function Main() {
         return
       }
 
-      const verifySignRes = await fetchLogin(prepareMessage, signResult).catch((error) => {
+      const verifySignRes = await fetchLogin(prepareMessage, signResult, nonce).catch((error) => {
         console.error('fetchLogin error', error);
         onDisconnectWallet();
       })
