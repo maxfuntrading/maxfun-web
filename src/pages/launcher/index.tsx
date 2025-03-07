@@ -746,7 +746,7 @@ export default function Launcher() {
               <div className="text-[#AAABAB]">
                 The biggest increase before list on PancakeSwap :
                 {initialYUniswapPrice && initialYprice && <span className="text-white ml-2">
-                  {formatAmount(Big((initialYUniswapPrice - initialYprice) / initialYprice * 100).toFixed(2))}%
+                  {formatAmount(Big((initialYUniswapPrice - initialYprice) / initialYprice * 100).toFixed(2, Big.roundDown))}%
                 </span>}
               </div>
             </div>
