@@ -19,6 +19,7 @@ import Big from 'big.js'
 import { erc20Abi, parseUnits } from 'viem'
 import { useChainInfo } from '@/hooks/useChainInfo'
 import { MAX_FUN_FACTORY_ABI } from '@/constants/abi/MaxFunFactory'
+import { formatAmount } from '@/utils/utils'
 
 function isValidUrl(url: string) {
   const urlPattern = /^https?:\/\/.+\..+/
@@ -30,8 +31,6 @@ enum LaunchButtonText {
   Launch = 'Launch',
   InsufficientAssets = 'Insufficient Assets',
 }
-
-const MIGRATION_TAX = 0; // migration tax
 
 export default function Launcher() {
   const { isConnected, address, chainId } = useAccount()
@@ -93,6 +92,16 @@ export default function Launcher() {
       enabled: !!raisedToken?.address
     }
   })
+  // migrationTax
+  const {data: migrationTaxData} = useReadContract({
+    address: VITE_CONTRACT_MAX_FUN_FACTORY as `0x${string}`,
+    abi: MAX_FUN_FACTORY_ABI,
+    functionName: 'migrationTax',
+    query: {
+      enabled: !!VITE_CONTRACT_MAX_FUN_FACTORY
+    }
+  })
+  const migrationTax = migrationTaxData !== undefined ? Number(migrationTaxData) / 10000 : undefined
 
   // initial price
   const initialYprice = useMemo(() => {
@@ -104,17 +113,21 @@ export default function Launcher() {
       return undefined
     }
 
+    if (migrationTax === undefined) {
+      return undefined
+    }
+
     const r = Number(raisedAmount)                  // raised amount
     const l = Number(liquidityPoolRatio) / 100      // liquidity pool ratio
     const s = Number(salesRatio) / 100              // sales ratio
     const t = Number(totalSupply)                   // meme token total supply
-    const m = MIGRATION_TAX                         // migration tax
+    const m = migrationTax                         // migration tax
 
     // 1 Meme=\frac{R⋅L} {(1−M)⋅S^2⋅T} raised
     const price = (r * l) / ((1 -m) * Math.pow(s, 2) * t)
 
     return price
-  }, [raisedAmount, liquidityPoolRatio, salesRatio, totalSupply])
+  }, [raisedAmount, liquidityPoolRatio, salesRatio, totalSupply, migrationTax])
 
   // initial price of uniswap
   const initialYUniswapPrice = useMemo(() => {
@@ -126,15 +139,19 @@ export default function Launcher() {
       return undefined
     }
 
+    if (migrationTax === undefined) {
+      return undefined
+    }
+
     const r = Number(raisedAmount)                  // raised amount
     const l = Number(liquidityPoolRatio) / 100      // liquidity pool ratio  
     const t = Number(totalSupply)                   // meme token total supply
-    const m = MIGRATION_TAX                         // migration tax
+    const m = migrationTax                         // migration tax
 
     // \frac{X}{Y}=\frac{R⋅(1−M)}{T⋅L}
     const priceUniswap = (r * (1 - m)) / (t * l);
     return priceUniswap
-  }, [liquidityPoolRatio, raisedAmount, totalSupply])
+  }, [liquidityPoolRatio, raisedAmount, totalSupply, migrationTax])
 
   // useEffect(() => {
   //   // TODO: get total supply from backend
@@ -729,7 +746,7 @@ export default function Launcher() {
               <div className="text-[#AAABAB]">
                 The biggest increase before list on PancakeSwap :
                 {initialYUniswapPrice && initialYprice && <span className="text-white ml-2">
-                  {Big(initialYUniswapPrice / initialYprice * 100).toFixed(0)}%
+                  {formatAmount(Big((initialYUniswapPrice - initialYprice) / initialYprice * 100).toFixed(2))}%
                 </span>}
               </div>
             </div>
