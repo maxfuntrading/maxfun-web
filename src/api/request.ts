@@ -1,5 +1,6 @@
 import { toastError } from '@/components/toast';
 import axios, { AxiosRequestConfig } from 'axios'
+import { VITE_API_HOST } from "@/utils/runtime-config"
 
 interface ResponseType<T = any> {
   code: number;
@@ -8,7 +9,7 @@ interface ResponseType<T = any> {
 }
 
 const asioxInstance = axios.create({
-  baseURL: '/',
+  baseURL: VITE_API_HOST || '/',
   timeout: 10000,
 })
 
