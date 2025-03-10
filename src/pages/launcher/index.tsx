@@ -26,7 +26,7 @@ function isValidUrl(url: string) {
   return urlPattern.test(url)
 }
 
-const RaisedTokenTotalPrice = 2000; // min raised amount is $2000
+const RaisedTokenTotalPrice = 1; // min raised amount is $1 // temp modify to 1 fot test
 enum LaunchButtonText {
   Launch = 'Launch',
   InsufficientAssets = 'Insufficient Assets',
