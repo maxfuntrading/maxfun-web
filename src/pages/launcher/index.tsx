@@ -282,7 +282,7 @@ export default function Launcher() {
 
     const num = Number(raisedAmount)
 
-    if (Math.ceil(num * raisedTokenPrice) < 2000) {
+    if (Math.ceil(num * raisedTokenPrice) < RaisedTokenTotalPrice) {
       return false
     }
 
