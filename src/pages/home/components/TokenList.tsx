@@ -140,7 +140,7 @@ export default function TokenList() {
     // onLoadMore()
     setPage(1)
     setTokenList([])
-    getTokenList(search, 'All', isOnUniswap, selectSort.key, sortOrder, 1);
+    getTokenList(search, selectTag.value, isOnUniswap, selectSort.key, sortOrder, 1);
   }
 
     // 获取tag
