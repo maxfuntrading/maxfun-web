@@ -6,7 +6,7 @@ import { useDisclosure } from '@chakra-ui/react'
 import SlippageModal from './SlippageModal'
 import { useAccount, useReadContract, useReadContracts, useSwitchChain } from 'wagmi'
 import { MaxFunTokenAbi } from '@/constants/abi/MaxFunToken'
-import { VITE_CONTRACT_MAX_FUN_CURVE, VITE_CONTRACT_MAX_FUN_FACTORY, VITE_CONTRACT_UNISWAP_V2_FACTORY } from '@/utils/runtime-config'
+import { VITE_CONTRACT_MAX_FUN_CURVE, VITE_CONTRACT_MAX_FUN_FACTORY, VITE_CONTRACT_UNISWAP_V2_FACTORY, VITE_CONTRACT_UNISWAP_V2_ROUTER02 } from '@/utils/runtime-config'
 import { MaxFunCurveAbi } from '@/constants/abi/MaxFunCurve'
 import Big from 'big.js'
 import useBuy from '@/hooks/contract/useBuy'
@@ -18,6 +18,7 @@ import { toastError } from '@/components/toast'
 import { MAX_FUN_FACTORY_ABI } from '@/constants/abi/MaxFunFactory'
 import { UniswapV2Factory } from '@/constants/abi/UniswapV2Factory'
 import { useChainInfo } from '@/hooks/useChainInfo'
+import { UNISWAP_V2_ROUTER02_ABI } from '@/constants/abi/UniswapV2Router02'
 
 interface BuyAndSellProps {
   className?: string
@@ -158,19 +159,28 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
   const agentTokenForSale = (agentTokenTotalSalesAmount !== undefined && agentTokenSoldAmount !== undefined) ? agentTokenTotalSalesAmount - agentTokenSoldAmount : undefined
 
   // buy-expected token amount
-  const { data: amountOutBuy } = useReadContract({
-    address: VITE_CONTRACT_MAX_FUN_CURVE as `0x${string}`,
-    abi: MaxFunCurveAbi,
+  const { data: amountOutBuyData } = useReadContract({
+    address: isOnUniswap === true ? VITE_CONTRACT_UNISWAP_V2_ROUTER02 as `0x${string}` : VITE_CONTRACT_MAX_FUN_CURVE as `0x${string}`,
+    abi: isOnUniswap === true ? UNISWAP_V2_ROUTER02_ABI : MaxFunCurveAbi,
     functionName: 'getAmountsOut',
-    args: amount && raiseTokenDecimal ? [ 
-      raiseTokenAddress as `0x${string}`,
-      maxfunTokenAddress as `0x${string}`, 
-      BigInt(Big(amount).times(1-(slippage / 100)).times(Big(10).pow(raiseTokenDecimal)).toFixed(0))
-    ] : undefined,
+    args: amount && raiseTokenDecimal 
+      ? isOnUniswap === true 
+        ? [
+          BigInt(Big(amount).times(1-(slippage / 100)).times(Big(10).pow(raiseTokenDecimal)).toFixed(0)),
+          [raiseTokenAddress as `0x${string}`, maxfunTokenAddress as `0x${string}`],
+        ]
+        : [ 
+          raiseTokenAddress as `0x${string}`,
+          maxfunTokenAddress as `0x${string}`, 
+          BigInt(Big(amount).times(1-(slippage / 100)).times(Big(10).pow(raiseTokenDecimal)).toFixed(0))
+        ] 
+      : undefined,
     query: {
-      enabled: !!raiseTokenAddress && !!maxfunTokenAddress && !!amount
+      enabled: !!raiseTokenAddress && !!maxfunTokenAddress && !!amount && isOnUniswap !== undefined
     }
   })
+  const amountOutBuy = isOnUniswap === true ? (amountOutBuyData as bigint[])?.[1] : amountOutBuyData as bigint | undefined
+  
   // const {data: amountInBuy} = useReadContract({
   //   address: VITE_CONTRACT_MAX_FUN_CURVE as `0x${string}`,
   //   abi: MaxFunCurveAbi,
@@ -187,26 +197,32 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
   // console.log('amountInBuy', amountInBuy);
   
   // sell-expected token amount
-  const { data: amountOutSell } = useReadContract({
-    address: VITE_CONTRACT_MAX_FUN_CURVE as `0x${string}`,
-    abi: MaxFunCurveAbi,
+  const { data: amountOutSellData } = useReadContract({
+    address: isOnUniswap === true ? VITE_CONTRACT_UNISWAP_V2_ROUTER02 as `0x${string}` : VITE_CONTRACT_MAX_FUN_CURVE as `0x${string}`,
+    abi: isOnUniswap === true ? UNISWAP_V2_ROUTER02_ABI : MaxFunCurveAbi,
     functionName: 'getAmountsOut',
-    args: amount && maxfunTokenDecimal ? [
-      maxfunTokenAddress as `0x${string}`, 
-      raiseTokenAddress as `0x${string}`,  
-      BigInt(Big(amount).times(1-(slippage / 100)).times(Big(10).pow(maxfunTokenDecimal)).toFixed(0))
-    ] : undefined,
+    args: amount && maxfunTokenDecimal ? isOnUniswap === true 
+      ? [
+        BigInt(Big(amount).times(1-(slippage / 100)).times(Big(10).pow(maxfunTokenDecimal)).toFixed(0)),
+        [maxfunTokenAddress as `0x${string}`, raiseTokenAddress as `0x${string}`],
+      ] : [ 
+        maxfunTokenAddress as `0x${string}`,
+        raiseTokenAddress as `0x${string}`,  
+        BigInt(Big(amount).times(1-(slippage / 100)).times(Big(10).pow(maxfunTokenDecimal)).toFixed(0))
+      ] 
+    : undefined,
     query: {
-      enabled: !!maxfunTokenAddress && !!raiseTokenAddress && !!amount && !!raiseTokenDecimal
+      enabled: !!maxfunTokenAddress && !!raiseTokenAddress && !!amount && !!raiseTokenDecimal && isOnUniswap !== undefined
     }
   })
+  const amountOutSell = isOnUniswap === true ? (amountOutSellData as bigint[])?.[1] : amountOutSellData as bigint | undefined
 
   const isCanBuy = useMemo(() => {
     if (isSell) return false
     if (isLoadingTrade) return false
     if (!amount || Number(amount) <= 0) return false
     if (raiseTokenBalance === undefined || raiseTokenDecimal === undefined) return false
-    if (isOnUniswap === undefined || isOnUniswap === true) return false
+    if (isOnUniswap === undefined) return false
     
     setButtonText(ButtonText.Buy)
 
@@ -224,7 +240,7 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
     if (isLoadingTrade) return false
     if (!amount || Number(amount) <= 0) return false
     if (maxfunTokenBalance === undefined || maxfunTokenDecimal === undefined) return false
-    if (isOnUniswap === undefined || isOnUniswap === true) return false
+    if (isOnUniswap === undefined) return false
 
     setButtonText(ButtonText.Sell)
 
@@ -242,6 +258,7 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
     if (!raiseTokenDecimal) return
     if (!chainId) return;
     if (agentTokenForSale === undefined) return;
+    if (isOnUniswap === undefined) return;
 
     if (!chainIdSupported.includes(chainId)) {
       const firstChainId = chainIdSupported[0]
@@ -260,6 +277,7 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
       amountMinOut: amountOutBuy,
       asset: raiseTokenAddress,
       isPurchaseToGrad,
+      isOnUniswap,
     })
   }
 
@@ -268,6 +286,8 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
     if (!amountOutSell) return
     if (!maxfunTokenDecimal) return
     if (!chainId) return;
+    if (isOnUniswap === undefined) return;
+
     if (!chainIdSupported.includes(chainId)) {
       const firstChainId = chainIdSupported[0]
       setIsLoadingSwitchChain(true)
@@ -281,6 +301,8 @@ export default function BuyAndSell({className, tokenAddress, raiseTokenAddress, 
       amountIn: BigInt(Big(amount).times(Big(10).pow(maxfunTokenDecimal)).toFixed(0)),
       tokenAddress: maxfunTokenAddress,
       amountMinOut: amountOutSell,
+      asset: raiseTokenAddress,
+      isOnUniswap,
     })
   }
 
